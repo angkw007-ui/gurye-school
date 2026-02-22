@@ -1,10 +1,10 @@
 const CACHE_NAME = 'gurye-school-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  './',
+  './index.html',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   'https://cdn.tailwindcss.com'
 ];
 
@@ -45,7 +45,7 @@ self.addEventListener('fetch', event => {
       })
       .catch(() => {
         // 오프라인일 때
-        return caches.match('/index.html');
+        return caches.match('./index.html');
       })
   );
 });
