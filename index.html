@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="구례중">
     <link rel="apple-touch-icon" href="./icons/icon-192.png">
-    <meta name="theme-color" content="#312e81">
+    <meta name="theme-color" content="#166534">
     <!-- PWA 설정 끝 -->
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,12 +24,12 @@
         @media (min-width: 768px) { .day-cell { min-height: 140px; padding: 12px; } }
         .day-cell:hover { background-color: #f1f5f9; }
         
-        .event-item { font-size: 13px; padding: 4px 6px; margin-top: 3px; border-radius: 3px; background-color: #f1f5f9; border-left: 2px solid #6366f1; font-weight: 700; display: flex; justify-content: space-between; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .event-item { font-size: 13px; padding: 4px 6px; margin-top: 3px; border-radius: 3px; background-color: #f1f5f9; border-left: 2px solid #16a34a; font-weight: 700; display: flex; justify-content: space-between; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         @media (min-width: 768px) { 
             .event-item { font-size: 14px; padding: 6px 8px; margin-top: 5px; border-radius: 5px; border-left-width: 3px; white-space: normal; word-break: break-all; } 
         }
         
-        .dept-교무 { color: #4338ca; border-left-color: #4338ca; }
+        .dept-교무 { color: #15803d; border-left-color: #15803d; }
         .dept-연구 { color: #059669; border-left-color: #059669; }
         .dept-학생 { color: #d97706; border-left-color: #d97706; }
         .dept-창의 { color: #7c3aed; border-left-color: #7c3aed; }
@@ -56,7 +56,7 @@
         .mini-day { padding: 4px; text-align: center; min-height: 30px; background: #f8fafc; border-radius: 4px; cursor: pointer; }
         @media (min-width: 768px) { .mini-day { min-height: 36px; padding: 6px; } }
         
-        .mini-day.has-event { background: #dbeafe; font-weight: 700; }
+        .mini-day.has-event { background: #dcfce7; font-weight: 700; }
         .mini-day.weekend { background: #fee2e2; }
         
         .week-item { background-color: white; }
@@ -66,14 +66,14 @@
         .notice-list { display: flex; flex-direction: column; gap: 12px; }
         .notice-box { display: flex; flex-direction: column; gap: 4px; position: relative; }
         .notice-header { display: flex; justify-content: space-between; align-items: center; }
-        .notice-label { font-size: 13px; font-weight: 800; color: #4338ca; }
+        .notice-label { font-size: 13px; font-weight: 800; color: #15803d; }
         @media (min-width: 768px) { .notice-label { font-size: 15px; } }
         
         .notice-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; outline: none; transition: all 0.2s; min-height: 60px; resize: vertical; background-color: white; font-weight: normal; }
         @media (min-width: 768px) { .notice-input { font-size: 15px; padding: 12px; min-height: 70px; } }
         
         .notice-input.has-content { background-color: #fef9c3 !important; font-weight: normal !important; border-color: #facc15; }
-        .notice-input:focus { border-color: #6366f1; ring: 2px solid #e0e7ff; }
+        .notice-input:focus { border-color: #16a34a; ring: 2px solid #dcfce7; }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 24px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
@@ -86,7 +86,7 @@
             position: fixed; 
             bottom: 20px; 
             right: 20px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
             color: white;
             padding: 12px 24px;
             border-radius: 50px;
@@ -110,12 +110,12 @@
 </head>
 <body class="p-3">
     <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-6 bg-indigo-900 p-4 rounded-2xl text-white shadow-lg">
-            <h1 class="font-black text-sm md:text-lg">🏫 구례중 학사력</h1>
+        <header class="flex justify-between items-center mb-6 bg-green-800 p-4 rounded-2xl text-white shadow-lg">
+            <h1 class="font-black text-sm md:text-lg">🏫 구례중 주간 계획</h1>
             <div class="flex gap-1 md:gap-2">
-                <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-indigo-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-indigo-600">주간</button>
-                <button onclick="app.setView('monthly')" class="text-[10px] md:text-sm bg-indigo-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-indigo-600">월간</button>
-                <button onclick="app.setView('yearly')" class="text-[10px] md:text-sm bg-indigo-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-indigo-600">연간</button>
+                <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">주간</button>
+                <button onclick="app.setView('monthly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">월간</button>
+                <button onclick="app.setView('yearly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">연간</button>
             </div>
         </header>
 
@@ -126,29 +126,29 @@
                 <option>교무</option><option>연구</option><option>학생</option><option>창의</option><option>행정</option>
                 <option>1학년</option><option>2학년</option><option>3학년</option>
             </select>
-            <button onclick="app.saveEvent()" class="bg-indigo-600 text-white rounded-xl font-bold py-2 text-sm md:text-base hover:bg-indigo-700">저장하기</button>
+            <button onclick="app.saveEvent()" class="bg-green-600 text-white rounded-xl font-bold py-2 text-sm md:text-base hover:bg-green-700">저장하기</button>
         </section>
 
         <div class="flex justify-between items-center bg-white p-3 rounded-2xl border mb-4">
-            <button onclick="app.move(-1)" class="text-indigo-600 font-bold px-4 text-lg md:text-xl hover:text-indigo-800">❮</button>
+            <button onclick="app.move(-1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">❮</button>
             <h2 id="titleText" class="text-sm md:text-xl font-black text-slate-700">로딩 중...</h2>
-            <button onclick="app.move(1)" class="text-indigo-600 font-bold px-4 text-lg md:text-xl hover:text-indigo-800">❯</button>
+            <button onclick="app.move(1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">❯</button>
         </div>
 
         <div id="viewPort"></div>
         
         <div id="noticePort" class="hidden">
             <div class="notice-section">
-                <h3 class="font-black text-indigo-900 mb-4 flex items-center gap-2 text-base md:text-lg">📢 주간 안내사항</h3>
+                <h3 class="font-black text-green-800 mb-4 flex items-center gap-2 text-base md:text-lg">📢 주간 안내사항</h3>
                 <div class="notice-list">
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교장</label></div><textarea data-dept="교장" class="notice-input" oninput="app.updateInputStyle(this); app.markAsEditing(this)" onchange="app.saveNotice(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교감</label></div><textarea data-dept="교감" class="notice-input" oninput="app.updateInputStyle(this); app.markAsEditing(this)" onchange="app.saveNotice(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">행정실장</label></div><textarea data-dept="행정실" class="notice-input" oninput="app.updateInputStyle(this); app.markAsEditing(this)" onchange="app.saveNotice(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교무부</label></div><textarea data-dept="교무부" class="notice-input" oninput="app.updateInputStyle(this); app.markAsEditing(this)" onchange="app.saveNotice(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">연구부</label></div><textarea data-dept="연구부" class="notice-input" oninput="app.updateInputStyle(this); app.markAsEditing(this)" onchange="app.saveNotice(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">학생부</label></div><textarea data-dept="학생부" class="notice-input" oninput="app.updateInputStyle(this); app.markAsEditing(this)" onchange="app.saveNotice(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">창의인성부</label></div><textarea data-dept="창의인성부" class="notice-input" oninput="app.updateInputStyle(this); app.markAsEditing(this)" onchange="app.saveNotice(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">학년실</label></div><textarea data-dept="학년실" class="notice-input" oninput="app.updateInputStyle(this); app.markAsEditing(this)" onchange="app.saveNotice(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교장</label></div><textarea data-dept="교장" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교감</label></div><textarea data-dept="교감" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">행정실장</label></div><textarea data-dept="행정실" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교무부</label></div><textarea data-dept="교무부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">연구부</label></div><textarea data-dept="연구부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">학생부</label></div><textarea data-dept="학생부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">창의인성부</label></div><textarea data-dept="창의인성부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">학년실</label></div><textarea data-dept="학년실" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
                 </div>
             </div>
         </div>
@@ -165,9 +165,9 @@
 
     <div id="detailModal" class="modal" onclick="app.closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="modalDate" class="font-black text-indigo-900 mb-2 text-base md:text-lg"></h3>
+            <h3 id="modalDate" class="font-black text-green-800 mb-2 text-base md:text-lg"></h3>
             <div id="modalContent" class="space-y-2 max-h-60 overflow-y-auto mb-4 text-sm md:text-base"></div>
-            <button onclick="app.closeModal()" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-xl text-sm md:text-base hover:bg-indigo-700">닫기</button>
+            <button onclick="app.closeModal()" class="w-full bg-green-600 text-white font-bold py-2 rounded-xl text-sm md:text-base hover:bg-green-700">닫기</button>
         </div>
     </div>
 
@@ -179,6 +179,7 @@
             viewMode: 'weekly',
             isSyncing: false,
             isEditing: false,
+            saveTimers: {},  // debounce 타이머 저장
             days: ['일', '월', '화', '수', '목', '금', '토'],
             
             holidays: [
@@ -252,7 +253,23 @@
                 }
             },
 
-            markAsEditing(input) { this.isEditing = true; },
+            // ⚡ 입력 지연 해결: debounce 적용
+            handleNoticeInput(input) {
+                this.isEditing = true;
+                this.updateInputStyle(input);
+                
+                const dept = input.dataset.dept;
+                
+                // 기존 타이머 제거
+                if (this.saveTimers[dept]) {
+                    clearTimeout(this.saveTimers[dept]);
+                }
+                
+                // 1.5초 후에 저장 (사용자가 입력을 멈추면)
+                this.saveTimers[dept] = setTimeout(() => {
+                    this.saveNotice(input);
+                }, 1500);
+            },
             
             updateInputStyle(input) {
                 if (input.value.trim() !== "") input.classList.add('has-content');
@@ -279,7 +296,7 @@
                     else this.events.push(newNotice);
                     await this.saveToServer('add', newNotice);
                 }
-                this.render();
+                // render() 호출 제거 - 불필요한 재렌더링 방지
             },
 
             async clearNotice(dept) {
@@ -446,7 +463,7 @@
                     const isWeekend = d.getDay() === 0 || d.getDay() === 6;
                     const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
                     const dayOfWeek = this.days[d.getDay()];
-                    const colorClass = d.getDay() === 0 || holiday ? 'text-sun' : (d.getDay() === 6 ? 'text-sat' : 'text-indigo-900');
+                    const colorClass = d.getDay() === 0 || holiday ? 'text-sun' : (d.getDay() === 6 ? 'text-sat' : 'text-green-800');
                     
                     html += `<div class="week-item ${holidayClass} p-4 rounded-xl border flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')">
                         <div class="w-20 md:w-28 week-date-label font-black ${colorClass} border-r mr-4">${d.getDate()}일(${dayOfWeek})`;
