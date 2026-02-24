@@ -81,6 +81,51 @@
         .week-date-label { font-size: 15px; font-weight: 900; line-height: 1.3; }
         @media (min-width: 768px) { .week-date-label { font-size: 17px; } }
         
+        /* 📝 회의메모 스타일 - 날짜 입력 개선 */
+        .meeting-container { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .meeting-date-picker { display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); padding: 20px; border-radius: 12px; margin-bottom: 24px; }
+        
+        .meeting-date-input { 
+            background: white; 
+            color: #15803d; 
+            font-weight: 900; 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            font-size: 18px; 
+            border: 3px solid rgba(255,255,255,0.3);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        @media (min-width: 768px) { 
+            .meeting-date-input { font-size: 20px; padding: 14px 24px; } 
+        }
+        .meeting-date-input:hover { 
+            transform: scale(1.02); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+        }
+        .meeting-date-input:focus { 
+            border-color: #facc15; 
+            box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.3); 
+        }
+        
+        .meeting-input-group { margin-bottom: 20px; }
+        .meeting-label { font-size: 15px; font-weight: 800; color: #15803d; margin-bottom: 8px; display: block; }
+        @media (min-width: 768px) { .meeting-label { font-size: 17px; } }
+        
+        .meeting-input { width: 100%; border: 2px solid #cbd5e1; border-radius: 12px; padding: 14px; font-size: 15px; outline: none; transition: all 0.2s; font-weight: 600; }
+        .meeting-input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
+        
+        .meeting-textarea { width: 100%; border: 2px solid #cbd5e1; border-radius: 12px; padding: 14px; font-size: 14px; outline: none; transition: all 0.2s; min-height: 300px; resize: vertical; line-height: 1.8; }
+        @media (min-width: 768px) { .meeting-textarea { font-size: 15px; min-height: 350px; } }
+        .meeting-textarea:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
+        
+        .meeting-input.has-data, .meeting-textarea.has-data { background-color: #fef9c3; border-color: #facc15; }
+        
+        .save-indicator { position: fixed; bottom: 20px; right: 20px; background: #16a34a; color: white; padding: 12px 24px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 1000; }
+        .save-indicator.show { opacity: 1; transform: translateY(0); }
+        
         /* 📱 PWA 설치 버튼 스타일 */
         .install-btn { 
             position: fixed; 
@@ -116,6 +161,7 @@
                 <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">주간</button>
                 <button onclick="app.setView('monthly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">월간</button>
                 <button onclick="app.setView('yearly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">연간</button>
+                <button onclick="app.setView('meeting')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">📝회의메모</button>
             </div>
         </header>
 
@@ -163,6 +209,9 @@
         📱 앱으로 설치하기
     </button>
 
+    <!-- 💾 저장 인디케이터 -->
+    <div id="saveIndicator" class="save-indicator">💾 저장 완료!</div>
+
     <div id="detailModal" class="modal" onclick="app.closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h3 id="modalDate" class="font-black text-green-800 mb-2 text-base md:text-lg"></h3>
@@ -179,7 +228,8 @@
             viewMode: 'weekly',
             isSyncing: false,
             isEditing: false,
-            saveTimers: {},  // debounce 타이머 저장
+            saveTimers: {},
+            meetingDate: new Date(),
             days: ['일', '월', '화', '수', '목', '금', '토'],
             
             holidays: [
@@ -201,6 +251,12 @@
             
             setSyncStatus(status) { },
             
+            showSaveIndicator() {
+                const indicator = document.getElementById('saveIndicator');
+                indicator.classList.add('show');
+                setTimeout(() => indicator.classList.remove('show'), 2000);
+            },
+            
             async loadFromServer() {
                 if (this.isSyncing) return;
                 if (this.API_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
@@ -219,7 +275,14 @@
                         let dateStr = item.date;
                         if (typeof dateStr === 'string' && dateStr.includes('T')) dateStr = dateStr.split('T')[0];
                         else if (typeof dateStr === 'string') dateStr = dateStr.substring(0, 10);
-                        return { id: String(item.id), date: dateStr, title: item.title, dapt: item.dapt };
+                        return { 
+                            id: String(item.id), 
+                            date: dateStr, 
+                            title: item.title, 
+                            dapt: item.dapt,
+                            subject: item.subject || '',
+                            content: item.content || ''
+                        };
                     });
                     
                     this.setSyncStatus('success');
@@ -235,6 +298,7 @@
             async saveToServer(action, data) {
                 if (this.API_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
                     localStorage.setItem('gurye_events', JSON.stringify(this.events));
+                    this.showSaveIndicator();
                     return;
                 }
                 try {
@@ -245,7 +309,10 @@
                         body: JSON.stringify({ action, ...data })
                     });
                     const result = await response.json();
-                    if (result.success) this.setSyncStatus('success');
+                    if (result.success) {
+                        this.setSyncStatus('success');
+                        this.showSaveIndicator();
+                    }
                     else throw new Error(result.error);
                 } catch (error) {
                     console.error('저장 오류:', error);
@@ -253,19 +320,16 @@
                 }
             },
 
-            // ⚡ 입력 지연 해결: debounce 적용
             handleNoticeInput(input) {
                 this.isEditing = true;
                 this.updateInputStyle(input);
                 
                 const dept = input.dataset.dept;
                 
-                // 기존 타이머 제거
                 if (this.saveTimers[dept]) {
                     clearTimeout(this.saveTimers[dept]);
                 }
                 
-                // 1.5초 후에 저장 (사용자가 입력을 멈추면)
                 this.saveTimers[dept] = setTimeout(() => {
                     this.saveNotice(input);
                 }, 1500);
@@ -296,7 +360,6 @@
                     else this.events.push(newNotice);
                     await this.saveToServer('add', newNotice);
                 }
-                // render() 호출 제거 - 불필요한 재렌더링 방지
             },
 
             async clearNotice(dept) {
@@ -309,6 +372,109 @@
                 if (input) { input.value = ""; this.updateInputStyle(input); }
                 await this.saveToServer('delete', { id: noticeId });
                 this.render();
+            },
+            
+            // 📝 회의메모 날짜 변경 이벤트 (직접 입력)
+            onMeetingDateChange(dateStr) {
+                this.meetingDate = new Date(dateStr);
+                this.renderMeetingView();
+            },
+            
+            // 📝 회의메모 입력 이벤트 - 즉시 저장
+            handleMeetingInput(input) {
+                this.isEditing = true;
+                if (input.value.trim() !== "") input.classList.add('has-data');
+                else input.classList.remove('has-data');
+                
+                // ⚡ 즉시 저장 (debounce 제거)
+                this.saveMeeting();
+            },
+            
+            async saveMeeting() {
+                this.isEditing = false;
+                const dateStr = this.formatDate(this.meetingDate);
+                const subject = document.getElementById('meetingSubject')?.value.trim() || '';
+                const content = document.getElementById('meetingContent')?.value.trim() || '';
+                const meetingId = `meeting_${dateStr}`;
+                
+                const existingIndex = this.events.findIndex(e => e.id === meetingId);
+                
+                if (subject === '' && content === '') {
+                    if (existingIndex !== -1) {
+                        this.events.splice(existingIndex, 1);
+                        await this.saveToServer('delete', { id: meetingId });
+                    }
+                } else {
+                    const meetingData = {
+                        id: meetingId,
+                        date: dateStr,
+                        title: subject || '(제목 없음)',
+                        dapt: 'meeting',
+                        subject: subject,
+                        content: content
+                    };
+                    
+                    if (existingIndex !== -1) {
+                        this.events[existingIndex] = meetingData;
+                    } else {
+                        this.events.push(meetingData);
+                    }
+                    
+                    await this.saveToServer('add', meetingData);
+                }
+            },
+            
+            renderMeetingView() {
+                const dateStr = this.formatDate(this.meetingDate);
+                
+                // 저장된 회의 데이터 불러오기
+                const meetingId = `meeting_${dateStr}`;
+                const meetingData = this.events.find(e => e.id === meetingId);
+                
+                const html = `
+                    <div class="meeting-container">
+                        <div class="meeting-date-picker">
+                            <input 
+                                type="date" 
+                                id="meetingDateInput"
+                                class="meeting-date-input" 
+                                value="${dateStr}"
+                                onchange="app.onMeetingDateChange(this.value)"
+                            >
+                        </div>
+                        
+                        <div class="meeting-input-group">
+                            <label class="meeting-label">📋 모임 주제</label>
+                            <input 
+                                type="text" 
+                                id="meetingSubject"
+                                class="meeting-input ${meetingData?.subject ? 'has-data' : ''}" 
+                                placeholder="예: 1학기 중간고사 준비 회의"
+                                value="${meetingData?.subject || ''}"
+                                data-type="subject"
+                                oninput="app.handleMeetingInput(this)"
+                            >
+                        </div>
+                        
+                        <div class="meeting-input-group">
+                            <label class="meeting-label">📝 모임 내용 정리</label>
+                            <textarea 
+                                id="meetingContent"
+                                class="meeting-textarea ${meetingData?.content ? 'has-data' : ''}" 
+                                placeholder="회의 내용을 자유롭게 작성하세요.&#10;&#10;예시:&#10;• 참석자: 교무부장, 학년부장, 교과부장&#10;• 주요 안건: 시험 일정 조율, 출제 범위 확정&#10;• 결정 사항: 4월 15일~17일 시험 실시&#10;• 비고: 다음 회의는 4월 1일"
+                                data-type="content"
+                                oninput="app.handleMeetingInput(this)"
+                            >${meetingData?.content || ''}</textarea>
+                        </div>
+                        
+                        <div class="text-sm text-slate-500 text-center mt-4">
+                            ⚡ 입력 즉시 자동 저장됩니다
+                        </div>
+                    </div>
+                `;
+                
+                const viewPort = document.getElementById('viewPort');
+                viewPort.innerHTML = html;
             },
             
             getMonday(d) {
@@ -357,10 +523,20 @@
                 modalDate.textContent = `${dateStr}(${dayOfWeek})` + (holiday ? ` (${holiday})` : '');
                 modalContent.innerHTML = "";
                 
-                const dayEvents = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_'));
-                if (dayEvents.length === 0) {
+                const dayEvents = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
+                const meetingData = this.events.find(e => e.id === `meeting_${dateStr}`);
+                
+                if (meetingData) {
+                    modalContent.innerHTML += `<div class="bg-green-50 p-4 rounded-lg border-2 border-green-300 mb-3">
+                        <div class="text-green-800 font-black mb-2">📝 회의메모</div>
+                        <div class="font-bold text-green-700 mb-1">${meetingData.subject || '(제목 없음)'}</div>
+                        <div class="text-sm text-slate-600 whitespace-pre-wrap">${meetingData.content || ''}</div>
+                    </div>`;
+                }
+                
+                if (dayEvents.length === 0 && !meetingData) {
                     modalContent.innerHTML = "<div class='text-slate-400 text-sm'>일정이 없습니다.</div>";
-                } else {
+                } else if (dayEvents.length > 0) {
                     dayEvents.forEach(e => {
                         modalContent.innerHTML += `<div class="bg-slate-50 p-3 rounded-lg flex justify-between items-center">
                             <div class="dept-${e.dapt}"><span class="font-bold">[${e.dapt}]</span> ${e.title}</div>
@@ -376,6 +552,10 @@
             move(direction) {
                 if (this.viewMode === 'yearly') this.currentDate.setFullYear(this.currentDate.getFullYear() + direction);
                 else if (this.viewMode === 'monthly') this.currentDate.setMonth(this.currentDate.getMonth() + direction);
+                else if (this.viewMode === 'meeting') {
+                    this.meetingDate.setMonth(this.meetingDate.getMonth() + direction);
+                    document.getElementById('meetingDateInput').value = this.formatDate(this.meetingDate);
+                }
                 else this.currentDate.setDate(this.currentDate.getDate() + (direction * 7));
                 this.render();
             },
@@ -431,7 +611,7 @@
                         <div class="text-[10px] md:text-sm font-black ${colorClass}">${d}</div>`;
                     if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
                     html += '<div class="mt-1">';
-                    this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_')).forEach(e => {
+                    this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
                         const isMobile = window.innerWidth < 768;
                         const displayTitle = isMobile ? e.title.substring(0, 3) : e.title;
                         html += `<div class="event-item dept-${e.dapt}"><span>${displayTitle}</span></div>`;
@@ -469,7 +649,7 @@
                         <div class="w-20 md:w-28 week-date-label font-black ${colorClass} border-r mr-4">${d.getDate()}일(${dayOfWeek})`;
                     if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
                     html += '</div><div class="flex-1">';
-                    this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_')).forEach(e => {
+                    this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
                         html += `<div class="event-item mb-1 p-2 dept-${e.dapt}" onclick="event.stopPropagation()">
                             <span>${e.title} (${e.dapt})</span>
                             <span class="del-x" onclick="app.deleteEvent('${e.id}')">✕</span>
@@ -484,21 +664,30 @@
                 const viewPort = document.getElementById('viewPort');
                 const titleText = document.getElementById('titleText');
                 const noticePort = document.getElementById('noticePort');
+                const eventInputSection = document.getElementById('eventInputSection');
                 const year = this.currentDate.getFullYear();
                 const month = this.currentDate.getMonth() + 1;
                 
-                if (this.viewMode === 'yearly') {
-                    titleText.textContent = `${year}년 전체 학사력`;
-                    viewPort.innerHTML = this.renderYearly();
+                if (this.viewMode === 'meeting') {
+                    titleText.textContent = `📝 회의메모`;
+                    this.renderMeetingView();
                     noticePort.classList.add('hidden');
-                } else if (this.viewMode === 'monthly') {
-                    titleText.textContent = `${year}년 ${month}월`;
-                    viewPort.innerHTML = this.renderMonthly();
-                    noticePort.classList.add('hidden');
+                    eventInputSection.classList.add('hidden');
                 } else {
-                    titleText.textContent = `${year}년 ${month}월 주간계획`;
-                    viewPort.innerHTML = this.renderWeekly();
-                    noticePort.classList.remove('hidden');
+                    eventInputSection.classList.remove('hidden');
+                    if (this.viewMode === 'yearly') {
+                        titleText.textContent = `${year}년 전체 학사력`;
+                        viewPort.innerHTML = this.renderYearly();
+                        noticePort.classList.add('hidden');
+                    } else if (this.viewMode === 'monthly') {
+                        titleText.textContent = `${year}년 ${month}월`;
+                        viewPort.innerHTML = this.renderMonthly();
+                        noticePort.classList.add('hidden');
+                    } else {
+                        titleText.textContent = `${year}년 ${month}월 주간계획`;
+                        viewPort.innerHTML = this.renderWeekly();
+                        noticePort.classList.remove('hidden');
+                    }
                 }
             },
             
@@ -512,9 +701,8 @@
         window.addEventListener('DOMContentLoaded', () => app.init());
     </script>
     
-    <!-- 📱 PWA Service Worker 등록 - 상대 경로로 수정 -->
+    <!-- 📱 PWA Service Worker 등록 -->
     <script>
-        // Service Worker 등록
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
@@ -527,34 +715,24 @@
             });
         }
 
-        // PWA 설치 프롬프트
         let deferredPrompt;
         const installBtn = document.getElementById('installBtn');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // 기본 설치 프롬프트 방지
             e.preventDefault();
             deferredPrompt = e;
-            // 설치 버튼 표시
             installBtn.style.display = 'block';
         });
 
         installBtn.addEventListener('click', async () => {
             if (!deferredPrompt) return;
-            
-            // 설치 프롬프트 표시
             deferredPrompt.prompt();
-            
-            // 사용자 선택 대기
             const { outcome } = await deferredPrompt.userChoice;
             console.log(`사용자 선택: ${outcome}`);
-            
-            // 프롬프트 초기화
             deferredPrompt = null;
             installBtn.style.display = 'none';
         });
 
-        // 설치 완료 후
         window.addEventListener('appinstalled', () => {
             console.log('✅ PWA 설치 완료!');
             installBtn.style.display = 'none';
