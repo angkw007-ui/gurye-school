@@ -193,26 +193,7 @@
     </div>
 
     <script>
-        // ★ 모임내용 고정 기본 템플릿
-        const MEETING_TEMPLATE = `1. 참여인원: 
-
-2. 일시: 
-
-3. 장소: 
-
-4. 주요안건
-   
-
-5. 협의내용
-
-
-
-
-6. 협의 결과
-   
-
-
-   * [회의록 내부결재가 필요한 경우] 구례중학교 위임전결규정에 의거 협의회 서명은 참여위원의 전자문서 공람 및 관리자 결재로 갈음함.`;
+        // 빈 공란으로 시작 - 템플릿 없음
 
         const app = {
             // ★ API_URL을 최신 배포 주소로 업데이트
@@ -255,12 +236,9 @@
                 return activeEl && (activeEl === subjectEl || activeEl === contentEl);
             },
 
-            // ★ 저장된 내용이 없으면 기본 템플릿 반환
+            // 저장된 내용 있으면 반환, 없으면 빈 문자열
             getMeetingContent(meetingData) {
-                if (meetingData && meetingData.content && meetingData.content.trim() !== '') {
-                    return meetingData.content;
-                }
-                return MEETING_TEMPLATE;
+                return (meetingData && meetingData.content) ? meetingData.content : '';
             },
 
             async loadFromServer() {
@@ -743,7 +721,7 @@
             },
 
             updateMeetingInputStyle(input) {
-                if (input.value.trim() !== '' && input.value.trim() !== MEETING_TEMPLATE.trim()) input.classList.add('has-data');
+                if (input.value.trim() !== '') input.classList.add('has-data');
                 else input.classList.remove('has-data');
             },
 
@@ -760,10 +738,8 @@
                 const meetingId = `meeting_${dateStr}`;
                 const existingIndex = this.events.findIndex(e => e.id === meetingId);
 
-                // 템플릿과 동일하면 저장하지 않음
-                const isOnlyTemplate = content === MEETING_TEMPLATE.trim() && subject === '';
-
-                if ((subject === '' && content === '') || isOnlyTemplate) {
+                // 내용 없으면 삭제
+                if (!subject && !content) {
                     if (existingIndex !== -1) {
                         this.events.splice(existingIndex, 1);
                         await this.saveToServer('delete', { id: meetingId });
@@ -841,40 +817,15 @@
             // ★ AI 결과에서 가로줄 및 불필요한 기호 제거
             cleanAIMinutes(text) {
                 return text
-                    .replace(/━+/g, '')           // ━━━ 줄 제거
-                    .replace(/─+/g, '')           // ─── 줄 제거
-                    .replace(/[\-]{4,}/g, '')     // ---- 4개 이상 줄 제거
-                    .replace(/[=]{4,}/g, '')      // ==== 4개 이상 줄 제거
-                    .replace(/\n{3,}/g, '\n\n')   // 3줄 이상 빈줄 → 2줄로
-                    .trim();
+                    .replace(/━+/g, '').replace(/─+/g, '')
+                    .replace(/[\-]{4,}/g, '').replace(/[=]{4,}/g, '')
+                    .replace(/\n{3,}/g, '\n\n').trim();
             },
 
-            // ★ 로컬 포맷터 - 가로줄 없이 깔끔하게
+            // ★ 지정 형식으로 회의록 생성
             formatMeetingMinutesLocal(subject, rawContent, dateStr, dayOfWeek) {
-                const lines = rawContent.split('\n').filter(l => l.trim());
-
-                let formatted = `📋 ${subject}\n\n`;
-                formatted += `📅 일시: ${dateStr} (${dayOfWeek})\n`;
-                formatted += `📍 장소: \n`;
-                formatted += `👥 참석자: \n\n`;
-                formatted += `📌 주요 안건\n\n`;
-
-                let agendaNum = 1;
-                lines.forEach(line => {
-                    const trimmed = line.trim();
-                    if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
-                        formatted += `${agendaNum}. ${trimmed.substring(1).trim()}\n`;
-                        agendaNum++;
-                    } else if (trimmed) {
-                        formatted += `   ${trimmed}\n`;
-                    }
-                });
-
-                formatted += `\n✅ 결정 사항\n\n• \n\n`;
-                formatted += `📝 특이사항 및 비고\n\n• \n\n`;
-                formatted += `📆 다음 회의\n\n일시: \n안건: `;
-
-                return formatted;
+                const body = rawContent ? rawContent.split('\n').map(l => '   ' + l).join('\n') : '';
+                return `1. 참여인원: \n\n2. 일시: ${dateStr} (${dayOfWeek})\n\n3. 장소: \n\n4. 주요안건\n   ${subject}\n\n5. 협의내용\n${body}\n\n\n\n6. 협의 결과\n   \n\n\n   * [회의록 내부결재가 필요한 경우] 구례중학교 위임전결규정에 의거 협의회 서명은 참여위원의 전자문서 공람 및 관리자 결재로 갈음함.`;
             },
 
             render() {
