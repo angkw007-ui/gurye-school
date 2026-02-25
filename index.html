@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -281,11 +282,12 @@
         const app = {
             API_URL: 'https://script.google.com/macros/s/AKfycbyIl7Rl7q_fwk4vBqH0yTD8qmWtnRQpsqprx_QJvZZya6OaUCHXHlDOdU6wUgSp0S_i/exec',
             events: [],
-            localChanges: {}, // 🔥 로컬 변경사항 추적
+            localChanges: {},
             currentDate: new Date(),
             viewMode: 'weekly',
             isSyncing: false,
             isEditing: false,
+            meetingInputFocused: false,   // ★ 신규: 회의메모 input 포커스 상태 추적
             saveTimers: {},
             meetingDate: new Date(),
             meetingCalendarDate: new Date(),
@@ -317,6 +319,14 @@
                     statusEl.classList.remove('show');
                 }, 2000);
             },
+
+            // ★ 신규: 회의메모 input에 포커스가 있는지 확인
+            isMeetingInputActive() {
+                const subjectEl = document.getElementById('meetingSubject');
+                const contentEl = document.getElementById('meetingContent');
+                const activeEl = document.activeElement;
+                return (activeEl === subjectEl || activeEl === contentEl);
+            },
             
             async loadFromServer() {
                 if (this.isSyncing) return;
@@ -339,11 +349,18 @@
                         };
                     });
                     
-                    // 🔥 로컬 변경사항과 병합
+                    // 로컬 변경사항과 병합
                     this.events = this.mergeEvents(serverEvents);
                     
                     if (!this.isEditing) {
-                        this.render();
+                        // ★ 핵심 수정: 회의메모 뷰일 때 DOM 재생성 안 함
+                        if (this.viewMode === 'meeting') {
+                            // 달력만 갱신하고, input은 포커스 없을 때만 값 업데이트
+                            this.renderMeetingCalendar();
+                            this.softUpdateMeetingInputs();
+                        } else {
+                            this.render();
+                        }
                     }
                 } catch (error) {
                     console.error('로드 오류:', error);
@@ -351,21 +368,46 @@
                     this.isSyncing = false;
                 }
             },
+
+            // ★ 신규: 회의메모 input을 DOM 재생성 없이 부드럽게 업데이트
+            softUpdateMeetingInputs() {
+                const subjectEl = document.getElementById('meetingSubject');
+                const contentEl = document.getElementById('meetingContent');
+                if (!subjectEl || !contentEl) return;
+                
+                // 포커스가 있으면 절대 건드리지 않음
+                if (this.isMeetingInputActive() || this.meetingInputFocused) return;
+                
+                const dateStr = this.formatDate(this.meetingDate);
+                const meetingId = `meeting_${dateStr}`;
+                const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
+                
+                const newSubject = meetingData?.subject || '';
+                const newContent = meetingData?.content || '';
+                
+                // 값이 실제로 다를 때만 업데이트 (불필요한 갱신 방지)
+                if (subjectEl.value !== newSubject) {
+                    subjectEl.value = newSubject;
+                }
+                if (contentEl.value !== newContent) {
+                    contentEl.value = newContent;
+                }
+                
+                this.updateMeetingInputStyle(subjectEl);
+                this.updateMeetingInputStyle(contentEl);
+            },
             
-            // 🔥 서버 데이터와 로컬 변경사항 병합
+            // 서버 데이터와 로컬 변경사항 병합
             mergeEvents(serverEvents) {
                 const merged = [...serverEvents];
                 
-                // 로컬 변경사항을 서버 데이터에 반영
                 Object.keys(this.localChanges).forEach(id => {
                     const localData = this.localChanges[id];
                     const serverIndex = merged.findIndex(e => e.id === id);
                     
                     if (serverIndex !== -1) {
-                        // 서버에 있으면 로컬 데이터로 덮어쓰기
                         merged[serverIndex] = { ...merged[serverIndex], ...localData };
                     } else {
-                        // 서버에 없으면 추가
                         merged.push(localData);
                     }
                 });
@@ -377,7 +419,7 @@
                 try {
                     this.showSaveStatus('saving');
                     
-                    // 🔥 로컬에 먼저 저장 (낙관적 업데이트)
+                    // 로컬에 먼저 저장 (낙관적 업데이트)
                     if (action === 'add') {
                         this.localChanges[data.id] = data;
                     } else if (action === 'delete') {
@@ -394,14 +436,16 @@
                     
                     if (result.success) {
                         this.showSaveStatus('saved');
-                        // 저장 성공하면 로컬 변경사항에서 제거
-                        delete this.localChanges[data.id];
+                        // ★ 수정: 즉시 삭제하지 않고 지연 후 삭제 (서버 동기화 안전장치)
+                        const savedId = data.id;
+                        setTimeout(() => {
+                            delete this.localChanges[savedId];
+                        }, 15000);
                     } else {
                         throw new Error(result.error);
                     }
                 } catch (error) {
                     console.error('저장 오류:', error);
-                    // 실패해도 로컬 변경사항은 유지
                     alert('서버 저장 실패. 로컬에 임시 저장되었습니다.');
                 }
             },
@@ -539,7 +583,6 @@
                 const dateStr = this.formatDate(this.meetingDate);
                 const meetingId = `meeting_${dateStr}`;
                 
-                // 🔥 로컬 변경사항 우선 확인
                 const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
                 
                 const subjectInput = document.getElementById('meetingSubject');
@@ -559,6 +602,7 @@
                 else input.classList.remove('has-data');
             },
             
+            // ★ 수정: 포커스 기반 isEditing 관리
             handleMeetingInput(input) {
                 this.isEditing = true;
                 this.updateMeetingInputStyle(input);
@@ -571,9 +615,30 @@
                     this.saveMeeting();
                 }, 2000);
             },
+
+            // ★ 신규: 포커스 이벤트 핸들러
+            handleMeetingFocus() {
+                this.meetingInputFocused = true;
+                this.isEditing = true;
+            },
+
+            handleMeetingBlur() {
+                this.meetingInputFocused = false;
+                // blur 후 약간의 지연을 두고 isEditing 해제 (탭 이동 등 대비)
+                setTimeout(() => {
+                    if (!this.isMeetingInputActive()) {
+                        this.isEditing = false;
+                    }
+                }, 500);
+            },
             
+            // ★ 수정: isEditing을 포커스 상태에 따라 결정
             async saveMeeting() {
-                this.isEditing = false;
+                // 포커스가 아직 있으면 isEditing 유지
+                if (!this.isMeetingInputActive()) {
+                    this.isEditing = false;
+                }
+                
                 const dateStr = this.formatDate(this.meetingDate);
                 const subject = document.getElementById('meetingSubject')?.value.trim() || '';
                 const content = document.getElementById('meetingContent')?.value.trim() || '';
@@ -713,6 +778,14 @@
                 const meetingId = `meeting_${dateStr}`;
                 const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
                 
+                // ★ 핵심 수정: 이미 meeting 컨테이너가 있고 input에 포커스면 DOM 재생성 안 함
+                const existingContainer = document.querySelector('.meeting-container');
+                if (existingContainer && (this.isMeetingInputActive() || this.meetingInputFocused)) {
+                    // 달력만 갱신
+                    this.renderMeetingCalendar();
+                    return;
+                }
+                
                 const html = `
                     <div class="meeting-container">
                         <div id="meetingCalendar"></div>
@@ -726,8 +799,10 @@
                                 id="meetingSubject"
                                 class="meeting-input ${meetingData?.subject ? 'has-data' : ''}" 
                                 placeholder="예: 1학기 중간고사 준비 회의"
-                                value="${meetingData?.subject || ''}"
+                                value="${(meetingData?.subject || '').replace(/"/g, '&quot;')}"
                                 oninput="app.handleMeetingInput(this)"
+                                onfocus="app.handleMeetingFocus()"
+                                onblur="app.handleMeetingBlur()"
                             >
                         </div>
                         
@@ -743,6 +818,8 @@
                                 class="meeting-textarea ${meetingData?.content ? 'has-data' : ''}" 
                                 placeholder="회의 내용을 자유롭게 작성하세요.&#10;&#10;예시:&#10;• 참석자: 교무부장, 학년부장&#10;• 주요 안건: 시험 일정 조율&#10;• 결정 사항: 4월 15-17일 실시&#10;&#10;💡 AI 회의록 버튼으로 자동 변환"
                                 oninput="app.handleMeetingInput(this)"
+                                onfocus="app.handleMeetingFocus()"
+                                onblur="app.handleMeetingBlur()"
                             >${meetingData?.content || ''}</textarea>
                         </div>
                         
@@ -844,6 +921,9 @@
             
             setView(mode) { 
                 this.viewMode = mode;
+                // ★ 뷰 전환 시 포커스 상태 초기화
+                this.meetingInputFocused = false;
+                this.isEditing = false;
                 this.render(); 
             },
             
@@ -977,15 +1057,15 @@
                 await this.loadFromServer();
                 this.render();
                 
-                // 🔥 10초로 늘림 (입력 중 방해 최소화)
                 setInterval(() => { 
-                    if (!this.isEditing) {
+                    // ★ 수정: 회의메모 input 포커스 상태도 체크
+                    if (!this.isEditing && !this.meetingInputFocused) {
                         this.loadFromServer(); 
                     }
                 }, 10000);
                 
                 window.addEventListener('resize', () => {
-                    if (!this.isEditing) {
+                    if (!this.isEditing && !this.meetingInputFocused) {
                         this.render();
                     }
                 });
@@ -1026,4 +1106,3 @@
     </script>
 </body>
 </html>
-
