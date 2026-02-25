@@ -189,27 +189,6 @@
             background-size: 1000px 100%;
             animation: shimmer 2s infinite;
         }
-
-        /* 저장 상태 표시 - 토스트 형태 */
-        .save-status {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 1001;
-            pointer-events: none;
-        }
-        .save-status.show { opacity: 1; }
-        .save-status.saving { color: #f59e0b; border: 2px solid #fbbf24; }
-        .save-status.saved { color: #16a34a; border: 2px solid #16a34a; }
-        .save-status.error { color: #ef4444; border: 2px solid #ef4444; }
     </style>
 </head>
 <body class="p-3">
@@ -223,8 +202,6 @@
                 <button onclick="app.setView('meeting')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">📝회의메모</button>
             </div>
         </header>
-
-        <div id="saveStatus" class="save-status"></div>
 
         <section id="eventInputSection" class="bg-white p-4 rounded-2xl shadow-sm border mb-4 grid grid-cols-2 md:grid-cols-4 gap-2">
             <input type="date" id="inDate" class="border p-2 rounded-xl text-sm md:text-base outline-none">
@@ -279,7 +256,7 @@
 
     <script>
         const app = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbyIl7Rl7q_fwk4vBqH0yTD8qmWtnRQpsqprx_QJvZZya6OaUCHXHlDOdU6wUgSp0S_i/exec',
+            API_URL: 'https://script.google.com/macros/s/AKfycbzS9fTLtq_yLujsSLvTkPtZl9CxPkB356GV4Y7KqnnYn0W51H1KydURDK4nriDd6Fw/exec',
             events: [],
             localChanges: {},
             currentDate: new Date(),
@@ -288,6 +265,8 @@
             isEditing: false,
             meetingInputFocused: false,
             saveTimers: {},
+            savingInProgress: false,
+            pendingSave: null,
             meetingDate: new Date(),
             meetingCalendarDate: new Date(),
             days: ['일', '월', '화', '수', '목', '금', '토'],
@@ -309,27 +288,6 @@
                 return this.events.some(e => e.date === dateStr && (e.title.includes('재량휴업일') || e.title.includes('휴업일') || e.title.includes('휴무일')));
             },
 
-            // ★ 수정: 토스트 알림 (alert 대신 - 포커스 빼앗지 않음)
-            showSaveStatus(status, customMsg) {
-                const statusEl = document.getElementById('saveStatus');
-                statusEl.className = 'save-status show ' + status;
-                if (customMsg) {
-                    statusEl.textContent = customMsg;
-                } else if (status === 'saving') {
-                    statusEl.textContent = '💾 저장 중...';
-                } else if (status === 'saved') {
-                    statusEl.textContent = '✅ 저장 완료';
-                } else if (status === 'error') {
-                    statusEl.textContent = '⚠️ 저장 실패 (재시도 예정)';
-                }
-
-                const duration = status === 'error' ? 4000 : 2000;
-                setTimeout(() => {
-                    statusEl.classList.remove('show');
-                }, duration);
-            },
-
-            // ★ 회의메모 input 포커스 확인
             isMeetingInputActive() {
                 const subjectEl = document.getElementById('meetingSubject');
                 const contentEl = document.getElementById('meetingContent');
@@ -360,11 +318,9 @@
 
                     this.events = this.mergeEvents(serverEvents);
 
-                    // ★ 핵심: 편집/포커스 중이면 절대 렌더링 안 함
                     if (this.isEditing || this.meetingInputFocused) return;
 
                     if (this.viewMode === 'meeting') {
-                        // ★ 회의메모 뷰: DOM 재생성 없이 달력+값만 갱신
                         this.renderMeetingCalendar();
                         this.softUpdateMeetingInputs();
                     } else {
@@ -377,7 +333,6 @@
                 }
             },
 
-            // ★ 신규: 포커스 안 빼앗고 input 값만 갱신
             softUpdateMeetingInputs() {
                 if (this.isMeetingInputActive() || this.meetingInputFocused) return;
 
@@ -416,17 +371,23 @@
                 return merged;
             },
 
-            // ★ 핵심 수정: alert() 완전 제거, 토스트만 사용 + 재시도 로직
-            async saveToServer(action, data, retryCount = 0) {
+            // ★ 저장 큐: 동시 요청 방지 (중복 행 원인 제거)
+            async saveToServer(action, data) {
+                if (action === 'add') {
+                    this.localChanges[data.id] = data;
+                } else if (action === 'delete') {
+                    delete this.localChanges[data.id];
+                }
+
+                // 이미 저장 중이면 대기열에 넣기
+                if (this.savingInProgress) {
+                    this.pendingSave = { action, data };
+                    return;
+                }
+
+                this.savingInProgress = true;
+
                 try {
-                    this.showSaveStatus('saving');
-
-                    if (action === 'add') {
-                        this.localChanges[data.id] = data;
-                    } else if (action === 'delete') {
-                        delete this.localChanges[data.id];
-                    }
-
                     const response = await fetch(this.API_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain' },
@@ -436,27 +397,22 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        this.showSaveStatus('saved');
-                        // ★ 15초 후 localChanges 제거 (서버 동기화 안전장치)
                         const savedId = data.id;
                         setTimeout(() => {
                             delete this.localChanges[savedId];
                         }, 15000);
-                    } else {
-                        throw new Error(result.error || '서버 응답 오류');
                     }
                 } catch (error) {
                     console.error('저장 오류:', error);
+                    // 실패해도 조용히 - 로컬에 보관 중이므로 다음 저장 시 재시도됨
+                } finally {
+                    this.savingInProgress = false;
 
-                    // ★ 핵심: alert() 대신 토스트 알림 (포커스 안 빼앗음!)
-                    if (retryCount < 2) {
-                        this.showSaveStatus('error', `⚠️ 저장 실패, ${5}초 후 재시도...`);
-                        // 자동 재시도 (최대 2회)
-                        setTimeout(() => {
-                            this.saveToServer(action, data, retryCount + 1);
-                        }, 5000);
-                    } else {
-                        this.showSaveStatus('error', '⚠️ 저장 실패 (로컬 보관 중)');
+                    // 대기 중인 저장이 있으면 실행
+                    if (this.pendingSave) {
+                        const pending = this.pendingSave;
+                        this.pendingSave = null;
+                        await this.saveToServer(pending.action, pending.data);
                     }
                 }
             },
@@ -627,14 +583,12 @@
                 }, 2000);
             },
 
-            // ★ 포커스 이벤트
             handleMeetingFocus() {
                 this.meetingInputFocused = true;
                 this.isEditing = true;
             },
 
             handleMeetingBlur() {
-                // blur 후 300ms 대기 (다른 meeting input으로 탭 이동 시 대비)
                 setTimeout(() => {
                     if (!this.isMeetingInputActive()) {
                         this.meetingInputFocused = false;
@@ -644,7 +598,6 @@
             },
 
             async saveMeeting() {
-                // ★ 포커스 있으면 isEditing 유지
                 if (!this.isMeetingInputActive()) {
                     this.isEditing = false;
                     this.meetingInputFocused = false;
@@ -689,8 +642,6 @@
             async generateAIMeetingMinutes() {
                 const contentInput = document.getElementById('meetingContent');
                 if (!contentInput || !contentInput.value.trim()) {
-                    // ★ alert 대신 토스트
-                    this.showSaveStatus('error', '⚠️ 회의 내용을 먼저 입력해주세요.');
                     return;
                 }
 
@@ -760,14 +711,12 @@
                 const meetingId = `meeting_${dateStr}`;
                 const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
 
-                // ★ 핵심: 이미 컨테이너 있고 포커스 중이면 DOM 재생성 안 함
                 const existingContainer = document.querySelector('.meeting-container');
                 if (existingContainer && (this.isMeetingInputActive() || this.meetingInputFocused)) {
                     this.renderMeetingCalendar();
                     return;
                 }
 
-                // ★ subject에 " 문자 이스케이프
                 const safeSubject = (meetingData?.subject || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
                 const safeContent = (meetingData?.content || '').replace(/</g, '&lt;');
 
