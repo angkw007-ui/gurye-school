@@ -71,7 +71,7 @@
         @media (min-width: 768px) { .notice-input { font-size: 15px; padding: 12px; min-height: 70px; } }
 
         .notice-input.has-content { background-color: #fef9c3 !important; font-weight: normal !important; border-color: #facc15; }
-        .notice-input:focus { border-color: #16a34a; ring: 2px solid #dcfce7; }
+        .notice-input:focus { border-color: #16a34a; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 24px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
@@ -79,86 +79,177 @@
         .week-date-label { font-size: 15px; font-weight: 900; line-height: 1.3; }
         @media (min-width: 768px) { .week-date-label { font-size: 17px; } }
 
-        .meeting-container { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        @media (min-width: 768px) { .meeting-container { padding: 20px; } }
+        /* ===== 회의메모 뷰 ===== */
+        .meeting-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 40px;
+        }
+        @media (min-width: 768px) {
+            .meeting-wrapper {
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
 
-        .meeting-calendar-wrapper { max-width: 350px; margin: 0 auto 12px auto; }
-        @media (min-width: 768px) { .meeting-calendar-wrapper { max-width: 400px; margin-bottom: 16px; } }
+        /* 달력 패널 */
+        .meeting-cal-panel {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+            .meeting-cal-panel { width: 300px; }
+        }
 
-        .meeting-calendar-header { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); padding: 6px 10px; border-radius: 6px 6px 0 0; color: white; }
-        @media (min-width: 768px) { .meeting-calendar-header { padding: 8px 12px; } }
-
-        .meeting-calendar-header button { background: rgba(255,255,255,0.2); color: white; font-weight: bold; padding: 3px 8px; border-radius: 4px; font-size: 12px; transition: all 0.2s; }
-        @media (min-width: 768px) { .meeting-calendar-header button { padding: 4px 10px; font-size: 14px; } }
-        .meeting-calendar-header button:hover { background: rgba(255,255,255,0.3); }
-
-        .meeting-calendar-title { font-size: 12px; font-weight: 900; }
-        @media (min-width: 768px) { .meeting-calendar-title { font-size: 16px; } }
-
-        .meeting-calendar-body { background: white; border: 2px solid #16a34a; border-top: none; border-radius: 0 0 6px 6px; padding: 4px; }
-        @media (min-width: 768px) { .meeting-calendar-body { padding: 6px; } }
-
-        .meeting-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
-        @media (min-width: 768px) { .meeting-calendar-grid { gap: 2px; } }
-
-        .meeting-calendar-day-header { text-align: center; font-weight: 700; color: #64748b; padding: 2px; font-size: 9px; }
-        @media (min-width: 768px) { .meeting-calendar-day-header { font-size: 10px; padding: 3px; } }
-
-        .meeting-calendar-day { 
-            aspect-ratio: 1; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 10px;
+        .meeting-calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            padding: 10px 14px;
+            color: white;
+        }
+        .meeting-calendar-header button {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 14px;
             transition: all 0.2s;
+        }
+        .meeting-calendar-header button:hover { background: rgba(255,255,255,0.4); }
+        .meeting-calendar-title { font-size: 15px; font-weight: 900; }
+
+        .meeting-calendar-body { padding: 8px; }
+        .meeting-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+        .meeting-calendar-day-header { text-align: center; font-weight: 700; color: #64748b; padding: 4px 2px; font-size: 11px; }
+
+        .meeting-calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.15s;
             background: #f8fafc;
+            position: relative;
         }
-        @media (min-width: 768px) { .meeting-calendar-day { font-size: 12px; border-radius: 6px; } }
-
         .meeting-calendar-day:hover { background: #e0f2fe; transform: scale(1.05); }
-        .meeting-calendar-day.selected { background: #16a34a; color: white; font-weight: 900; box-shadow: 0 1px 4px rgba(22, 163, 74, 0.3); }
-        .meeting-calendar-day.today { border: 1.5px solid #facc15; }
-        .meeting-calendar-day.weekend { background: #fef2f2; }
-        .meeting-calendar-day.other-month { color: #cbd5e1; background: transparent; font-size: 9px; }
-        .meeting-calendar-day.has-meeting { background: #dcfce7; font-weight: 800; }
-
-        .meeting-input-group { margin-bottom: 12px; }
-        @media (min-width: 768px) { .meeting-input-group { margin-bottom: 16px; } }
-
-        .meeting-label { font-size: 13px; font-weight: 800; color: #15803d; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-        @media (min-width: 768px) { .meeting-label { font-size: 15px; margin-bottom: 6px; } }
-
-        .ai-generate-btn { 
-            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); 
-            color: white; 
-            padding: 4px 10px; 
-            border-radius: 5px; 
-            font-size: 10px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(124, 58, 237, 0.3);
+        .meeting-calendar-day.selected { background: #16a34a !important; color: white !important; font-weight: 900; box-shadow: 0 2px 6px rgba(22,163,74,0.4); }
+        .meeting-calendar-day.today { outline: 2px solid #facc15; outline-offset: -2px; }
+        .meeting-calendar-day.weekend { background: #fef2f2; color: #ef4444; }
+        .meeting-calendar-day.other-month { color: #cbd5e1; background: transparent; font-size: 10px; }
+        .meeting-calendar-day.has-meeting::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #16a34a;
         }
-        @media (min-width: 768px) { .ai-generate-btn { padding: 5px 12px; font-size: 11px; } }
-        .ai-generate-btn:hover { transform: scale(1.05); }
+        .meeting-calendar-day.selected.has-meeting::after { background: white; }
 
-        .meeting-input { width: 100%; border: 2px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13px; outline: none; transition: all 0.2s; font-weight: 600; }
-        @media (min-width: 768px) { .meeting-input { padding: 12px; font-size: 14px; } }
-        .meeting-input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
+        /* 입력 패널 */
+        .meeting-input-panel {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            padding: 16px;
+            min-width: 0;
+        }
+        .meeting-panel-title {
+            font-size: 14px;
+            font-weight: 900;
+            color: #15803d;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #dcfce7;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .meeting-date-badge {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
 
-        .meeting-textarea { width: 100%; border: 2px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 12px; outline: none; transition: all 0.2s; min-height: 200px; resize: vertical; line-height: 1.7; }
-        @media (min-width: 768px) { .meeting-textarea { padding: 12px; font-size: 13px; min-height: 250px; } }
-        .meeting-textarea:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
+        .meeting-label { font-size: 13px; font-weight: 800; color: #374151; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        @media (min-width: 768px) { .meeting-label { font-size: 14px; } }
 
-        .meeting-input.has-data, .meeting-textarea.has-data { background-color: #fef9c3; border-color: #facc15; }
+        .ai-generate-btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(124,58,237,0.3);
+        }
+        .ai-generate-btn:hover { transform: scale(1.05); box-shadow: 0 3px 8px rgba(124,58,237,0.4); }
 
-        .install-btn { 
-            position: fixed; 
-            bottom: 20px; 
-            right: 20px; 
+        .meeting-input {
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            font-family: 'Pretendard', sans-serif;
+            margin-bottom: 12px;
+        }
+        .meeting-input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
+
+        .meeting-textarea {
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s;
+            min-height: 220px;
+            resize: vertical;
+            line-height: 1.7;
+            font-family: 'Pretendard', sans-serif;
+        }
+        @media (min-width: 768px) { .meeting-textarea { min-height: 280px; font-size: 14px; } }
+        .meeting-textarea:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
+
+        .meeting-input.has-data,
+        .meeting-textarea.has-data { background-color: #fefce8; border-color: #facc15; }
+
+        .save-indicator {
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: right;
+            margin-top: 6px;
+        }
+        .save-indicator.saving { color: #f59e0b; }
+        .save-indicator.saved { color: #16a34a; }
+
+        .install-btn {
+            position: fixed;
+            bottom: 20px; right: 20px;
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
             color: white;
             padding: 12px 24px;
@@ -169,16 +260,7 @@
             z-index: 1000;
             animation: pulse 2s infinite;
         }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .install-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
         @keyframes shimmer {
             0% { background-position: -1000px 0; }
@@ -242,9 +324,7 @@
         </footer>
     </div>
 
-    <button id="installBtn" class="install-btn" style="display: none;">
-        📱 앱으로 설치하기
-    </button>
+    <button id="installBtn" class="install-btn" style="display: none;">📱 앱으로 설치하기</button>
 
     <div id="detailModal" class="modal" onclick="app.closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -269,13 +349,15 @@
             pendingSave: null,
             meetingDate: new Date(),
             meetingCalendarDate: new Date(),
+            // ★ 회의 뷰 초기화 여부 추적 - 한 번만 DOM 생성
+            meetingViewInitialized: false,
             days: ['일', '월', '화', '수', '목', '금', '토'],
 
             holidays: [
                 '2026-01-01:신정', '2026-02-16:설날연휴', '2026-02-17:설날', '2026-02-18:설날연휴',
-                '2026-03-01:삼일절', '2026-03-02:대체공휴일', '2026-05-05:어린이날', '2026-05-24:부처님오신날', 
+                '2026-03-01:삼일절', '2026-03-02:대체공휴일', '2026-05-05:어린이날', '2026-05-24:부처님오신날',
                 '2026-05-25:대체공휴일', '2026-06-06:현충일', '2026-08-15:광복절', '2026-08-17:대체공휴일',
-                '2026-09-24:추석연휴', '2026-09-25:추석', '2026-09-26:추석연휴', '2026-10-03:개천절', 
+                '2026-09-24:추석연휴', '2026-09-25:추석', '2026-09-26:추석연휴', '2026-10-03:개천절',
                 '2026-10-05:대체공휴일', '2026-10-09:한글날', '2026-12-25:크리스마스'
             ],
 
@@ -288,11 +370,12 @@
                 return this.events.some(e => e.date === dateStr && (e.title.includes('재량휴업일') || e.title.includes('휴업일') || e.title.includes('휴무일')));
             },
 
+            // ★ 회의 입력 필드가 포커스 중인지 안전하게 확인
             isMeetingInputActive() {
                 const subjectEl = document.getElementById('meetingSubject');
                 const contentEl = document.getElementById('meetingContent');
                 const activeEl = document.activeElement;
-                return (activeEl && (activeEl === subjectEl || activeEl === contentEl));
+                return activeEl && (activeEl === subjectEl || activeEl === contentEl);
             },
 
             async loadFromServer() {
@@ -306,10 +389,10 @@
                         let dateStr = item.date;
                         if (typeof dateStr === 'string' && dateStr.includes('T')) dateStr = dateStr.split('T')[0];
                         else if (typeof dateStr === 'string') dateStr = dateStr.substring(0, 10);
-                        return { 
-                            id: String(item.id), 
-                            date: dateStr, 
-                            title: item.title, 
+                        return {
+                            id: String(item.id),
+                            date: dateStr,
+                            title: item.title,
                             dapt: item.dapt,
                             subject: item.subject || '',
                             content: item.content || ''
@@ -318,12 +401,14 @@
 
                     this.events = this.mergeEvents(serverEvents);
 
-                    if (this.isEditing || this.meetingInputFocused) return;
-
+                    // 회의 뷰: DOM은 건드리지 않고 달력만 업데이트
                     if (this.viewMode === 'meeting') {
                         this.renderMeetingCalendar();
-                        this.softUpdateMeetingInputs();
-                    } else {
+                        // 입력 중이 아닐 때만 값 동기화
+                        if (!this.isMeetingInputActive() && !this.meetingInputFocused) {
+                            this.syncMeetingInputsFromData();
+                        }
+                    } else if (!this.isEditing) {
                         this.render();
                     }
                 } catch (error) {
@@ -333,9 +418,8 @@
                 }
             },
 
-            softUpdateMeetingInputs() {
-                if (this.isMeetingInputActive() || this.meetingInputFocused) return;
-
+            // ★ 입력 필드 값만 부드럽게 동기화 (DOM 재생성 없음)
+            syncMeetingInputsFromData() {
                 const subjectEl = document.getElementById('meetingSubject');
                 const contentEl = document.getElementById('meetingContent');
                 if (!subjectEl || !contentEl) return;
@@ -347,31 +431,31 @@
                 const newSubject = meetingData?.subject || '';
                 const newContent = meetingData?.content || '';
 
-                if (subjectEl.value !== newSubject) subjectEl.value = newSubject;
-                if (contentEl.value !== newContent) contentEl.value = newContent;
-
-                this.updateMeetingInputStyle(subjectEl);
-                this.updateMeetingInputStyle(contentEl);
+                if (subjectEl.value !== newSubject) {
+                    subjectEl.value = newSubject;
+                    this.updateMeetingInputStyle(subjectEl);
+                }
+                if (contentEl.value !== newContent) {
+                    contentEl.value = newContent;
+                    this.updateMeetingInputStyle(contentEl);
+                }
+                this.updateMeetingPanelDate();
             },
 
             mergeEvents(serverEvents) {
                 const merged = [...serverEvents];
-
                 Object.keys(this.localChanges).forEach(id => {
                     const localData = this.localChanges[id];
                     const serverIndex = merged.findIndex(e => String(e.id) === String(id));
-
                     if (serverIndex !== -1) {
                         merged[serverIndex] = { ...merged[serverIndex], ...localData };
                     } else {
                         merged.push(localData);
                     }
                 });
-
                 return merged;
             },
 
-            // ★ 저장 큐: 동시 요청 방지 (중복 행 원인 제거)
             async saveToServer(action, data) {
                 if (action === 'add') {
                     this.localChanges[data.id] = data;
@@ -379,7 +463,6 @@
                     delete this.localChanges[data.id];
                 }
 
-                // 이미 저장 중이면 대기열에 넣기
                 if (this.savingInProgress) {
                     this.pendingSave = { action, data };
                     return;
@@ -398,17 +481,14 @@
 
                     if (result.success) {
                         const savedId = data.id;
-                        setTimeout(() => {
-                            delete this.localChanges[savedId];
-                        }, 15000);
+                        setTimeout(() => { delete this.localChanges[savedId]; }, 15000);
+                        // 저장 완료 표시
+                        this.showSaveIndicator('saved');
                     }
                 } catch (error) {
                     console.error('저장 오류:', error);
-                    // 실패해도 조용히 - 로컬에 보관 중이므로 다음 저장 시 재시도됨
                 } finally {
                     this.savingInProgress = false;
-
-                    // 대기 중인 저장이 있으면 실행
                     if (this.pendingSave) {
                         const pending = this.pendingSave;
                         this.pendingSave = null;
@@ -417,23 +497,25 @@
                 }
             },
 
+            showSaveIndicator(status) {
+                const el = document.getElementById('meetingSaveIndicator');
+                if (!el) return;
+                el.className = 'save-indicator ' + status;
+                if (status === 'saving') el.textContent = '💾 저장 중...';
+                else if (status === 'saved') el.textContent = '✅ 저장 완료';
+                else el.textContent = '자동 저장';
+            },
+
             handleNoticeInput(input) {
                 this.isEditing = true;
                 this.updateInputStyle(input);
-
                 const dept = input.dataset.dept;
-
-                if (this.saveTimers[dept]) {
-                    clearTimeout(this.saveTimers[dept]);
-                }
-
-                this.saveTimers[dept] = setTimeout(() => {
-                    this.saveNotice(input);
-                }, 2000);
+                if (this.saveTimers[dept]) clearTimeout(this.saveTimers[dept]);
+                this.saveTimers[dept] = setTimeout(() => { this.saveNotice(input); }, 2000);
             },
 
             updateInputStyle(input) {
-                if (input.value.trim() !== "") input.classList.add('has-content');
+                if (input.value.trim() !== '') input.classList.add('has-content');
                 else input.classList.remove('has-content');
             },
 
@@ -446,7 +528,7 @@
                 const noticeId = `notice_${dateStr}_${dept}`;
 
                 const existingIndex = this.events.findIndex(e => e.id === noticeId);
-                if (content === "") {
+                if (content === '') {
                     if (existingIndex !== -1) {
                         this.events.splice(existingIndex, 1);
                         await this.saveToServer('delete', { id: noticeId });
@@ -459,29 +541,44 @@
                 }
             },
 
-            async clearNotice(dept) {
-                if (!confirm(`${dept} 안내사항을 삭제하시겠습니까?`)) return;
-                const monday = this.getMonday(this.currentDate);
-                const dateStr = this.formatDate(monday);
-                const noticeId = `notice_${dateStr}_${dept}`;
-                this.events = this.events.filter(e => e.id !== noticeId);
-                const input = document.querySelector(`textarea[data-dept="${dept}"]`);
-                if (input) { input.value = ""; this.updateInputStyle(input); }
-                await this.saveToServer('delete', { id: noticeId });
-                this.render();
-            },
-
+            // ===== 회의 달력 이동 =====
             moveMeetingCalendar(direction) {
                 this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth() + direction);
                 this.renderMeetingCalendar();
             },
 
+            // ===== 날짜 선택 → 입력 필드 값만 교체 (DOM 재생성 없음) =====
             selectMeetingDate(dateStr) {
-                this.meetingDate = new Date(dateStr);
-                this.loadMeetingData();
+                this.meetingDate = new Date(dateStr + 'T00:00:00');
+                this.meetingCalendarDate = new Date(dateStr + 'T00:00:00');
+
+                // 현재 입력 필드가 있으면 값만 교체
+                const subjectEl = document.getElementById('meetingSubject');
+                const contentEl = document.getElementById('meetingContent');
+
+                if (subjectEl && contentEl) {
+                    const meetingId = `meeting_${dateStr}`;
+                    const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
+                    subjectEl.value = meetingData?.subject || '';
+                    contentEl.value = meetingData?.content || '';
+                    this.updateMeetingInputStyle(subjectEl);
+                    this.updateMeetingInputStyle(contentEl);
+                }
+
+                this.updateMeetingPanelDate();
                 this.renderMeetingCalendar();
             },
 
+            // 날짜 표시만 업데이트
+            updateMeetingPanelDate() {
+                const el = document.getElementById('meetingPanelDate');
+                if (!el) return;
+                const dateStr = this.formatDate(this.meetingDate);
+                const dayOfWeek = this.days[this.meetingDate.getDay()];
+                el.textContent = `${dateStr} (${dayOfWeek})`;
+            },
+
+            // ===== 달력만 리렌더 (입력 필드 건드리지 않음) =====
             renderMeetingCalendar() {
                 const year = this.meetingCalendarDate.getFullYear();
                 const month = this.meetingCalendarDate.getMonth();
@@ -493,24 +590,22 @@
                 const prevLastDate = new Date(year, month, 0).getDate();
 
                 let html = `
-                    <div class="meeting-calendar-wrapper">
-                        <div class="meeting-calendar-header">
-                            <button onclick="app.moveMeetingCalendar(-1)">◀</button>
-                            <div class="meeting-calendar-title">${year}년 ${month + 1}월</div>
-                            <button onclick="app.moveMeetingCalendar(1)">▶</button>
-                        </div>
-                        <div class="meeting-calendar-body">
-                            <div class="meeting-calendar-grid">
+                    <div class="meeting-calendar-header">
+                        <button onclick="app.moveMeetingCalendar(-1)">◀</button>
+                        <div class="meeting-calendar-title">${year}년 ${month + 1}월</div>
+                        <button onclick="app.moveMeetingCalendar(1)">▶</button>
+                    </div>
+                    <div class="meeting-calendar-body">
+                        <div class="meeting-calendar-grid">
                 `;
 
                 this.days.forEach(day => {
-                    const colorClass = day === '일' ? 'text-sun' : (day === '토' ? 'text-sat' : '');
+                    const colorClass = day === '일' ? 'text-red-500' : (day === '토' ? 'text-blue-500' : '');
                     html += `<div class="meeting-calendar-day-header ${colorClass}">${day}</div>`;
                 });
 
                 for (let i = firstDay - 1; i >= 0; i--) {
-                    const day = prevLastDate - i;
-                    html += `<div class="meeting-calendar-day other-month">${day}</div>`;
+                    html += `<div class="meeting-calendar-day other-month">${prevLastDate - i}</div>`;
                 }
 
                 for (let day = 1; day <= lastDate; day++) {
@@ -519,10 +614,11 @@
                     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
                     const isToday = dateStr === today;
                     const isSelected = dateStr === selectedDateStr;
+                    // ★ meeting_ 접두사 있는 것만 has-meeting 표시
                     const hasMeeting = this.events.some(e => e.id === `meeting_${dateStr}`) || !!this.localChanges[`meeting_${dateStr}`];
 
                     let classes = 'meeting-calendar-day';
-                    if (isWeekend) classes += ' weekend';
+                    if (isWeekend && !isSelected) classes += ' weekend';
                     if (isToday) classes += ' today';
                     if (isSelected) classes += ' selected';
                     if (hasMeeting) classes += ' has-meeting';
@@ -538,7 +634,7 @@
                     }
                 }
 
-                html += '</div></div></div>';
+                html += '</div></div>';
 
                 const calendarContainer = document.getElementById('meetingCalendar');
                 if (calendarContainer) {
@@ -546,226 +642,64 @@
                 }
             },
 
-            loadMeetingData() {
-                const dateStr = this.formatDate(this.meetingDate);
-                const meetingId = `meeting_${dateStr}`;
-
-                const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
-
-                const subjectInput = document.getElementById('meetingSubject');
-                const contentInput = document.getElementById('meetingContent');
-
-                if (subjectInput && contentInput) {
-                    subjectInput.value = meetingData?.subject || '';
-                    contentInput.value = meetingData?.content || '';
-
-                    this.updateMeetingInputStyle(subjectInput);
-                    this.updateMeetingInputStyle(contentInput);
-                }
-            },
-
-            updateMeetingInputStyle(input) {
-                if (input.value.trim() !== "") input.classList.add('has-data');
-                else input.classList.remove('has-data');
-            },
-
-            handleMeetingInput(input) {
-                this.isEditing = true;
-                this.meetingInputFocused = true;
-                this.updateMeetingInputStyle(input);
-
-                if (this.saveTimers['meeting']) {
-                    clearTimeout(this.saveTimers['meeting']);
-                }
-
-                this.saveTimers['meeting'] = setTimeout(() => {
-                    this.saveMeeting();
-                }, 2000);
-            },
-
-            handleMeetingFocus() {
-                this.meetingInputFocused = true;
-                this.isEditing = true;
-            },
-
-            handleMeetingBlur() {
-                setTimeout(() => {
-                    if (!this.isMeetingInputActive()) {
-                        this.meetingInputFocused = false;
-                        this.isEditing = false;
-                    }
-                }, 300);
-            },
-
-            async saveMeeting() {
-                if (!this.isMeetingInputActive()) {
-                    this.isEditing = false;
-                    this.meetingInputFocused = false;
-                }
-
-                const dateStr = this.formatDate(this.meetingDate);
-                const subjectEl = document.getElementById('meetingSubject');
-                const contentEl = document.getElementById('meetingContent');
-                const subject = subjectEl?.value.trim() || '';
-                const content = contentEl?.value.trim() || '';
-                const meetingId = `meeting_${dateStr}`;
-
-                const existingIndex = this.events.findIndex(e => e.id === meetingId);
-
-                if (subject === '' && content === '') {
-                    if (existingIndex !== -1) {
-                        this.events.splice(existingIndex, 1);
-                        await this.saveToServer('delete', { id: meetingId });
-                    }
-                } else {
-                    const meetingData = {
-                        id: meetingId,
-                        date: dateStr,
-                        title: subject || '(제목 없음)',
-                        dapt: 'meeting',
-                        subject: subject,
-                        content: content
-                    };
-
-                    if (existingIndex !== -1) {
-                        this.events[existingIndex] = meetingData;
-                    } else {
-                        this.events.push(meetingData);
-                    }
-
-                    await this.saveToServer('add', meetingData);
-                }
-
-                this.renderMeetingCalendar();
-            },
-
-            async generateAIMeetingMinutes() {
-                const contentInput = document.getElementById('meetingContent');
-                if (!contentInput || !contentInput.value.trim()) {
-                    return;
-                }
-
-                const rawContent = contentInput.value.trim();
-                const subjectInput = document.getElementById('meetingSubject');
-                const subject = subjectInput?.value.trim() || '회의';
-                const dateStr = this.formatDate(this.meetingDate);
-                const dayOfWeek = this.days[this.meetingDate.getDay()];
-
-                contentInput.classList.add('ai-loading');
-                contentInput.disabled = true;
-
-                try {
-                    const response = await fetch(this.API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify({
-                            action: 'generateAI',
-                            subject: subject,
-                            content: rawContent,
-                            date: dateStr,
-                            dayOfWeek: dayOfWeek
-                        })
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        contentInput.value = result.minutes;
-                    } else {
-                        throw new Error(result.error || 'AI 생성 실패');
-                    }
-                } catch (error) {
-                    console.error('AI 생성 오류:', error);
-                    contentInput.value = this.formatMeetingMinutesLocal(subject, rawContent, dateStr, dayOfWeek);
-                } finally {
-                    contentInput.classList.remove('ai-loading');
-                    contentInput.disabled = false;
-                    this.updateMeetingInputStyle(contentInput);
-                    this.handleMeetingInput(contentInput);
-                }
-            },
-
-            formatMeetingMinutesLocal(subject, rawContent, dateStr, dayOfWeek) {
-                const lines = rawContent.split('\n').filter(l => l.trim());
-
-                let formatted = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 ${subject}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📅 일시: ${dateStr} (${dayOfWeek})\n📍 장소: \n👥 참석자: \n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📌 주요 안건\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-
-                let agendaNum = 1;
-                lines.forEach(line => {
-                    const trimmed = line.trim();
-                    if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
-                        formatted += `${agendaNum}. ${trimmed.substring(1).trim()}\n`;
-                        agendaNum++;
-                    } else if (trimmed) {
-                        formatted += `   ${trimmed}\n`;
-                    }
-                });
-
-                formatted += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✅ 결정 사항\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• \n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📝 특이사항 및 비고\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• \n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📆 다음 회의\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n일시: \n안건: \n`;
-
-                return formatted;
-            },
-
+            // ===== 회의메모 뷰 - 최초 1회만 DOM 생성, 이후 값만 업데이트 =====
             renderMeetingView() {
+                const viewPort = document.getElementById('viewPort');
                 const dateStr = this.formatDate(this.meetingDate);
                 const meetingId = `meeting_${dateStr}`;
                 const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
 
-                const existingContainer = document.querySelector('.meeting-container');
-                if (existingContainer && (this.isMeetingInputActive() || this.meetingInputFocused)) {
-                    this.renderMeetingCalendar();
-                    return;
+                // ★ 핵심: viewPort에 meeting-wrapper가 없을 때만 HTML 생성
+                if (!viewPort.querySelector('.meeting-wrapper')) {
+                    const dayOfWeek = this.days[this.meetingDate.getDay()];
+                    const safeSubject = (meetingData?.subject || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                    const safeContent = (meetingData?.content || '').replace(/</g, '&lt;');
+
+                    viewPort.innerHTML = `
+                        <div class="meeting-wrapper">
+                            <div class="meeting-cal-panel">
+                                <div id="meetingCalendar"></div>
+                            </div>
+                            <div class="meeting-input-panel">
+                                <div class="meeting-panel-title">
+                                    📝 회의메모
+                                    <span id="meetingPanelDate" class="meeting-date-badge">${dateStr} (${dayOfWeek})</span>
+                                </div>
+
+                                <label class="meeting-label">📋 모임 주제</label>
+                                <input
+                                    type="text"
+                                    id="meetingSubject"
+                                    class="meeting-input ${meetingData?.subject ? 'has-data' : ''}"
+                                    placeholder="예: 1학기 중간고사 준비 회의"
+                                    value="${safeSubject}"
+                                    oninput="app.handleMeetingInput(this)"
+                                    onfocus="app.handleMeetingFocus()"
+                                    onblur="app.handleMeetingBlur()"
+                                >
+
+                                <label class="meeting-label">
+                                    <span>📝 모임 내용 정리</span>
+                                    <button class="ai-generate-btn" onclick="app.generateAIMeetingMinutes()">🤖 AI 회의록</button>
+                                </label>
+                                <textarea
+                                    id="meetingContent"
+                                    class="meeting-textarea ${meetingData?.content ? 'has-data' : ''}"
+                                    placeholder="회의 내용을 자유롭게 작성하세요.&#10;&#10;예시:&#10;• 참석자: 교무부장, 학년부장&#10;• 주요 안건: 시험 일정 조율&#10;• 결정 사항: 4월 15-17일 실시&#10;&#10;💡 AI 회의록 버튼으로 자동 변환"
+                                    oninput="app.handleMeetingInput(this)"
+                                    onfocus="app.handleMeetingFocus()"
+                                    onblur="app.handleMeetingBlur()"
+                                >${safeContent}</textarea>
+
+                                <div id="meetingSaveIndicator" class="save-indicator">💡 입력 2초 후 자동 저장</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // ★ 이미 DOM이 있으면 달력만 갱신, 입력 필드는 절대 건드리지 않음
                 }
 
-                const safeSubject = (meetingData?.subject || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-                const safeContent = (meetingData?.content || '').replace(/</g, '&lt;');
-
-                const html = `
-                    <div class="meeting-container">
-                        <div id="meetingCalendar"></div>
-
-                        <div class="meeting-input-group">
-                            <label class="meeting-label">
-                                <span>📋 모임 주제</span>
-                            </label>
-                            <input 
-                                type="text" 
-                                id="meetingSubject"
-                                class="meeting-input ${meetingData?.subject ? 'has-data' : ''}" 
-                                placeholder="예: 1학기 중간고사 준비 회의"
-                                value="${safeSubject}"
-                                oninput="app.handleMeetingInput(this)"
-                                onfocus="app.handleMeetingFocus()"
-                                onblur="app.handleMeetingBlur()"
-                            >
-                        </div>
-
-                        <div class="meeting-input-group">
-                            <label class="meeting-label">
-                                <span>📝 모임 내용 정리</span>
-                                <button class="ai-generate-btn" onclick="app.generateAIMeetingMinutes()">
-                                    🤖 AI 회의록
-                                </button>
-                            </label>
-                            <textarea 
-                                id="meetingContent"
-                                class="meeting-textarea ${meetingData?.content ? 'has-data' : ''}" 
-                                placeholder="회의 내용을 자유롭게 작성하세요.&#10;&#10;예시:&#10;• 참석자: 교무부장, 학년부장&#10;• 주요 안건: 시험 일정 조율&#10;• 결정 사항: 4월 15-17일 실시&#10;&#10;💡 AI 회의록 버튼으로 자동 변환"
-                                oninput="app.handleMeetingInput(this)"
-                                onfocus="app.handleMeetingFocus()"
-                                onblur="app.handleMeetingBlur()"
-                            >${safeContent}</textarea>
-                        </div>
-
-                        <div class="text-slate-500 text-center mt-3" style="font-size: 10px;">
-                            💡 입력 2초 후 자동 저장 | 🔒 입력 중 새로고침 안 함
-                        </div>
-                    </div>
-                `;
-
-                const viewPort = document.getElementById('viewPort');
-                viewPort.innerHTML = html;
-
+                // 달력은 항상 갱신 (선택 날짜 반영)
                 this.meetingCalendarDate = new Date(this.meetingDate);
                 this.renderMeetingCalendar();
             },
@@ -810,12 +744,13 @@
                 const modalDate = document.getElementById('modalDate');
                 const modalContent = document.getElementById('modalContent');
                 const holiday = this.getHoliday(dateStr);
-                const d = new Date(dateStr);
+                const d = new Date(dateStr + 'T00:00:00');
                 const dayOfWeek = this.days[d.getDay()];
 
                 modalDate.textContent = `${dateStr}(${dayOfWeek})` + (holiday ? ` (${holiday})` : '');
-                modalContent.innerHTML = "";
+                modalContent.innerHTML = '';
 
+                // ★ notice_, meeting_ 제외한 일반 일정만 표시
                 const dayEvents = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
                 const meetingData = this.events.find(e => e.id === `meeting_${dateStr}`);
 
@@ -829,7 +764,7 @@
 
                 if (dayEvents.length === 0 && !meetingData) {
                     modalContent.innerHTML = "<div class='text-slate-400 text-sm'>일정이 없습니다.</div>";
-                } else if (dayEvents.length > 0) {
+                } else {
                     dayEvents.forEach(e => {
                         modalContent.innerHTML += `<div class="bg-slate-50 p-3 rounded-lg flex justify-between items-center">
                             <div class="dept-${e.dapt}"><span class="font-bold">[${e.dapt}]</span> ${e.title}</div>
@@ -848,16 +783,23 @@
                 else if (this.viewMode === 'meeting') {
                     this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth() + direction);
                     this.renderMeetingCalendar();
+                    return; // render() 호출하지 않음
+                } else {
+                    this.currentDate.setDate(this.currentDate.getDate() + (direction * 7));
                 }
-                else this.currentDate.setDate(this.currentDate.getDate() + (direction * 7));
                 this.render();
             },
 
-            setView(mode) { 
+            setView(mode) {
+                const prevMode = this.viewMode;
                 this.viewMode = mode;
-                this.meetingInputFocused = false;
-                this.isEditing = false;
-                this.render(); 
+
+                if (mode !== 'meeting') {
+                    // ★ 회의 뷰 벗어날 때 viewPort 초기화해서 다음 입장 시 새로 그림
+                    this.meetingInputFocused = false;
+                    this.isEditing = false;
+                }
+                this.render();
             },
 
             renderYearly() {
@@ -872,7 +814,8 @@
                     for (let d = 1; d <= last; d++) {
                         const dateStr = `${year}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                         const dayIdx = new Date(year, m, d).getDay();
-                        const hasEvent = this.events.some(e => e.date === dateStr && !e.id.startsWith('notice_'));
+                        // ★ notice_, meeting_ 제외한 일정만 has-event 표시
+                        const hasEvent = this.events.some(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
                         const holiday = this.getHoliday(dateStr);
                         const isSpecial = this.isSpecialHoliday(dateStr);
                         const isWeekend = dayIdx === 0 || dayIdx === 6;
@@ -906,6 +849,7 @@
                         <div class="text-[10px] md:text-sm font-black ${colorClass}">${d}</div>`;
                     if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
                     html += '<div class="mt-1">';
+                    // ★ meeting_ 제외 - 월간 달력에 미표시
                     this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
                         const isMobile = window.innerWidth < 768;
                         const displayTitle = isMobile ? e.title.substring(0, 3) : e.title;
@@ -924,7 +868,7 @@
                         const dept = input.dataset.dept;
                         const noticeId = `notice_${dateStr}_${dept}`;
                         const notice = this.events.find(e => e.id === noticeId);
-                        input.value = notice ? notice.title : "";
+                        input.value = notice ? notice.title : '';
                         this.updateInputStyle(input);
                     });
                 }
@@ -944,6 +888,7 @@
                         <div class="w-20 md:w-28 week-date-label font-black ${colorClass} border-r mr-4">${d.getDate()}일(${dayOfWeek})`;
                     if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
                     html += '</div><div class="flex-1">';
+                    // ★ meeting_ 제외
                     this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
                         html += `<div class="event-item mb-1 p-2 dept-${e.dapt}" onclick="event.stopPropagation()">
                             <span>${e.title} (${e.dapt})</span>
@@ -955,6 +900,135 @@
                 return html + '</div>';
             },
 
+            handleMeetingInput(input) {
+                this.isEditing = true;
+                this.meetingInputFocused = true;
+                this.updateMeetingInputStyle(input);
+                this.showSaveIndicator('saving');
+
+                if (this.saveTimers['meeting']) clearTimeout(this.saveTimers['meeting']);
+                this.saveTimers['meeting'] = setTimeout(() => { this.saveMeeting(); }, 2000);
+            },
+
+            handleMeetingFocus() {
+                this.meetingInputFocused = true;
+                this.isEditing = true;
+            },
+
+            handleMeetingBlur() {
+                setTimeout(() => {
+                    if (!this.isMeetingInputActive()) {
+                        this.meetingInputFocused = false;
+                        this.isEditing = false;
+                    }
+                }, 300);
+            },
+
+            updateMeetingInputStyle(input) {
+                if (input.value.trim() !== '') input.classList.add('has-data');
+                else input.classList.remove('has-data');
+            },
+
+            async saveMeeting() {
+                if (!this.isMeetingInputActive()) {
+                    this.isEditing = false;
+                    this.meetingInputFocused = false;
+                }
+
+                const dateStr = this.formatDate(this.meetingDate);
+                const subjectEl = document.getElementById('meetingSubject');
+                const contentEl = document.getElementById('meetingContent');
+                const subject = subjectEl?.value.trim() || '';
+                const content = contentEl?.value.trim() || '';
+                const meetingId = `meeting_${dateStr}`;
+
+                const existingIndex = this.events.findIndex(e => e.id === meetingId);
+
+                if (subject === '' && content === '') {
+                    if (existingIndex !== -1) {
+                        this.events.splice(existingIndex, 1);
+                        await this.saveToServer('delete', { id: meetingId });
+                    }
+                } else {
+                    const meetingData = {
+                        id: meetingId,
+                        date: dateStr,
+                        title: subject || '(제목 없음)',
+                        dapt: 'meeting',
+                        subject: subject,
+                        content: content
+                    };
+
+                    if (existingIndex !== -1) this.events[existingIndex] = meetingData;
+                    else this.events.push(meetingData);
+
+                    await this.saveToServer('add', meetingData);
+                }
+
+                // 달력 dot만 갱신
+                this.renderMeetingCalendar();
+            },
+
+            async generateAIMeetingMinutes() {
+                const contentInput = document.getElementById('meetingContent');
+                if (!contentInput || !contentInput.value.trim()) return;
+
+                const rawContent = contentInput.value.trim();
+                const subjectInput = document.getElementById('meetingSubject');
+                const subject = subjectInput?.value.trim() || '회의';
+                const dateStr = this.formatDate(this.meetingDate);
+                const dayOfWeek = this.days[this.meetingDate.getDay()];
+
+                contentInput.classList.add('ai-loading');
+                contentInput.disabled = true;
+
+                try {
+                    const response = await fetch(this.API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({
+                            action: 'generateAI',
+                            subject: subject,
+                            content: rawContent,
+                            date: dateStr,
+                            dayOfWeek: dayOfWeek
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        contentInput.value = result.minutes;
+                    } else {
+                        throw new Error(result.error || 'AI 생성 실패');
+                    }
+                } catch (error) {
+                    console.error('AI 생성 오류:', error);
+                    contentInput.value = this.formatMeetingMinutesLocal(subject, rawContent, dateStr, dayOfWeek);
+                } finally {
+                    contentInput.classList.remove('ai-loading');
+                    contentInput.disabled = false;
+                    this.updateMeetingInputStyle(contentInput);
+                    this.handleMeetingInput(contentInput);
+                }
+            },
+
+            formatMeetingMinutesLocal(subject, rawContent, dateStr, dayOfWeek) {
+                const lines = rawContent.split('\n').filter(l => l.trim());
+                let formatted = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 ${subject}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📅 일시: ${dateStr} (${dayOfWeek})\n📍 장소: \n👥 참석자: \n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📌 주요 안건\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+                let agendaNum = 1;
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
+                        formatted += `${agendaNum}. ${trimmed.substring(1).trim()}\n`;
+                        agendaNum++;
+                    } else if (trimmed) {
+                        formatted += `   ${trimmed}\n`;
+                    }
+                });
+                formatted += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✅ 결정 사항\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• \n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📝 특이사항 및 비고\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n• \n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📆 다음 회의\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n일시: \n안건: \n`;
+                return formatted;
+            },
+
             render() {
                 const viewPort = document.getElementById('viewPort');
                 const titleText = document.getElementById('titleText');
@@ -964,12 +1038,17 @@
                 const month = this.currentDate.getMonth() + 1;
 
                 if (this.viewMode === 'meeting') {
-                    titleText.textContent = `📝 회의메모`;
-                    this.renderMeetingView();
+                    titleText.textContent = '📝 회의메모';
                     noticePort.classList.add('hidden');
                     eventInputSection.classList.add('hidden');
+                    this.renderMeetingView();
                 } else {
                     eventInputSection.classList.remove('hidden');
+                    // ★ 다른 뷰로 전환 시 meeting wrapper 완전 제거 → 다음 번 회의 뷰 진입 시 새로 그림
+                    if (viewPort.querySelector('.meeting-wrapper')) {
+                        viewPort.innerHTML = '';
+                    }
+
                     if (this.viewMode === 'yearly') {
                         titleText.textContent = `${year}년 전체 학사력`;
                         viewPort.innerHTML = this.renderYearly();
@@ -990,9 +1069,9 @@
                 await this.loadFromServer();
                 this.render();
 
-                setInterval(() => { 
+                setInterval(() => {
                     if (!this.isEditing && !this.meetingInputFocused) {
-                        this.loadFromServer(); 
+                        this.loadFromServer();
                     }
                 }, 10000);
 
@@ -1010,7 +1089,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => console.log('✅ Service Worker 등록 성공'))
+                    .then(() => console.log('✅ Service Worker 등록 성공'))
                     .catch(err => console.log('❌ Service Worker 등록 실패:', err));
             });
         }
