@@ -753,43 +753,61 @@
             },
 
             // ✅ GAS 백엔드를 통해 OpenAI API 호출
-            async generateAIMeetingMinutes() {
-                const subjectEl = document.getElementById('meetingSubject');
-                const contentEl = document.getElementById('meetingContent');
-                const aiBtn = document.getElementById('aiBtnEl');
+           async generateAIMeetingMinutes() {
+    const subjectEl = document.getElementById('meetingSubject');
+    const contentEl = document.getElementById('meetingContent');
+    const aiBtn = document.getElementById('aiBtnEl');
 
-                if (!contentEl.value.trim()) return alert('내용을 입력해주세요.');
+    if (!contentEl.value.trim()) return alert('내용을 입력해주세요.');
 
-                aiBtn.disabled = true;
-                aiBtn.innerHTML = '<span>⏳ AI 분석중...</span>';
-                contentEl.style.opacity = '0.5';
+    aiBtn.disabled = true;
+    aiBtn.innerHTML = '<span>⏳ AI 분석중...</span>';
+    contentEl.style.opacity = '0.5';
 
-                try {
-                    const response = await fetch(this.API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            action: 'generateAI',
-                            subject: subjectEl.value,
-                            content: contentEl.value
-                        })
-                    });
+    try {
+        const response = await fetch(this.API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'generateAI',
+                subject: subjectEl.value,
+                content: contentEl.value,
+                meetingDate: this.formatDate(this.meetingDate)  // ← 달력 선택 날짜 전송
+            })
+        });
 
-                    const resData = await response.json();
-                    if (resData.success) {
-                        contentEl.value = resData.minutes;
-                        this.handleMeetingInput(contentEl);
-                        alert('AI가 회의록을 정리했습니다.');
-                    } else {
-                        throw new Error(resData.error || '알 수 없는 오류');
-                    }
-                } catch (err) {
-                    alert('AI 통신 오류: ' + err.message);
-                } finally {
-                    aiBtn.disabled = false;
-                    aiBtn.innerHTML = '🤖 AI 회의록';
-                    contentEl.style.opacity = '1';
-                }
-            },
+        const resData = await response.json();
+        if (resData.success) {
+            contentEl.value = resData.minutes;
+            this.handleMeetingInput(contentEl);
+            alert('AI가 회의록을 정리했습니다.');
+        } else {
+            throw new Error(resData.error || '알 수 없는 오류');
+        }
+    } catch (err) {
+        alert('AI 통신 오류: ' + err.message);
+    } finally {
+        aiBtn.disabled = false;
+        aiBtn.innerHTML = '🤖 AI 회의록';
+        contentEl.style.opacity = '1';
+    }
+},
+```
+
+---
+
+## 결과 예시
+```
+1. 참여인원: 
+2. 일시: 02.26.(목), 15:30~
+3. 장소: 
+4. 주요안건
+   학생생활규정 개정 협의회
+5. 협의내용
+   가. ...
+   나. ...
+6. 협의 결과
+   ...
+   * [회의록 내부결재가 필요한 경우] 구례중학교 위임전결규정에 의거 ...,
 
             cleanAIMinutes(text) {
                 return text
