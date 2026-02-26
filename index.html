@@ -193,11 +193,9 @@
     </div>
 
     <script>
-        // 빈 공란으로 시작 - 템플릿 없음
-
         const app = {
-            // ★ API_URL을 최신 배포 주소로 업데이트
-            API_URL: 'https://script.google.com/macros/s/AKfycbzf0ZNgaHAir7HCqxRhdqjZZjsjZ_wypHTGD4altywd_hq1OBSlIcYfqreMzOBZMuFV/exec',
+            // ✅ 새 GAS 배포 주소로 업데이트
+            API_URL: 'https://script.google.com/macros/s/AKfycbyEvToNWQcm18xB_pCivKFCvhjKsLXouss8RO7Tlh7G1CkM1jMr2tD0hp1KKDrTqBWa/exec',
             events: [],
             localChanges: {},
             currentDate: new Date(),
@@ -236,7 +234,6 @@
                 return activeEl && (activeEl === subjectEl || activeEl === contentEl);
             },
 
-            // 저장된 내용 있으면 반환, 없으면 빈 문자열
             getMeetingContent(meetingData) {
                 return (meetingData && meetingData.content) ? meetingData.content : '';
             },
@@ -473,7 +470,6 @@
                     const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
                     const dayOfWeek = this.days[this.meetingDate.getDay()];
                     const safeSubject = (meetingData?.subject || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-                    // ★ content가 없으면 기본 템플릿 사용
                     const contentValue = this.getMeetingContent(meetingData);
                     const safeContent = contentValue.replace(/</g, '&lt;');
                     const hasData = meetingData?.content && meetingData.content.trim() !== '';
@@ -738,7 +734,6 @@
                 const meetingId = `meeting_${dateStr}`;
                 const existingIndex = this.events.findIndex(e => e.id === meetingId);
 
-                // 내용 없으면 삭제
                 if (!subject && !content) {
                     if (existingIndex !== -1) {
                         this.events.splice(existingIndex, 1);
@@ -757,48 +752,45 @@
                 this.renderMeetingCalendar();
             },
 
-            // ★ AI 회의록 생성 - 완전히 재작성
-     async generateAIMeetingMinutes() {
-    const subjectEl = document.getElementById('meetingSubject');
-    const contentEl = document.getElementById('meetingContent');
-    const aiBtn = document.getElementById('aiBtnEl');
+            // ✅ GAS 백엔드를 통해 OpenAI API 호출
+            async generateAIMeetingMinutes() {
+                const subjectEl = document.getElementById('meetingSubject');
+                const contentEl = document.getElementById('meetingContent');
+                const aiBtn = document.getElementById('aiBtnEl');
 
-    if (!contentEl.value.trim()) return alert('내용을 입력해주세요.');
-    
-    // 버튼 로딩 상태 전환
-    aiBtn.disabled = true;
-    aiBtn.innerHTML = '<span>⏳ AI 분석중...</span>';
-    contentEl.style.opacity = '0.5';
+                if (!contentEl.value.trim()) return alert('내용을 입력해주세요.');
 
-    try {
-        const response = await fetch(this.API_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-                action: 'generateAI',
-                subject: subjectEl.value,
-                content: contentEl.value
-            })
-        });
-        
-        const resData = await response.json();
-        if (resData.success) {
-            contentEl.value = resData.minutes;
-            // 변경된 내용을 서버에 즉시 저장하기 위해 핸들러 호출
-            this.handleMeetingInput(contentEl); 
-            alert('AI가 회의록을 정리했습니다.');
-        } else {
-            throw new Error(resData.error);
-        }
-    } catch (err) {
-        alert('AI 통신 오류: ' + err.message);
-    } finally {
-        aiBtn.disabled = false;
-        aiBtn.innerHTML = '🤖 AI 회의록';
-        contentEl.style.opacity = '1';
-    }
-},
+                aiBtn.disabled = true;
+                aiBtn.innerHTML = '<span>⏳ AI 분석중...</span>';
+                contentEl.style.opacity = '0.5';
 
-            // ★ AI 결과에서 가로줄 및 불필요한 기호 제거
+                try {
+                    const response = await fetch(this.API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: 'generateAI',
+                            subject: subjectEl.value,
+                            content: contentEl.value
+                        })
+                    });
+
+                    const resData = await response.json();
+                    if (resData.success) {
+                        contentEl.value = resData.minutes;
+                        this.handleMeetingInput(contentEl);
+                        alert('AI가 회의록을 정리했습니다.');
+                    } else {
+                        throw new Error(resData.error || '알 수 없는 오류');
+                    }
+                } catch (err) {
+                    alert('AI 통신 오류: ' + err.message);
+                } finally {
+                    aiBtn.disabled = false;
+                    aiBtn.innerHTML = '🤖 AI 회의록';
+                    contentEl.style.opacity = '1';
+                }
+            },
+
             cleanAIMinutes(text) {
                 return text
                     .replace(/━+/g, '').replace(/─+/g, '')
@@ -806,7 +798,6 @@
                     .replace(/\n{3,}/g, '\n\n').trim();
             },
 
-            // ★ 지정 형식으로 회의록 생성
             formatMeetingMinutesLocal(subject, rawContent, dateStr, dayOfWeek) {
                 const body = rawContent ? rawContent.split('\n').map(l => '   ' + l).join('\n') : '';
                 return `1. 참여인원: \n\n2. 일시: ${dateStr} (${dayOfWeek})\n\n3. 장소: \n\n4. 주요안건\n   ${subject}\n\n5. 협의내용\n${body}\n\n\n\n6. 협의 결과\n   \n\n\n   * [회의록 내부결재가 필요한 경우] 구례중학교 위임전결규정에 의거 협의회 서명은 참여위원의 전자문서 공람 및 관리자 결재로 갈음함.`;
