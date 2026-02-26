@@ -124,6 +124,16 @@
         .save-indicator.saving { color: #f59e0b; }
         .save-indicator.saved { color: #16a34a; }
 
+        /* ===== 복수 회의 카드 ===== */
+        .meeting-card { background: #f8fafc; border: 2px solid #e5e7eb; border-radius: 12px; padding: 14px; margin-bottom: 12px; position: relative; transition: border-color 0.2s; }
+        .meeting-card:hover { border-color: #16a34a; }
+        .meeting-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .meeting-card-num { font-size: 12px; font-weight: 900; color: #16a34a; background: #dcfce7; padding: 2px 10px; border-radius: 20px; }
+        .meeting-card-del { font-size: 13px; color: #ef4444; cursor: pointer; font-weight: bold; padding: 2px 8px; border-radius: 6px; background: #fee2e2; transition: all 0.2s; }
+        .meeting-card-del:hover { background: #fca5a5; }
+        .add-meeting-btn { width: 100%; padding: 10px; border: 2px dashed #16a34a; border-radius: 10px; color: #16a34a; font-weight: 900; font-size: 14px; cursor: pointer; background: white; transition: all 0.2s; margin-top: 4px; }
+        .add-meeting-btn:hover { background: #f0fdf4; }
+
         .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 24px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
@@ -229,14 +239,34 @@
             },
 
             isMeetingInputActive() {
-                const subjectEl = document.getElementById('meetingSubject');
-                const contentEl = document.getElementById('meetingContent');
                 const activeEl = document.activeElement;
-                return activeEl && (activeEl === subjectEl || activeEl === contentEl);
+                if (!activeEl) return false;
+                return activeEl.closest('.meeting-card') !== null ||
+                       activeEl.classList.contains('meeting-input') ||
+                       activeEl.classList.contains('meeting-textarea');
             },
 
             getMeetingContent(meetingData) {
                 return (meetingData && meetingData.content) ? meetingData.content : '';
+            },
+
+            getMeetingsForDate(dateStr) {
+                const prefix = `meeting_${dateStr}_`;
+                const all = this.events.filter(e => e.id.startsWith(prefix)).map(e => ({...e}));
+                Object.keys(this.localChanges).forEach(id => {
+                    if (id.startsWith(prefix) && !all.find(e => e.id === id)) {
+                        all.push({...this.localChanges[id]});
+                    }
+                });
+                return all.filter(e => !this.localDeletes.has(e.id))
+                          .sort((a, b) => a.id.localeCompare(b.id));
+            },
+
+            newMeetingId(dateStr) {
+                const existing = this.getMeetingsForDate(dateStr);
+                const nums = existing.map(e => parseInt(e.id.split('_').pop()) || 0);
+                const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+                return `meeting_${dateStr}_${next}`;
             },
 
             async loadFromServer() {
@@ -278,25 +308,8 @@
             },
 
             syncMeetingInputsFromData() {
-                const subjectEl = document.getElementById('meetingSubject');
-                const contentEl = document.getElementById('meetingContent');
-                if (!subjectEl || !contentEl) return;
-
-                const dateStr = this.formatDate(this.meetingDate);
-                const meetingId = `meeting_${dateStr}`;
-                const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
-
-                const newSubject = meetingData?.subject || '';
-                const newContent = this.getMeetingContent(meetingData);
-
-                if (subjectEl.value !== newSubject) {
-                    subjectEl.value = newSubject;
-                    this.updateMeetingInputStyle(subjectEl);
-                }
-                if (contentEl.value !== newContent) {
-                    contentEl.value = newContent;
-                    this.updateMeetingInputStyle(contentEl);
-                }
+                if (!document.getElementById('meetingCardsContainer')) return;
+                this.renderMeetingCards();
                 this.updateMeetingPanelDate();
             },
 
@@ -405,17 +418,8 @@
             selectMeetingDate(dateStr) {
                 this.meetingDate = new Date(dateStr + 'T00:00:00');
                 this.meetingCalendarDate = new Date(dateStr + 'T00:00:00');
-                const subjectEl = document.getElementById('meetingSubject');
-                const contentEl = document.getElementById('meetingContent');
-                if (subjectEl && contentEl) {
-                    const meetingId = `meeting_${dateStr}`;
-                    const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
-                    subjectEl.value = meetingData?.subject || '';
-                    contentEl.value = this.getMeetingContent(meetingData);
-                    this.updateMeetingInputStyle(subjectEl);
-                    this.updateMeetingInputStyle(contentEl);
-                }
                 this.updateMeetingPanelDate();
+                this.renderMeetingCards();
                 this.renderMeetingCalendar();
             },
 
@@ -455,7 +459,7 @@
                     const dayOfWeek = new Date(year, month, day).getDay();
                     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
                     const isSelected = dateStr === selectedDateStr;
-                    const hasMeeting = this.events.some(e => e.id === `meeting_${dateStr}`) || !!this.localChanges[`meeting_${dateStr}`];
+                    const hasMeeting = this.getMeetingsForDate(dateStr).length > 0;
                     let classes = 'meeting-calendar-day';
                     if (isWeekend && !isSelected) classes += ' weekend';
                     if (dateStr === today) classes += ' today';
@@ -474,17 +478,10 @@
 
             renderMeetingView() {
                 const viewPort = document.getElementById('viewPort');
+                const dateStr = this.formatDate(this.meetingDate);
+                const dayOfWeek = this.days[this.meetingDate.getDay()];
 
                 if (!viewPort.querySelector('.meeting-wrapper')) {
-                    const dateStr = this.formatDate(this.meetingDate);
-                    const meetingId = `meeting_${dateStr}`;
-                    const meetingData = this.localChanges[meetingId] || this.events.find(e => e.id === meetingId);
-                    const dayOfWeek = this.days[this.meetingDate.getDay()];
-                    const safeSubject = (meetingData?.subject || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-                    const contentValue = this.getMeetingContent(meetingData);
-                    const safeContent = contentValue.replace(/</g, '&lt;');
-                    const hasData = meetingData?.content && meetingData.content.trim() !== '';
-
                     viewPort.innerHTML = `
                         <div class="meeting-wrapper">
                             <div class="meeting-cal-panel">
@@ -495,31 +492,8 @@
                                     📝 회의메모
                                     <span id="meetingPanelDate" class="meeting-date-badge">${dateStr} (${dayOfWeek})</span>
                                 </div>
-
-                                <label class="meeting-label">📋 모임 주제</label>
-                                <input
-                                    type="text"
-                                    id="meetingSubject"
-                                    class="meeting-input ${meetingData?.subject ? 'has-data' : ''}"
-                                    placeholder="예: 학생생활규정 개정 협의회"
-                                    value="${safeSubject}"
-                                    oninput="app.handleMeetingInput(this)"
-                                    onfocus="app.handleMeetingFocus()"
-                                    onblur="app.handleMeetingBlur()"
-                                >
-
-                                <label class="meeting-label">
-                                    <span>📝 모임 내용 정리</span>
-                                    <button id="aiBtnEl" class="ai-generate-btn" onclick="app.generateAIMeetingMinutes()">🤖 AI 회의록</button>
-                                </label>
-                                <textarea
-                                    id="meetingContent"
-                                    class="meeting-textarea ${hasData ? 'has-data' : ''}"
-                                    oninput="app.handleMeetingInput(this)"
-                                    onfocus="app.handleMeetingFocus()"
-                                    onblur="app.handleMeetingBlur()"
-                                >${safeContent}</textarea>
-
+                                <div id="meetingCardsContainer"></div>
+                                <button class="add-meeting-btn" onclick="app.addMeetingCard()">＋ 회의 추가</button>
                                 <div id="meetingSaveIndicator" class="save-indicator">💡 입력 2초 후 자동 저장</div>
                             </div>
                         </div>
@@ -528,6 +502,104 @@
 
                 this.meetingCalendarDate = new Date(this.meetingDate);
                 this.renderMeetingCalendar();
+                this.renderMeetingCards();
+            },
+
+            renderMeetingCards() {
+                const container = document.getElementById('meetingCardsContainer');
+                if (!container) return;
+                const dateStr = this.formatDate(this.meetingDate);
+                const meetings = this.getMeetingsForDate(dateStr);
+
+                if (meetings.length === 0) {
+                    // 빈 카드 1개 자동 생성
+                    container.innerHTML = this.buildCardHTML(null, dateStr, 1, 1);
+                } else {
+                    container.innerHTML = meetings.map((m, i) =>
+                        this.buildCardHTML(m, dateStr, i + 1, meetings.length)
+                    ).join('');
+                }
+            },
+
+            buildCardHTML(meetingData, dateStr, num, total) {
+                const mid = meetingData ? meetingData.id : `__new__${dateStr}`;
+                const safeSubject = (meetingData?.subject || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                const safeContent = (meetingData?.content || '').replace(/</g, '&lt;');
+                const hasSubject = !!(meetingData?.subject);
+                const hasContent = !!(meetingData?.content);
+                return `
+                    <div class="meeting-card" data-mid="${mid}">
+                        <div class="meeting-card-header">
+                            <span class="meeting-card-num">회의 ${num}</span>
+                            <span class="meeting-card-del" onclick="app.deleteMeetingCard('${mid}', '${dateStr}')">🗑 삭제</span>
+                        </div>
+                        <label class="meeting-label">📋 모임 주제</label>
+                        <input type="text"
+                            class="meeting-input ${hasSubject ? 'has-data' : ''}"
+                            data-mid="${mid}" data-field="subject"
+                            placeholder="예: 학생생활규정 개정 협의회"
+                            value="${safeSubject}"
+                            oninput="app.handleCardInput(this)"
+                            onfocus="app.handleMeetingFocus()"
+                            onblur="app.handleMeetingBlur()">
+                        <label class="meeting-label">
+                            <span>📝 모임 내용 정리</span>
+                            <button class="ai-generate-btn" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button>
+                        </label>
+                        <textarea
+                            class="meeting-textarea ${hasContent ? 'has-data' : ''}"
+                            data-mid="${mid}" data-field="content"
+                            oninput="app.handleCardInput(this)"
+                            onfocus="app.handleMeetingFocus()"
+                            onblur="app.handleMeetingBlur()"
+                        >${safeContent}</textarea>
+                    </div>`;
+            },
+
+            addMeetingCard() {
+                const dateStr = this.formatDate(this.meetingDate);
+                const newId = this.newMeetingId(dateStr);
+                const meetings = this.getMeetingsForDate(dateStr);
+                const container = document.getElementById('meetingCardsContainer');
+                if (!container) return;
+                const newCard = document.createElement('div');
+                newCard.innerHTML = this.buildCardHTML(null, dateStr, meetings.length + 1, meetings.length + 1);
+                // 새 카드의 data-mid를 실제 id로 설정
+                const card = newCard.firstElementChild;
+                card.dataset.mid = newId;
+                card.querySelectorAll('[data-mid]').forEach(el => el.dataset.mid = newId);
+                card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${newId}', '${dateStr}')`);
+                container.appendChild(card);
+            },
+
+            async deleteMeetingCard(mid, dateStr) {
+                if (mid.startsWith('__new__')) {
+                    // 저장 안 된 빈 카드 - 그냥 DOM에서 제거
+                    const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+                    if (card) card.remove();
+                    this.renumberCards();
+                    return;
+                }
+                // 저장된 데이터 삭제
+                const idx = this.events.findIndex(e => e.id === mid);
+                if (idx !== -1) this.events.splice(idx, 1);
+                this.localDeletes.add(mid);
+                delete this.localChanges[mid];
+
+                const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+                if (card) card.remove();
+                this.renumberCards();
+                this.renderMeetingCalendar();
+                await this.saveToServer('delete', { id: mid });
+            },
+
+            renumberCards() {
+                const container = document.getElementById('meetingCardsContainer');
+                if (!container) return;
+                container.querySelectorAll('.meeting-card').forEach((card, i) => {
+                    const numEl = card.querySelector('.meeting-card-num');
+                    if (numEl) numEl.textContent = `회의 ${i + 1}`;
+                });
             },
 
             getMonday(d) {
@@ -573,15 +645,15 @@
                 const modalContent = document.getElementById('modalContent');
                 modalContent.innerHTML = '';
                 const dayEvents = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
-                const meetingData = this.events.find(e => e.id === `meeting_${dateStr}`);
-                if (meetingData) {
+                const meetings = this.getMeetingsForDate(dateStr);
+                meetings.forEach((meetingData, i) => {
                     modalContent.innerHTML += `<div class="bg-green-50 p-4 rounded-lg border-2 border-green-300 mb-3">
-                        <div class="text-green-800 font-black mb-2">📝 회의메모</div>
+                        <div class="text-green-800 font-black mb-2">📝 회의메모 ${meetings.length > 1 ? (i+1) : ''}</div>
                         <div class="font-bold text-green-700 mb-1">${meetingData.subject || '(제목 없음)'}</div>
                         <div class="text-sm text-slate-600 whitespace-pre-wrap">${meetingData.content || ''}</div>
                     </div>`;
-                }
-                if (dayEvents.length === 0 && !meetingData) {
+                });
+                if (dayEvents.length === 0 && meetings.length === 0) {
                     modalContent.innerHTML = "<div class='text-slate-400 text-sm'>일정이 없습니다.</div>";
                 } else {
                     dayEvents.forEach(e => {
@@ -708,13 +780,13 @@
                 return html + '</div>';
             },
 
-            handleMeetingInput(input) {
+            handleCardInput(input) {
                 this.isEditing = true;
                 this.meetingInputFocused = true;
                 this.updateMeetingInputStyle(input);
                 this.showSaveIndicator('saving');
                 if (this.saveTimers['meeting']) clearTimeout(this.saveTimers['meeting']);
-                this.saveTimers['meeting'] = setTimeout(() => { this.saveMeeting(); }, 2000);
+                this.saveTimers['meeting'] = setTimeout(() => { this.saveAllCards(); }, 2000);
             },
 
             handleMeetingFocus() { this.meetingInputFocused = true; this.isEditing = true; },
@@ -732,76 +804,101 @@
                 else input.classList.remove('has-data');
             },
 
-            async saveMeeting() {
+            async saveAllCards() {
                 if (!this.isMeetingInputActive()) {
                     this.isEditing = false;
                     this.meetingInputFocused = false;
                 }
                 const dateStr = this.formatDate(this.meetingDate);
-                const subjectEl = document.getElementById('meetingSubject');
-                const contentEl = document.getElementById('meetingContent');
-                const subject = subjectEl?.value.trim() || '';
-                const content = contentEl?.value.trim() || '';
-                const meetingId = `meeting_${dateStr}`;
-                const existingIndex = this.events.findIndex(e => e.id === meetingId);
+                const container = document.getElementById('meetingCardsContainer');
+                if (!container) return;
 
-                if (!subject && !content) {
-                    if (existingIndex !== -1) {
-                        this.events.splice(existingIndex, 1);
-                        await this.saveToServer('delete', { id: meetingId });
+                const cards = container.querySelectorAll('.meeting-card');
+                let cardNum = 1;
+
+                for (const card of cards) {
+                    const oldMid = card.dataset.mid;
+                    const subjectEl = card.querySelector('[data-field="subject"]');
+                    const contentEl = card.querySelector('[data-field="content"]');
+                    const subject = subjectEl?.value.trim() || '';
+                    const content = contentEl?.value.trim() || '';
+
+                    if (!subject && !content) {
+                        // 빈 카드 - 저장된 데이터 있으면 삭제
+                        if (!oldMid.startsWith('__new__')) {
+                            const idx = this.events.findIndex(e => e.id === oldMid);
+                            if (idx !== -1) this.events.splice(idx, 1);
+                            this.localDeletes.add(oldMid);
+                            delete this.localChanges[oldMid];
+                            await this.saveToServer('delete', { id: oldMid });
+                        }
+                        continue;
                     }
-                } else {
+
+                    // 실제 ID 결정 (새 카드면 id 생성)
+                    let mid = oldMid;
+                    if (oldMid.startsWith('__new__')) {
+                        mid = `meeting_${dateStr}_${cardNum}`;
+                        card.dataset.mid = mid;
+                        card.querySelectorAll('[data-mid]').forEach(el => el.dataset.mid = mid);
+                        card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${mid}', '${dateStr}')`);
+                    }
+
                     const meetingData = {
-                        id: meetingId, date: dateStr,
+                        id: mid, date: dateStr,
                         title: subject || '(제목 없음)',
                         dapt: 'meeting', subject, content
                     };
-                    if (existingIndex !== -1) this.events[existingIndex] = meetingData;
+                    const idx = this.events.findIndex(e => e.id === mid);
+                    if (idx !== -1) this.events[idx] = meetingData;
                     else this.events.push(meetingData);
+
+                    this.localDeletes.delete(mid);
                     await this.saveToServer('add', meetingData);
+                    cardNum++;
                 }
                 this.renderMeetingCalendar();
             },
 
-            // ✅ GAS 백엔드를 통해 OpenAI API 호출
-           async generateAIMeetingMinutes() {
-    const subjectEl = document.getElementById('meetingSubject');
-    const contentEl = document.getElementById('meetingContent');
-    const aiBtn = document.getElementById('aiBtnEl');
+            async generateAIMeetingMinutes(mid) {
+                const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+                if (!card) return;
+                const subjectEl = card.querySelector('[data-field="subject"]');
+                const contentEl = card.querySelector('[data-field="content"]');
+                const aiBtn = card.querySelector('.ai-generate-btn');
 
-    if (!contentEl.value.trim()) return alert('내용을 입력해주세요.');
+                if (!contentEl.value.trim()) return alert('내용을 입력해주세요.');
 
-    aiBtn.disabled = true;
-    aiBtn.innerHTML = '<span>⏳ AI 분석중...</span>';
-    contentEl.style.opacity = '0.5';
+                aiBtn.disabled = true;
+                aiBtn.innerHTML = '⏳ AI 분석중...';
+                contentEl.style.opacity = '0.5';
 
-    try {
-        const response = await fetch(this.API_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-                action: 'generateAI',
-                subject: subjectEl.value,
-                content: contentEl.value,
-                meetingDate: this.formatDate(this.meetingDate)  // ← 달력 선택 날짜 전송
-            })
-        });
-
-        const resData = await response.json();
-        if (resData.success) {
-            contentEl.value = resData.minutes;
-            this.handleMeetingInput(contentEl);
-            alert('AI가 회의록을 정리했습니다.');
-        } else {
-            throw new Error(resData.error || '알 수 없는 오류');
-        }
-    } catch (err) {
-        alert('AI 통신 오류: ' + err.message);
-    } finally {
-        aiBtn.disabled = false;
-        aiBtn.innerHTML = '🤖 AI 회의록';
-        contentEl.style.opacity = '1';
-    }
-},
+                try {
+                    const response = await fetch(this.API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: 'generateAI',
+                            subject: subjectEl.value,
+                            content: contentEl.value,
+                            meetingDate: this.formatDate(this.meetingDate)
+                        })
+                    });
+                    const resData = await response.json();
+                    if (resData.success) {
+                        contentEl.value = resData.minutes;
+                        this.handleCardInput(contentEl);
+                        alert('AI가 회의록을 정리했습니다.');
+                    } else {
+                        throw new Error(resData.error || '알 수 없는 오류');
+                    }
+                } catch (err) {
+                    alert('AI 통신 오류: ' + err.message);
+                } finally {
+                    aiBtn.disabled = false;
+                    aiBtn.innerHTML = '🤖 AI 회의록';
+                    contentEl.style.opacity = '1';
+                }
+            },
 
             cleanAIMinutes(text) {
                 return text
