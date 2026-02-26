@@ -198,6 +198,7 @@
             API_URL: 'https://script.google.com/macros/s/AKfycbyql6pDDPcrI4hxk67-fA1kLjGbT2_qJd8M66wQdd31q--I_k_cH6Hj38EhfbUwsghS/exec',
             events: [],
             localChanges: {},
+            localDeletes: new Set(), // ✅ 삭제된 항목 추적
             currentDate: new Date(),
             viewMode: 'weekly',
             isSyncing: false,
@@ -300,7 +301,9 @@
             },
 
             mergeEvents(serverEvents) {
-                const merged = [...serverEvents];
+                // ✅ 서버 데이터에서 로컬 삭제 목록에 있는 항목 먼저 제거
+                const filtered = serverEvents.filter(e => !this.localDeletes.has(String(e.id)));
+                const merged = [...filtered];
                 Object.keys(this.localChanges).forEach(id => {
                     const localData = this.localChanges[id];
                     const serverIndex = merged.findIndex(e => String(e.id) === String(id));
@@ -311,8 +314,13 @@
             },
 
             async saveToServer(action, data) {
-                if (action === 'add') this.localChanges[data.id] = data;
-                else if (action === 'delete') delete this.localChanges[data.id];
+                if (action === 'add') {
+                    this.localChanges[data.id] = data;
+                    this.localDeletes.delete(data.id); // 재등록 시 삭제 목록에서 제거
+                } else if (action === 'delete') {
+                    delete this.localChanges[data.id];
+                    this.localDeletes.add(data.id); // ✅ 삭제 목록에 추가
+                }
 
                 if (this.savingInProgress) {
                     this.pendingSave = { action, data };
@@ -328,7 +336,10 @@
                     const result = await response.json();
                     if (result.success) {
                         const savedId = data.id;
-                        setTimeout(() => { delete this.localChanges[savedId]; }, 15000);
+                        setTimeout(() => {
+                            delete this.localChanges[savedId];
+                            this.localDeletes.delete(savedId); // ✅ 서버 저장 확인 후 삭제 목록에서도 제거
+                        }, 15000);
                         this.showSaveIndicator('saved');
                     }
                 } catch (error) {
