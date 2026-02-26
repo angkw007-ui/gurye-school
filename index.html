@@ -205,7 +205,7 @@
     <script>
         const app = {
             // ✅ 새 GAS 배포 주소로 업데이트
-            API_URL: 'https://script.google.com/macros/s/AKfycbzyEuNcX7wWYY-ODOEwsMEUbM_u_8X843eILzM-lfPK6LVEB9YX6wKOFYUTumfJSOg9/exec',
+            API_URL: 'https://script.google.com/macros/s/AKfycbyql6pDDPcrI4hxk67-fA1kLjGbT2_qJd8M66wQdd31q--I_k_cH6Hj38EhfbUwsghS/exec',
             events: [],
             localChanges: {},
             localDeletes: new Set(), // ✅ 삭제된 항목 추적
@@ -606,7 +606,6 @@
                 const date = new Date(d);
                 const day = date.getDay();
                 const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-                // ✅ 원본 date 객체를 변경하지 않고 새 Date 반환
                 return new Date(date.getFullYear(), date.getMonth(), diff);
             },
 
@@ -624,7 +623,6 @@
                 if (!dateInput || !title) { alert('날짜와 내용을 입력하세요.'); return; }
                 const newEvent = { id: Date.now().toString(), date: dateInput, title: title, dapt: dapt };
                 this.events.push(newEvent);
-                // ✅ 저장된 날짜로 현재 뷰 이동 (날짜 점프 방지)
                 this.currentDate = new Date(dateInput + 'T00:00:00');
                 this.render();
                 document.getElementById('inDate').value = '';
@@ -879,6 +877,7 @@
                 try {
                     const response = await fetch(this.API_URL, {
                         method: 'POST',
+                        headers: { 'Content-Type': 'text/plain' },
                         body: JSON.stringify({
                             action: 'generateAI',
                             subject: subjectEl.value,
@@ -895,7 +894,7 @@
                         throw new Error(resData.error || '알 수 없는 오류');
                     }
                 } catch (err) {
-                    alert('AI 통신 오류: ' + err.message + '\n\n👉 GAS를 최신 코드로 재배포했는지 확인하세요.\n(배포 → 새 배포 → 웹 앱)');
+                    alert('AI 통신 오류: ' + err.message);
                 } finally {
                     aiBtn.disabled = false;
                     aiBtn.innerHTML = '🤖 AI 회의록';
