@@ -758,62 +758,43 @@
             },
 
             // ★ AI 회의록 생성 - 완전히 재작성
-      async generateAIMeetingMinutes() {
+     async generateAIMeetingMinutes() {
     const subjectEl = document.getElementById('meetingSubject');
     const contentEl = document.getElementById('meetingContent');
     const aiBtn = document.getElementById('aiBtnEl');
 
-    if (!subjectEl || !contentEl || !aiBtn) return;
-    if (!contentEl.value.trim()) {
-        alert('AI 회의록 작성을 위해 내용을 먼저 입력해주세요.');
-        return;
-    }
-
-    if (!confirm('AI가 내용을 분석하여 회의록 형식으로 정리합니다. 진행하시겠습니까?')) return;
+    if (!contentEl.value.trim()) return alert('내용을 입력해주세요.');
+    
+    // 버튼 로딩 상태 전환
+    aiBtn.disabled = true;
+    aiBtn.innerHTML = '<span>⏳ AI 분석중...</span>';
+    contentEl.style.opacity = '0.5';
 
     try {
-        // 로딩 상태 표시
-        aiBtn.disabled = true;
-        aiBtn.textContent = '⌛ 분석 중...';
-        contentEl.classList.add('ai-loading');
-
-        const dateStr = this.formatDate(this.meetingDate);
-        const dayOfWeek = this.days[this.meetingDate.getDay()];
-
-        // 백엔드(Apps Script)로 AI 생성 요청
         const response = await fetch(this.API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({
                 action: 'generateAI',
-                subject: subjectEl.value.trim(),
-                content: contentEl.value.trim(),
-                date: dateStr,
-                dayOfWeek: dayOfWeek
+                subject: subjectEl.value,
+                content: contentEl.value
             })
         });
-
-        const result = await response.json();
-
-        if (result.success && result.minutes) {
-            // AI가 생성한 텍스트로 교체
-            contentEl.value = result.minutes;
-            this.updateMeetingInputStyle(contentEl);
-            
-            // 변경된 내용 서버에 자동 저장
-            this.handleMeetingInput(contentEl);
-            alert('AI 회의록 작성이 완료되었습니다!');
+        
+        const resData = await response.json();
+        if (resData.success) {
+            contentEl.value = resData.minutes;
+            // 변경된 내용을 서버에 즉시 저장하기 위해 핸들러 호출
+            this.handleMeetingInput(contentEl); 
+            alert('AI가 회의록을 정리했습니다.');
         } else {
-            throw new Error(result.error || 'AI 분석에 실패했습니다.');
+            throw new Error(resData.error);
         }
-    } catch (error) {
-        console.error('AI 생성 오류:', error);
-        alert('AI 회의록 생성 중 오류가 발생했습니다: ' + error.message);
+    } catch (err) {
+        alert('AI 통신 오류: ' + err.message);
     } finally {
-        // 상태 복구
         aiBtn.disabled = false;
-        aiBtn.textContent = '🤖 AI 회의록';
-        contentEl.classList.remove('ai-loading');
+        aiBtn.innerHTML = '🤖 AI 회의록';
+        contentEl.style.opacity = '1';
     }
 },
 
