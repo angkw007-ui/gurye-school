@@ -13,314 +13,325 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
-        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
-        .day-cell { min-height: 80px; background-color: white; padding: 4px; position: relative; cursor: pointer; transition: background-color 0.2s; }
-        @media (min-width: 768px) { .day-cell { min-height: 140px; padding: 12px; } }
+        .day-cell { min-height: 100px; background-color: white; padding: 6px; position: relative; cursor: pointer; transition: background-color 0.2s; }
         .day-cell:hover { background-color: #f1f5f9; }
-        .event-item { font-size: 13px; padding: 4px 6px; margin-top: 3px; border-radius: 3px; background-color: #f1f5f9; border-left: 2px solid #16a34a; font-weight: 700; display: flex; justify-content: space-between; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        @media (min-width: 768px) { .event-item { font-size: 14px; padding: 6px 8px; margin-top: 5px; border-radius: 5px; border-left-width: 3px; white-space: normal; word-break: break-all; } }
-        .dept-교무 { color: #15803d; border-left-color: #15803d; } .dept-연구 { color: #059669; border-left-color: #059669; } .dept-학생 { color: #d97706; border-left-color: #d97706; } .dept-창의 { color: #7c3aed; border-left-color: #7c3aed; } .dept-행정 { color: #475569; border-left-color: #475569; } .dept-1학년 { color: #2563eb; border-left-color: #2563eb; } .dept-2학년 { color: #db2777; border-left-color: #db2777; } .dept-3학년 { color: #0891b2; border-left-color: #0891b2; } .dept-학사 { color: #1e293b; border-left-color: #1e293b; }
-        .holiday-badge { font-size: 11px; color: #dc2626; font-weight: 700; margin-top: 1px; }
-        @media (min-width: 768px) { .holiday-badge { font-size: 13px; } }
+        .event-item { font-size: 12px; padding: 3px 6px; margin-top: 3px; border-radius: 4px; background-color: #f1f5f9; border-left: 3px solid #16a34a; font-weight: 700; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .dept-교무 { color: #15803d; border-left-color: #15803d; } .dept-연구 { color: #059669; border-left-color: #059669; } .dept-학생 { color: #d97706; border-left-color: #d97706; } .dept-창의 { color: #7c3aed; border-left-color: #7c3aed; } .dept-행정 { color: #475569; border-left-color: #475569; }
+        .holiday-badge { font-size: 11px; color: #dc2626; font-weight: 700; }
         .text-sun { color: #ef4444; } .text-sat { color: #3b82f6; }
-        .del-x { color: #ef4444; cursor: pointer; margin-left: 4px; font-weight: bold; }
+        .del-x { color: #ef4444; cursor: pointer; float: right; font-weight: bold; }
         .year-view { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
         .year-month { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .year-month-title { font-weight: 900; color: #1e293b; margin-bottom: 8px; font-size: 16px; }
-        .mini-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 10px; }
-        .mini-day { padding: 4px; text-align: center; min-height: 30px; background: #f8fafc; border-radius: 4px; cursor: pointer; }
-        .mini-day.has-event { background: #dcfce7; font-weight: 700; }
-        .mini-day.weekend { background: #fee2e2; }
-        .week-item { background-color: white; }
-        .weekend-bg, .holiday-bg { background-color: #fff1f2 !important; }
-        .notice-section { background-color: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-top: 20px; }
-        .notice-list { display: flex; flex-direction: column; gap: 12px; }
-        .notice-box { display: flex; flex-direction: column; gap: 4px; position: relative; }
-        .notice-label { font-size: 13px; font-weight: 800; color: #15803d; }
-        .notice-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; outline: none; transition: all 0.2s; min-height: 60px; resize: vertical; background-color: white; font-weight: normal; }
-        .notice-input.has-content { background-color: #fef9c3 !important; border-color: #facc15; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 24px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
-        .week-date-label { font-size: 15px; font-weight: 900; line-height: 1.3; }
-        .meeting-wrapper { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
-        @media (min-width: 768px) { .meeting-wrapper { flex-direction: row; align-items: flex-start; gap: 20px; } }
-        .meeting-cal-panel { background: white; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; flex-shrink: 0; }
-        @media (min-width: 768px) { .meeting-cal-panel { width: 300px; } }
-        .meeting-calendar-header { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); padding: 10px 14px; color: white; }
-        .meeting-calendar-header button { background: rgba(255,255,255,0.25); color: white; font-weight: bold; padding: 4px 10px; border-radius: 6px; font-size: 14px; }
-        .meeting-calendar-title { font-size: 15px; font-weight: 900; }
-        .meeting-calendar-body { padding: 8px; }
-        .meeting-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-        .meeting-calendar-day-header { text-align: center; font-weight: 700; color: #64748b; padding: 4px 2px; font-size: 11px; }
-        .meeting-calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.15s; background: #f8fafc; position: relative; }
-        .meeting-calendar-day.selected { background: #16a34a !important; color: white !important; font-weight: 900; box-shadow: 0 2px 6px rgba(22,163,74,0.4); }
-        .meeting-calendar-day.today { outline: 2px solid #facc15; outline-offset: -2px; }
-        .meeting-calendar-day.weekend { background: #fef2f2; color: #ef4444; }
-        .meeting-calendar-day.other-month { color: #cbd5e1; background: transparent; font-size: 10px; }
-        .meeting-calendar-day.has-meeting::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: #16a34a; }
-        .meeting-input-panel { flex: 1; background: white; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); padding: 16px; min-width: 0; }
-        .meeting-panel-title { font-size: 14px; font-weight: 900; color: #15803d; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #dcfce7; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .meeting-date-badge { background: #dcfce7; color: #15803d; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-        .meeting-label { font-size: 13px; font-weight: 800; color: #374151; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .ai-generate-btn { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: white; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
-        .meeting-input { width: 100%; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px 12px; font-size: 14px; outline: none; margin-bottom: 12px; }
-        .meeting-textarea { width: 100%; border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px; font-size: 13px; outline: none; min-height: 300px; resize: vertical; line-height: 1.8; }
-        .save-indicator { font-size: 11px; color: #94a3b8; text-align: right; margin-top: 6px; }
-        .save-indicator.saving { color: #f59e0b; }
-        .save-indicator.saved { color: #16a34a; }
-        .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 24px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; display:none;}
+        .mini-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 11px; }
+        .mini-day { padding: 4px; text-align: center; border-radius: 4px; cursor: pointer; }
+        .mini-day.has-event { background: #dcfce7; font-weight: 700; color: #15803d; }
+        .notice-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; width: 100%; min-height: 60px; font-size: 14px; outline: none; }
+        .notice-input:focus { border-color: #16a34a; background-color: #f0fdf4; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; padding: 24px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .meeting-wrapper { display: flex; flex-direction: column; gap: 20px; }
+        @media (min-width: 768px) { .meeting-wrapper { flex-direction: row; } }
+        .meeting-cal-panel { width: 100%; max-width: 320px; background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .meeting-calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 8px; font-size: 13px; position: relative; }
+        .meeting-calendar-day.selected { background: #16a34a; color: white; font-weight: 900; }
+        .meeting-calendar-day.has-meeting::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: #16a34a; border-radius: 50%; }
+        .meeting-calendar-day.selected.has-meeting::after { background: white; }
     </style>
 </head>
 <body class="p-3">
     <div class="max-w-6xl mx-auto">
         <header class="flex justify-between items-center mb-6 bg-green-800 p-4 rounded-2xl text-white shadow-lg">
             <h1 class="font-black text-sm md:text-lg">🏫 구례중 주간 계획</h1>
-            <div class="flex gap-1 md:gap-2">
-                <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold">주간</button>
-                <button onclick="app.setView('monthly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold">월간</button>
-                <button onclick="app.setView('yearly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold">연간</button>
-                <button onclick="app.setView('meeting')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold">📝회의메모</button>
+            <div class="flex gap-1">
+                <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-green-700 px-3 py-2 rounded-lg font-bold">주간</button>
+                <button onclick="app.setView('monthly')" class="text-[10px] md:text-sm bg-green-700 px-3 py-2 rounded-lg font-bold">월간</button>
+                <button onclick="app.setView('yearly')" class="text-[10px] md:text-sm bg-green-700 px-3 py-2 rounded-lg font-bold">연간</button>
+                <button onclick="app.setView('meeting')" class="text-[10px] md:text-sm bg-green-700 px-3 py-2 rounded-lg font-bold">📝회의</button>
             </div>
         </header>
 
         <section id="eventInputSection" class="bg-white p-4 rounded-2xl shadow-sm border mb-4 grid grid-cols-2 md:grid-cols-4 gap-2">
-            <input type="date" id="inDate" class="border p-2 rounded-xl text-sm md:text-base outline-none">
-            <input type="text" id="inTitle" placeholder="업무 행사 입력" class="border p-2 rounded-xl text-sm md:text-base outline-none">
-            <select id="inDept" class="border p-2 rounded-xl text-sm md:text-base outline-none">
+            <input type="date" id="inDate" class="border p-2 rounded-xl text-sm outline-none">
+            <input type="text" id="inTitle" placeholder="업무 행사 입력" class="border p-2 rounded-xl text-sm outline-none">
+            <select id="inDept" class="border p-2 rounded-xl text-sm outline-none">
                 <option>교무</option><option>연구</option><option>학생</option><option>창의</option><option>행정</option>
                 <option>1학년</option><option>2학년</option><option>3학년</option>
             </select>
-            <button onclick="app.saveEvent()" class="bg-green-600 text-white rounded-xl font-bold py-2 text-sm md:text-base hover:bg-green-700">저장하기</button>
+            <button onclick="app.saveEvent()" class="bg-green-600 text-white rounded-xl font-bold py-2 text-sm hover:bg-green-700">저장하기</button>
         </section>
 
         <div class="flex justify-between items-center bg-white p-3 rounded-2xl border mb-4">
-            <button onclick="app.move(-1)" class="text-green-600 font-bold px-4 text-lg md:text-xl">❮</button>
-            <h2 id="titleText" class="text-sm md:text-xl font-black text-slate-700">로딩 중...</h2>
-            <button onclick="app.move(1)" class="text-green-600 font-bold px-4 text-lg md:text-xl">❯</button>
+            <button onclick="app.move(-1)" class="text-green-600 font-bold px-4 text-xl">❮</button>
+            <h2 id="titleText" class="text-sm md:text-xl font-black text-slate-700">데이터 로딩 중...</h2>
+            <button onclick="app.move(1)" class="text-green-600 font-bold px-4 text-xl">❯</button>
         </div>
 
         <div id="viewPort"></div>
-        <div id="noticePort" class="hidden">
-            <div class="notice-section">
-                <h3 class="font-black text-green-800 mb-4 flex items-center gap-2 text-base md:text-lg">📢 주간 안내사항</h3>
-                <div class="notice-list">
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교장</label></div><textarea data-dept="교장" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교감</label></div><textarea data-dept="교감" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">행정실장</label></div><textarea data-dept="행정실" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교무부</label></div><textarea data-dept="교무부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">연구부</label></div><textarea data-dept="연구부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">학생부</label></div><textarea data-dept="학생부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">창의인성부</label></div><textarea data-dept="창의인성부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><div class="notice-header"><label class="notice-label">학년실</label></div><textarea data-dept="학년실" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
-                </div>
+        <div id="noticePort" class="hidden mt-6">
+            <div class="bg-white p-6 rounded-2xl border">
+                <h3 class="font-black text-green-800 mb-4 flex items-center gap-2">📢 주간 안내사항</h3>
+                <div id="noticeList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    </div>
             </div>
         </div>
-        <footer class="text-center py-8 text-slate-400 text-[10px] md:text-xs">
-            © Developed by Choi Gwang-cheol of Gurye Middle School in 2026. All rights reserved.
-        </footer>
+        
+        <footer class="text-center py-8 text-slate-400 text-[10px]">© 2026 Gurye Middle School.</footer>
     </div>
-
-    <button id="installBtn" class="install-btn">📱 앱으로 설치하기</button>
 
     <div id="detailModal" class="modal" onclick="app.closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="modalDate" class="font-black text-green-800 mb-2 text-base md:text-lg"></h3>
-            <div id="modalContent" class="space-y-2 max-h-60 overflow-y-auto mb-4 text-sm md:text-base"></div>
-            <button onclick="app.closeModal()" class="w-full bg-green-600 text-white font-bold py-2 rounded-xl">닫기</button>
+            <h3 id="modalDate" class="font-black text-green-800 mb-4 text-lg border-b pb-2"></h3>
+            <div id="modalContent" class="space-y-2 max-h-60 overflow-y-auto mb-4"></div>
+            <button onclick="app.closeModal()" class="w-full bg-slate-100 py-3 rounded-xl font-bold">닫기</button>
         </div>
     </div>
 
     <script>
-    // 전역 app 객체를 명시적으로 생성
     window.app = {
         API_URL: 'https://script.google.com/macros/s/AKfycbyql6pDDPcrI4hxk67-fA1kLjGbT2_qJd8M66wQdd31q--I_k_cH6Hj38EhfbUwsghS/exec',
-        events: [], localChanges: {}, localDeletes: new Set(), currentDate: new Date(),
-        viewMode: 'weekly', isSyncing: false, isEditing: false, meetingInputFocused: false,
-        saveTimers: {}, savingInProgress: false, pendingSave: null, meetingDate: new Date(),
-        meetingCalendarDate: new Date(), days: ['일', '월', '화', '수', '목', '금', '토'],
+        events: [], currentDate: new Date(), viewMode: 'weekly', meetingDate: new Date(),
+        depts: ['교장','교감','행정실','교무부','연구부','학생부','창의인성부','학년실'],
+        days: ['일', '월', '화', '수', '목', '금', '토'],
         holidays: ['2026-01-01:신정','2026-03-01:삼일절','2026-05-05:어린이날','2026-06-06:현충일','2026-08-15:광복절','2026-10-03:개천절','2026-10-09:한글날','2026-12-25:크리스마스'],
 
-        getHoliday: function(dStr) { const found = this.holidays.find(h => h.startsWith(dStr)); return found ? found.split(':')[1] : null; },
-        formatDate: function(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); },
-        getMonday: function(d) { let date = new Date(d); let day = date.getDay(); let diff = date.getDate() - day + (day === 0 ? -6 : 1); return new Date(date.setDate(diff)); },
+        init: async function() {
+            this.renderNoticeInputs();
+            await this.loadFromServer();
+            // 30초마다 자동 갱신 (수정 중이 아닐 때만)
+            setInterval(() => { if(!document.activeElement.tagName.match(/INPUT|TEXTAREA/)) this.loadFromServer(); }, 30000);
+        },
 
-        async loadFromServer() {
-            if (this.isSyncing) return;
+        renderNoticeInputs: function() {
+            const list = document.getElementById('noticeList');
+            list.innerHTML = this.depts.map(d => `
+                <div>
+                    <label class="block text-xs font-bold text-green-700 mb-1">${d}</label>
+                    <textarea data-dept="${d}" class="notice-input" onchange="app.saveNotice(this)"></textarea>
+                </div>
+            `).join('');
+        },
+
+        loadFromServer: async function() {
             try {
-                this.isSyncing = true;
                 const res = await fetch(this.API_URL + '?t=' + Date.now());
                 const data = await res.json();
                 this.events = data.map(item => ({
-                    id: String(item.id), date: String(item.date).split('T')[0],
-                    title: item.title, dapt: item.dapt, subject: item.subject || '', content: item.content || ''
+                    id: String(item.id), 
+                    date: String(item.date).split('T')[0],
+                    title: item.title || '', 
+                    dapt: item.dapt || '', 
+                    subject: item.subject || '', 
+                    content: item.content || ''
                 }));
                 this.render();
-            } catch (e) { console.error('Load Error:', e); }
-            finally { this.isSyncing = false; }
+            } catch (e) {
+                document.getElementById('titleText').textContent = "연결 오류 (인터넷 확인)";
+            }
         },
 
-        render() {
+        render: function() {
             const vp = document.getElementById('viewPort');
             const title = document.getElementById('titleText');
             const np = document.getElementById('noticePort');
-            const eis = document.getElementById('eventInputSection');
-            const y = this.currentDate.getFullYear();
-            const m = this.currentDate.getMonth() + 1;
+            const y = this.currentDate.getFullYear(), m = this.currentDate.getMonth() + 1;
 
-            if (this.viewMode === 'meeting') {
-                title.textContent = '📝 회의메모'; np.classList.add('hidden'); eis.classList.add('hidden'); this.renderMeetingView();
+            if (this.viewMode === 'weekly') {
+                title.textContent = `${y}년 ${m}월 주간계획`;
+                np.classList.remove('hidden');
+                vp.innerHTML = this.renderWeekly();
+            } else if (this.viewMode === 'monthly') {
+                title.textContent = `${y}년 ${m}월`;
+                np.classList.add('hidden');
+                vp.innerHTML = this.renderMonthly();
+            } else if (this.viewMode === 'yearly') {
+                title.textContent = `${y}년 학사력`;
+                np.classList.add('hidden');
+                vp.innerHTML = this.renderYearly();
             } else {
-                eis.classList.remove('hidden');
-                if (this.viewMode === 'yearly') { title.textContent = y+'년 전체 학사력'; vp.innerHTML = this.renderYearly(); np.classList.add('hidden'); }
-                else if (this.viewMode === 'monthly') { title.textContent = y+'년 '+m+'월'; vp.innerHTML = this.renderMonthly(); np.classList.add('hidden'); }
-                else { title.textContent = y+'년 '+m+'월 주간계획'; vp.innerHTML = this.renderWeekly(); np.classList.remove('hidden'); }
+                title.textContent = `📝 회의메모`;
+                np.classList.add('hidden');
+                this.renderMeetingView();
             }
         },
 
-        renderYearly() {
-            const y = this.currentDate.getFullYear();
-            let h = '<div class="year-view">';
-            for(let m=0; m<12; m++) {
-                h += `<div class="year-month"><div class="year-month-title">${y}년 ${m+1}월</div><div class="mini-calendar">`;
-                this.days.forEach(w => h += `<div class="text-[9px] text-slate-400 font-bold text-center">${w}</div>`);
-                let first = new Date(y, m, 1).getDay();
-                let last = new Date(y, m+1, 0).getDate();
-                for(let i=0; i<first; i++) h += '<div></div>';
-                for(let d=1; d<=last; d++) {
-                    let dStr = y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-                    let hasE = this.events.some(e => e.date === dStr && !e.id.startsWith('notice_'));
-                    h += `<div class="mini-day ${hasE?'has-event':''}" onclick="app.showDetail('${dStr}')">${d}</div>`;
-                }
-                h += '</div></div>';
-            }
-            return h + '</div>';
-        },
-
-        renderMonthly() {
-            const y = this.currentDate.getFullYear(), m = this.currentDate.getMonth();
-            let h = '<div class="calendar-grid">';
-            this.days.forEach(w => h += `<div class="bg-slate-50 p-2 text-center text-[10px] font-bold text-slate-400">${w}</div>`);
-            let first = new Date(y, m, 1).getDay(), last = new Date(y, m+1, 0).getDate();
-            for(let i=0; i<first; i++) h += '<div class="day-cell bg-slate-50/30"></div>';
-            for(let d=1; d<=last; d++) {
-                let dStr = y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-                let hol = this.getHoliday(dStr);
-                h += `<div class="day-cell" onclick="app.showDetail('${dStr}')"><div class="text-[10px] font-black">${d}</div>`;
-                if(hol) h += `<div class="holiday-badge">${hol}</div>`;
-                this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_')).forEach(e => {
-                    h += `<div class="event-item dept-${e.dapt}"><span>${e.title}</span></div>`;
-                });
-                h += '</div>';
-            }
-            return h + '</div>';
-        },
-
-        renderWeekly() {
+        renderWeekly: function() {
             const mon = this.getMonday(this.currentDate);
-            const dStrMon = this.formatDate(mon);
-            document.querySelectorAll('.notice-input').forEach(input => {
-                const notice = this.events.find(e => e.id === `notice_${dStrMon}_${input.dataset.dept}`);
-                input.value = notice ? notice.title : '';
+            const monStr = this.formatDate(mon);
+            
+            // 공지사항 값 채우기
+            this.depts.forEach(d => {
+                const input = document.querySelector(`textarea[data-dept="${d}"]`);
+                const found = this.events.find(e => e.id === `notice_${monStr}_${d}`);
+                if (input && document.activeElement !== input) input.value = found ? found.title : '';
             });
-            let h = '<div class="flex flex-col gap-2">';
+
+            let html = '<div class="space-y-3">';
             for(let i=0; i<7; i++) {
-                let d = new Date(mon); d.setDate(mon.getDate()+i);
+                let d = new Date(mon); d.setDate(mon.getDate() + i);
                 let dStr = this.formatDate(d);
                 let hol = this.getHoliday(dStr);
-                let color = d.getDay()===0||hol?'text-sun':(d.getDay()===6?'text-sat':'text-green-800');
-                h += `<div class="week-item p-4 rounded-xl border flex items-center shadow-sm" onclick="app.showDetail('${dStr}')">
-                    <div class="w-20 font-black ${color} border-r mr-4">${d.getDate()}일(${this.days[d.getDay()]})${hol?`<div class="holiday-badge">${hol}</div>`:''}</div>
-                    <div class="flex-1">`;
-                this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_')).forEach(e => {
-                    h += `<div class="event-item mb-1 p-2 dept-${e.dapt}"><span>${e.title}</span><span class="del-x" onclick="event.stopPropagation();app.deleteEvent('${e.id}')">✕</span></div>`;
-                });
-                h += '</div></div>';
+                let color = (d.getDay()===0 || hol) ? 'text-sun' : (d.getDay()===6 ? 'text-sat' : 'text-slate-700');
+                
+                html += `
+                <div class="bg-white p-4 rounded-xl border shadow-sm flex gap-4 cursor-pointer" onclick="app.showDetail('${dStr}')">
+                    <div class="w-16 flex-shrink-0 text-center border-r pr-4">
+                        <div class="text-2xl font-black ${color}">${d.getDate()}</div>
+                        <div class="text-xs font-bold ${color}">${this.days[d.getDay()]}</div>
+                        ${hol ? `<div class="holiday-badge mt-1">${hol}</div>` : ''}
+                    </div>
+                    <div class="flex-1">
+                        ${this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_')).map(e => `
+                            <div class="event-item dept-${e.dapt}">${e.title}</div>
+                        `).join('')}
+                    </div>
+                </div>`;
             }
-            return h + '</div>';
+            return html + '</div>';
         },
 
-        renderMeetingView() {
+        renderMonthly: function() {
+            const y = this.currentDate.getFullYear(), m = this.currentDate.getMonth();
+            let html = '<div class="calendar-grid">';
+            this.days.forEach(d => html += `<div class="bg-slate-50 p-2 text-center text-xs font-bold text-slate-400">${d}</div>`);
+            
+            let first = new Date(y, m, 1).getDay(), last = new Date(y, m+1, 0).getDate();
+            for(let i=0; i<first; i++) html += '<div class="day-cell bg-slate-50/30"></div>';
+            for(let d=1; d<=last; d++) {
+                let dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                let hol = this.getHoliday(dStr);
+                html += `
+                <div class="day-cell" onclick="app.showDetail('${dStr}')">
+                    <span class="text-xs font-bold ${hol?'text-sun':''}">${d}</span>
+                    ${this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_')).map(e => `
+                        <div class="event-item dept-${e.dapt}" style="font-size:9px; padding:1px 3px;">${e.title}</div>
+                    `).join('')}
+                </div>`;
+            }
+            return html + '</div>';
+        },
+
+        renderYearly: function() {
+            const y = this.currentDate.getFullYear();
+            let html = '<div class="year-view">';
+            for(let m=0; m<12; m++) {
+                html += `<div class="year-month">
+                    <div class="font-black text-green-800 mb-2">${m+1}월</div>
+                    <div class="mini-calendar">`;
+                let first = new Date(y, m, 1).getDay(), last = new Date(y, m+1, 0).getDate();
+                for(let i=0; i<first; i++) html += '<div></div>';
+                for(let d=1; d<=last; d++) {
+                    let dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                    let hasE = this.events.some(e => e.date === dStr && !e.id.startsWith('notice_'));
+                    html += `<div class="mini-day ${hasE?'has-event':''}" onclick="app.showDetail('${dStr}')">${d}</div>`;
+                }
+                html += '</div></div>';
+            }
+            return html + '</div>';
+        },
+
+        renderMeetingView: function() {
             const vp = document.getElementById('viewPort');
             const dStr = this.formatDate(this.meetingDate);
             const data = this.events.find(e => e.id === `meeting_${dStr}`);
-            vp.innerHTML = `<div class="meeting-wrapper">
-                <div class="meeting-cal-panel"><div id="meetingCalendar"></div></div>
-                <div class="meeting-input-panel">
-                    <div class="meeting-panel-title">📝 회의메모 <span class="meeting-date-badge">${dStr}</span></div>
-                    <input type="text" id="meetingSubject" class="meeting-input" placeholder="주제" value="${data?.subject||''}" oninput="app.saveMeetingDebounce()">
-                    <textarea id="meetingContent" class="meeting-textarea" oninput="app.saveMeetingDebounce()">${data?.content||''}</textarea>
-                    <div id="meetingSaveIndicator" class="save-indicator">💡 입력 2초 후 자동 저장</div>
+            
+            vp.innerHTML = `
+                <div class="meeting-wrapper">
+                    <div class="meeting-cal-panel">
+                        <div class="bg-green-700 text-white p-3 flex justify-between items-center">
+                            <button onclick="app.moveMeetingCal(-1)">◀</button>
+                            <span class="font-bold">${this.meetingDate.getFullYear()}년 ${this.meetingDate.getMonth()+1}월</span>
+                            <button onclick="app.moveMeetingCal(1)">▶</button>
+                        </div>
+                        <div id="meetingCalendarGrid" class="grid grid-cols-7 p-2 text-center"></div>
+                    </div>
+                    <div class="flex-1 bg-white p-6 rounded-2xl border">
+                        <div class="mb-4">
+                            <label class="block text-xs font-bold text-slate-400 mb-1">날짜: ${dStr}</label>
+                            <input type="text" id="mSub" class="w-full border-b-2 py-2 font-bold outline-none focus:border-green-600" placeholder="회의 주제" value="${data?.subject||''}">
+                        </div>
+                        <textarea id="mCon" class="w-full h-64 p-4 bg-slate-50 rounded-xl outline-none resize-none" placeholder="내용을 입력하세요...">${data?.content||''}</textarea>
+                        <button onclick="app.saveMeeting()" class="w-full mt-4 bg-green-600 text-white py-3 rounded-xl font-bold">회의록 저장</button>
+                    </div>
                 </div>
-            </div>`;
-            this.renderMeetingCalendar();
+            `;
+            this.drawMeetingCalendar();
         },
 
-        renderMeetingCalendar() {
-            const cal = document.getElementById('meetingCalendar');
-            if(!cal) return;
-            const y = this.meetingCalendarDate.getFullYear(), m = this.meetingCalendarDate.getMonth();
-            let h = `<div class="meeting-calendar-header"><button onclick="app.moveMeetingCal(-1)">◀</button><b>${y}년 ${m+1}월</b><button onclick="app.moveMeetingCal(1)">▶</button></div><div class="meeting-calendar-grid p-2">`;
-            this.days.forEach(d => h += `<div class="text-center text-[11px] font-bold">${d}</div>`);
+        drawMeetingCalendar: function() {
+            const grid = document.getElementById('meetingCalendarGrid');
+            if(!grid) return;
+            grid.innerHTML = this.days.map(d => `<div class="text-[10px] font-bold text-slate-300 py-1">${d}</div>`).join('');
+            
+            const y = this.meetingDate.getFullYear(), m = this.meetingDate.getMonth();
             let first = new Date(y, m, 1).getDay(), last = new Date(y, m+1, 0).getDate();
-            for(let i=0; i<first; i++) h += '<div></div>';
+            for(let i=0; i<first; i++) grid.innerHTML += '<div></div>';
             for(let d=1; d<=last; d++) {
-                let dStr = y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-                let isS = dStr === this.formatDate(this.meetingDate);
+                let dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                let isSel = dStr === this.formatDate(this.meetingDate);
                 let hasM = this.events.some(e => e.id === `meeting_${dStr}`);
-                h += `<div class="meeting-calendar-day ${isS?'selected':''} ${hasM?'has-meeting':''}" onclick="app.selectMeetingDate('${dStr}')">${d}</div>`;
+                grid.innerHTML += `<div class="meeting-calendar-day ${isSel?'selected':''} ${hasM?'has-meeting':''}" onclick="app.setMeetingDate('${dStr}')">${d}</div>`;
             }
-            cal.innerHTML = h + '</div>';
         },
 
-        moveMeetingCal(dir) { this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth()+dir); this.renderMeetingCalendar(); },
-        selectMeetingDate(dStr) { this.meetingDate = new Date(dStr); this.renderMeetingView(); },
-        setView(mode) { this.viewMode = mode; this.render(); },
-        move(dir) {
+        /* 이벤트 처리 함수들 */
+        setView: function(m) { this.viewMode = m; this.render(); },
+        move: function(dir) {
             if(this.viewMode==='yearly') this.currentDate.setFullYear(this.currentDate.getFullYear()+dir);
             else if(this.viewMode==='monthly') this.currentDate.setMonth(this.currentDate.getMonth()+dir);
             else this.currentDate.setDate(this.currentDate.getDate()+(dir*7));
             this.render();
         },
-        showDetail(dStr) {
+        moveMeetingCal: function(dir) { this.meetingDate.setMonth(this.meetingDate.getMonth()+dir); this.renderMeetingView(); },
+        setMeetingDate: function(dStr) { this.meetingDate = new Date(dStr); this.renderMeetingView(); },
+        
+        getMonday: function(d) { let date = new Date(d); let day = date.getDay(); let diff = date.getDate() - day + (day === 0 ? -6 : 1); return new Date(date.setDate(diff)); },
+        formatDate: function(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); },
+        getHoliday: function(dStr) { const found = this.holidays.find(h => h.startsWith(dStr)); return found ? found.split(':')[1] : null; },
+
+        showDetail: function(dStr) {
             const modal = document.getElementById('detailModal');
             document.getElementById('modalDate').textContent = dStr;
-            const content = document.getElementById('modalContent');
-            const dayEs = this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_'));
-            content.innerHTML = dayEs.length ? dayEs.map(e => `<div class="p-2 border-b"><b>[${e.dapt}]</b> ${e.title}</div>`).join('') : '일정이 없습니다.';
+            const dayEs = this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
+            document.getElementById('modalContent').innerHTML = dayEs.length ? 
+                dayEs.map(e => `<div class="p-3 bg-slate-50 rounded-lg flex justify-between">
+                    <span><b>[${e.dapt}]</b> ${e.title}</span>
+                    <span class="text-red-500 font-bold cursor-pointer" onclick="app.deleteEvent('${e.id}')">✕</span>
+                </div>`).join('') : '<div class="text-center text-slate-400 py-10">일정이 없습니다.</div>';
             modal.style.display = 'flex';
         },
-        closeModal() { document.getElementById('detailModal').style.display = 'none'; },
+        closeModal: function() { document.getElementById('detailModal').style.display = 'none'; },
 
-        async saveEvent() {
-            const d = document.getElementById('inDate').value, t = document.getElementById('inTitle').value, dp = document.getElementById('inDept').value;
-            if(!d || !t) return alert('입력 확인');
-            const newE = { id: Date.now().toString(), date: d, title: t, dapt: dp, action: 'add' };
-            await fetch(this.API_URL, { method: 'POST', body: JSON.stringify(newE) });
-            this.loadFromServer();
+        /* 서버 저장 함수들 */
+        saveEvent: async function() {
+            const date = document.getElementById('inDate').value, title = document.getElementById('inTitle').value, dapt = document.getElementById('inDept').value;
+            if(!date || !title) return alert('내용을 입력하세요');
+            await this.sendPost({ action: 'add', id: Date.now().toString(), date, title, dapt });
         },
-        async deleteEvent(id) {
-            if(!confirm('삭제?')) return;
-            await fetch(this.API_URL, { method: 'POST', body: JSON.stringify({ action: 'delete', id: id }) });
-            this.loadFromServer();
+        deleteEvent: async function(id) {
+            if(!confirm('정말 삭제하시겠습니까?')) return;
+            await this.sendPost({ action: 'delete', id });
+            this.closeModal();
         },
-        saveMeetingDebounce() {
-            if(this.saveTimers['meeting']) clearTimeout(this.saveTimers['meeting']);
-            this.saveTimers['meeting'] = setTimeout(() => this.saveMeeting(), 2000);
+        saveNotice: async function(el) {
+            const monStr = this.formatDate(this.getMonday(this.currentDate));
+            await this.sendPost({ action: 'add', id: `notice_${monStr}_${el.dataset.dept}`, date: monStr, title: el.value, dapt: el.dataset.dept });
         },
-        async saveMeeting() {
+        saveMeeting: async function() {
             const dStr = this.formatDate(this.meetingDate);
-            const sub = document.getElementById('meetingSubject').value, con = document.getElementById('meetingContent').value;
-            await fetch(this.API_URL, { method: 'POST', body: JSON.stringify({ action: 'add', id: 'meeting_'+dStr, date: dStr, title: sub, dapt: 'meeting', subject: sub, content: con }) });
-            this.loadFromServer();
+            await this.sendPost({ action: 'add', id: `meeting_${dStr}`, date: dStr, title: document.getElementById('mSub').value, dapt: 'meeting', subject: document.getElementById('mSub').value, content: document.getElementById('mCon').value });
+        },
+        sendPost: async function(data) {
+            document.getElementById('titleText').textContent = "저장 중...";
+            try {
+                await fetch(this.API_URL, { method: 'POST', body: JSON.stringify(data) });
+                await this.loadFromServer();
+            } catch (e) { alert("저장 실패"); this.render(); }
         }
     };
 
-    // 초기 실행
-    window.addEventListener('DOMContentLoaded', () => {
-        app.loadFromServer();
-        setInterval(() => { if(!app.isEditing) app.loadFromServer(); }, 30000);
-    });
+    window.addEventListener('DOMContentLoaded', () => app.init());
     </script>
 </body>
 </html>
