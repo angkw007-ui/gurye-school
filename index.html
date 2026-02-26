@@ -758,61 +758,64 @@
             },
 
             // ★ AI 회의록 생성 - 완전히 재작성
-            async generateAIMeetingMinutes() {
-                const contentInput = document.getElementById('meetingContent');
-                const subjectInput = document.getElementById('meetingSubject');
-                const aiBtn = document.getElementById('aiBtnEl');
+      async generateAIMeetingMinutes() {
+    const subjectEl = document.getElementById('meetingSubject');
+    const contentEl = document.getElementById('meetingContent');
+    const aiBtn = document.getElementById('aiBtnEl');
 
-                if (!contentInput) return;
+    if (!subjectEl || !contentEl || !aiBtn) return;
+    if (!contentEl.value.trim()) {
+        alert('AI 회의록 작성을 위해 내용을 먼저 입력해주세요.');
+        return;
+    }
 
-                const rawContent = contentInput.value.trim();
-                const subject = subjectInput?.value.trim() || '협의회';
-                const dateStr = this.formatDate(this.meetingDate);
-                const dayOfWeek = this.days[this.meetingDate.getDay()];
+    if (!confirm('AI가 내용을 분석하여 회의록 형식으로 정리합니다. 진행하시겠습니까?')) return;
 
-                // 로딩 상태
-                contentInput.classList.add('ai-loading');
-                contentInput.disabled = true;
-                if (aiBtn) { aiBtn.disabled = true; aiBtn.textContent = '⏳ 생성 중...'; }
-                this.showSaveIndicator('saving');
+    try {
+        // 로딩 상태 표시
+        aiBtn.disabled = true;
+        aiBtn.textContent = '⌛ 분석 중...';
+        contentEl.classList.add('ai-loading');
 
-                let result = null;
+        const dateStr = this.formatDate(this.meetingDate);
+        const dayOfWeek = this.days[this.meetingDate.getDay()];
 
-                try {
-                    const response = await fetch(this.API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify({
-                            action: 'generateAI',
-                            subject: subject,
-                            content: rawContent,
-                            date: dateStr,
-                            dayOfWeek: dayOfWeek
-                        })
-                    });
+        // 백엔드(Apps Script)로 AI 생성 요청
+        const response = await fetch(this.API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({
+                action: 'generateAI',
+                subject: subjectEl.value.trim(),
+                content: contentEl.value.trim(),
+                date: dateStr,
+                dayOfWeek: dayOfWeek
+            })
+        });
 
-                    result = await response.json();
-                    console.log('AI 응답:', result);
+        const result = await response.json();
 
-                    if (result.success && result.minutes) {
-                        // ★ 가로줄(━━━) 제거 후 적용
-                        contentInput.value = this.cleanAIMinutes(result.minutes);
-                    } else {
-                        console.warn('AI 실패, 로컬 포맷터 사용:', result.error);
-                        contentInput.value = this.formatMeetingMinutesLocal(subject, rawContent, dateStr, dayOfWeek);
-                    }
-                } catch (error) {
-                    console.error('AI 생성 오류:', error);
-                    // 네트워크 오류 시 로컬 포맷터
-                    contentInput.value = this.formatMeetingMinutesLocal(subject, rawContent, dateStr, dayOfWeek);
-                } finally {
-                    contentInput.classList.remove('ai-loading');
-                    contentInput.disabled = false;
-                    if (aiBtn) { aiBtn.disabled = false; aiBtn.textContent = '🤖 AI 회의록'; }
-                    this.updateMeetingInputStyle(contentInput);
-                    this.handleMeetingInput(contentInput);
-                }
-            },
+        if (result.success && result.minutes) {
+            // AI가 생성한 텍스트로 교체
+            contentEl.value = result.minutes;
+            this.updateMeetingInputStyle(contentEl);
+            
+            // 변경된 내용 서버에 자동 저장
+            this.handleMeetingInput(contentEl);
+            alert('AI 회의록 작성이 완료되었습니다!');
+        } else {
+            throw new Error(result.error || 'AI 분석에 실패했습니다.');
+        }
+    } catch (error) {
+        console.error('AI 생성 오류:', error);
+        alert('AI 회의록 생성 중 오류가 발생했습니다: ' + error.message);
+    } finally {
+        // 상태 복구
+        aiBtn.disabled = false;
+        aiBtn.textContent = '🤖 AI 회의록';
+        contentEl.classList.remove('ai-loading');
+    }
+},
 
             // ★ AI 결과에서 가로줄 및 불필요한 기호 제거
             cleanAIMinutes(text) {
