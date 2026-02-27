@@ -139,8 +139,15 @@
         .ai-spinner { font-size: 13px; color: #7c3aed; font-weight: 700; background: white; padding: 8px 16px; border-radius: 20px; box-shadow: 0 2px 8px rgba(124,58,237,0.2); animation: pulse-ai 1.5s infinite; }
         @keyframes pulse-ai { 0%,100%{opacity:1} 50%{opacity:0.6} }
 
-        .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 24px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; animation: pulse 2s infinite; }
+        .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.25); cursor: pointer; z-index: 9000; animation: pulse 2s infinite; font-size: 13px; border: none; }
+        @media (max-width: 767px) { .install-btn { bottom: 16px; right: 12px; padding: 10px 16px; font-size: 12px; } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        /* ===== 모바일 스크롤 수정 ===== */
+        html, body { height: auto; }
+        body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .meeting-wrapper { -webkit-overflow-scrolling: touch; }
+        .meeting-textarea { touch-action: pan-y; -webkit-overflow-scrolling: touch; }
 
         /* 에러 토스트 */
         .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity 0.3s; max-width: 90vw; text-align: center; }
@@ -201,7 +208,22 @@
     </div>
 
     <div id="toast" class="toast"></div>
-    <button id="installBtn" class="install-btn" style="display: none;">📱 앱으로 설치하기</button>
+    <button id="installBtn" class="install-btn" style="display: none;" onclick="app.handleInstall()">📱 앱으로 설치하기</button>
+
+    <!-- iOS 설치 안내 모달 -->
+    <div id="iosInstallModal" class="modal" onclick="document.getElementById('iosInstallModal').style.display='none'">
+        <div class="modal-content" onclick="event.stopPropagation()" style="text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">📱</div>
+            <h3 style="font-weight:900; color:#15803d; margin-bottom:12px; font-size:16px;">홈 화면에 추가하기</h3>
+            <div style="background:#f0fdf4; border-radius:12px; padding:16px; margin-bottom:16px; text-align:left; font-size:14px; line-height:1.8;">
+                <div style="margin-bottom:8px;">1️⃣ 하단 <strong>공유 버튼</strong> 탭 <span style="font-size:18px;">⬆️</span></div>
+                <div style="margin-bottom:8px;">2️⃣ <strong>"홈 화면에 추가"</strong> 선택</div>
+                <div>3️⃣ 오른쪽 위 <strong>"추가"</strong> 탭</div>
+            </div>
+            <button onclick="document.getElementById('iosInstallModal').style.display='none'"
+                style="width:100%; background:#15803d; color:white; font-weight:bold; padding:12px; border-radius:12px; border:none; font-size:15px; cursor:pointer;">확인</button>
+        </div>
+    </div>
 
     <div id="detailModal" class="modal" onclick="app.closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -214,7 +236,7 @@
     <script>
         const app = {
             // ✅ GAS 배포 주소 - 재배포 후 새 URL로 교체하세요
-            API_URL: 'https://script.google.com/macros/s/AKfycbwab8OyMFCibnSXjmqAunPLp48IUyob7P_xLOEC94rtPKGHhE8vONMYOZCy9KfYVgTp/exec',
+            API_URL: 'https://script.google.com/macros/s/AKfycbxf0a56E_z4mlSr3b8xpii24MDEXNEHHUaV261J7wFgse6y_3qg4Uj2bC6y58GI4776/exec',
             events: [],
             localChanges: {},
             localDeletes: new Set(),
@@ -1086,21 +1108,50 @@
                     .catch(err => console.log('❌ Service Worker 등록 실패:', err));
             });
         }
-        let deferredPrompt;
+
+        let deferredPrompt = null;
         const installBtn = document.getElementById('installBtn');
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-        installBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            installBtn.style.display = 'none';
-        });
-        window.addEventListener('appinstalled', () => { installBtn.style.display = 'none'; });
+
+        // ✅ 이미 설치(standalone)로 실행 중이면 버튼 숨김
+        const isStandalone = window.navigator.standalone === true ||
+                             window.matchMedia('(display-mode: standalone)').matches;
+
+        if (!isStandalone) {
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            const isAndroid = /android/i.test(navigator.userAgent);
+
+            if (isIOS) {
+                // iOS Safari: beforeinstallprompt 없음 → 항상 버튼 표시
+                installBtn.style.display = 'block';
+            }
+
+            // Android / Chrome: beforeinstallprompt 이벤트 대기
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.style.display = 'block';
+            });
+
+            // PWA 설치 완료 시 숨김
+            window.addEventListener('appinstalled', () => {
+                installBtn.style.display = 'none';
+                deferredPrompt = null;
+            });
+        }
+
+        // ✅ app 객체에 handleInstall 추가
+        app.handleInstall = async function() {
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            if (isIOS) {
+                // iOS는 안내 모달 표시
+                document.getElementById('iosInstallModal').style.display = 'flex';
+            } else if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            }
+        };
     </script>
 </body>
 </html>
