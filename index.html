@@ -18,13 +18,47 @@
         body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: #f8fafc; }
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
-        .day-cell { min-height: 80px; background-color: white; padding: 4px; position: relative; cursor: pointer; transition: background-color 0.2s; }
+        .day-cell { min-height: 80px; background-color: white; padding: 4px; position: relative; cursor: pointer; transition: background-color 0.2s; display: flex; flex-direction: column; }
         @media (min-width: 768px) { .day-cell { min-height: 140px; padding: 12px; } }
         .day-cell:hover { background-color: #f1f5f9; }
 
-        /* ✅ 1. 월간 일정 한 줄 출력 및 말줄임 처리 (PC/모바일 공통 적용) */
-        .event-item { font-size: 13px; padding: 4px 6px; margin-top: 3px; border-radius: 3px; background-color: #f1f5f9; border-left: 2px solid #16a34a; font-weight: 700; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        @media (min-width: 768px) { .event-item { font-size: 14px; padding: 6px 8px; margin-top: 5px; white-space: nowrap; } }
+        /* ✅ 1. 월간 일정 고정 높이 및 줄간격 일정 유지 */
+        .day-cell-header { font-size: 10px; font-weight: black; margin-bottom: 4px; flex-shrink: 0; }
+        @media (min-width: 768px) { .day-cell-header { font-size: 14px; margin-bottom: 8px; } }
+        
+        .day-cell-holiday { font-size: 11px; color: #dc2626; font-weight: 700; margin-bottom: 2px; flex-shrink: 0; }
+        @media (min-width: 768px) { .day-cell-holiday { font-size: 13px; } }
+        
+        /* 고정 높이의 이벤트 컨테이너 */
+        .day-cell-events { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 0px; min-height: 0; max-height: 100%; }
+        
+        /* 일정 항목: 고정 높이 한 줄, 넘치는 텍스트는 말줄임 */
+        .event-item { 
+            font-size: 13px; 
+            padding: 4px 6px; 
+            border-radius: 3px; 
+            background-color: #f1f5f9; 
+            border-left: 2px solid #16a34a; 
+            font-weight: 700; 
+            display: block; 
+            overflow: hidden; 
+            white-space: nowrap; 
+            text-overflow: ellipsis; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            flex-shrink: 0;
+            height: 22px;
+            line-height: 14px;
+        }
+        @media (min-width: 768px) { 
+            .event-item { 
+                font-size: 14px; 
+                padding: 6px 8px; 
+                height: 26px;
+                line-height: 14px;
+            } 
+        }
+        .event-item:hover { background-color: #e0f2fe; }
 
         /* ✅ 2. 오늘 날짜 빨간 테두리 스타일 */
         .today-border { outline: 3px solid #ef4444 !important; outline-offset: -3px; z-index: 10; position: relative; border-radius: 8px; }
@@ -139,19 +173,19 @@
         .add-meeting-btn:hover { background: #f0fdf4; }
 
         /* AI 로딩 오버레이 */
-        .ai-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(124,58,237,0.08); border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 10; }
-        .ai-spinner { font-size: 13px; color: #7c3aed; font-weight: 700; background: white; padding: 8px 16px; border-radius: 20px; box-shadow: 0 2px 8px rgba(124,58,237,0.2); animation: pulse-ai 1.5s infinite; }
-        @keyframes pulse-ai { 0%,100%{opacity:1} 50%{opacity:0.6} }
+        .ai-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(124,58,237,0.08);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .ai-spinner { font-size: 13px; font-weight: 700; color: #7c3aed; text-align: center; }
 
-        .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.25); cursor: pointer; z-index: 9000; animation: pulse 2s infinite; font-size: 13px; border: none; }
-        @media (max-width: 767px) { .install-btn { bottom: 16px; right: 12px; padding: 10px 16px; font-size: 12px; } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(22,163,74,0.3); cursor: pointer; border: none; transition: all 0.3s; z-index: 999; }
+        .install-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(22,163,74,0.4); }
 
-        /* ===== 모바일 스크롤 수정 ===== */
-        html, body { height: auto; }
-        body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        .meeting-wrapper { -webkit-overflow-scrolling: touch; }
-        .meeting-textarea { touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+        @media (max-width: 767px) {
+            html, body { height: auto; }
+            body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .meeting-wrapper { -webkit-overflow-scrolling: touch; }
+            .meeting-textarea { touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+        }
 
         /* 에러 토스트 */
         .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity 0.3s; max-width: 90vw; text-align: center; }
@@ -264,9 +298,13 @@
                 '2026-10-05:대체공휴일', '2026-10-09:한글날', '2026-12-25:크리스마스'
             ],
 
-            // ✅ 3. 날짜 하루 앞당겨지는 오류 해결 (모든 문자열 날짜 변환 시 T00:00:00 강제 결합)
+            // ✅ 3. 날짜 문자열을 그대로 사용하여 타임존 문제 완벽히 해결
             parseLocalDate(dateStr) {
-                return new Date(dateStr + 'T00:00:00');
+                // dateStr 형식: "YYYY-MM-DD" (input[type="date"]의 값)
+                // 타임존 영향을 받지 않도록 직접 파싱
+                const parts = dateStr.split('-');
+                if (parts.length !== 3) return new Date();
+                return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
             },
 
             // ✅ 2. 오늘 날짜 확인 로직
@@ -497,7 +535,6 @@
                     </div>
                     <div class="meeting-calendar-body">
                         <div class="meeting-calendar-grid">`;
-
                 this.days.forEach(day => {
                     const colorClass = day === '일' ? 'text-red-500' : (day === '토' ? 'text-blue-500' : '');
                     html += `<div class="meeting-calendar-day-header ${colorClass}">${day}</div>`;
@@ -674,6 +711,9 @@
                 const title = document.getElementById('inTitle').value;
                 const dapt = document.getElementById('inDept').value;
                 if (!dateInput || !title) { alert('날짜와 내용을 입력하세요.'); return; }
+                
+                // ✅ 오류 수정: 날짜 입력값을 그대로 사용하여 타임존 문제 완벽히 해결
+                // dateInput은 "YYYY-MM-DD" 형식의 문자열
                 const newEvent = { id: Date.now().toString(), date: dateInput, title: title, dapt: dapt };
                 this.events.push(newEvent);
                 this.currentDate = this.parseLocalDate(dateInput);
@@ -693,11 +733,14 @@
 
             showDetail(dateStr) {
                 const modal = document.getElementById('detailModal');
-                const holiday = this.getHoliday(dateStr);
-                const d = this.parseLocalDate(dateStr);
-                document.getElementById('modalDate').textContent = `${dateStr}(${this.days[d.getDay()]})` + (holiday ? ` (${holiday})` : '');
+                const modalDate = document.getElementById('modalDate');
                 const modalContent = document.getElementById('modalContent');
+                const dayOfWeek = this.days[this.parseLocalDate(dateStr).getDay()];
+                const holiday = this.getHoliday(dateStr);
+                
+                modalDate.textContent = `${dateStr} (${dayOfWeek})${holiday ? ' - ' + holiday : ''}`;
                 modalContent.innerHTML = '';
+                
                 const dayEvents = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
                 const meetings = this.getMeetingsForDate(dateStr);
                 meetings.forEach((meetingData, i) => {
@@ -792,12 +835,12 @@
                     // ✅ 월간 뷰 오늘 날짜 빨간 테두리 적용
                     const todayClass = this.isToday(dateStr) ? 'today-border' : '';
                     html += `<div class="day-cell ${holidayClass} ${todayClass}" onclick="app.showDetail('${dateStr}')">
-                        <div class="text-[10px] md:text-sm font-black ${colorClass}">${d}</div>`;
-                    if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
-                    html += '<div class="mt-1">';
+                        <div class="day-cell-header ${colorClass}">${d}</div>`;
+                    if (holiday) html += `<div class="day-cell-holiday">${holiday}</div>`;
+                    html += '<div class="day-cell-events">';
                     this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
                         const displayTitle = window.innerWidth < 768 ? e.title.substring(0, 3) : e.title;
-                        html += `<div class="event-item dept-${e.dapt}" onclick="event.stopPropagation(); app.showDetail('${dateStr}')"><span>${displayTitle}</span></div>`;
+                        html += `<div class="event-item dept-${e.dapt}" onclick="event.stopPropagation(); app.showDetail('${dateStr}')" title="${e.title}"><span>${displayTitle}</span></div>`;
                     });
                     html += '</div></div>';
                 }
