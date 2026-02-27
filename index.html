@@ -14,6 +14,8 @@
     <meta name="theme-color" content="#166534">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: #f8fafc; }
 
@@ -211,6 +213,54 @@
         .toast.show { opacity: 1; }
         .toast.error { background: #dc2626; }
         .toast.success { background: #16a34a; }
+
+        /* ===== 녹음 기능 ===== */
+        .record-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white; padding: 4px 12px; border-radius: 6px;
+            font-size: 11px; font-weight: bold; cursor: pointer;
+            transition: all 0.2s; box-shadow: 0 2px 5px rgba(239,68,68,0.3);
+            border: none; margin-left: 6px;
+        }
+        .record-btn:hover { transform: scale(1.05); }
+        .record-btn.recording {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+            animation: pulse-red 1s infinite;
+        }
+        .record-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 2px 5px rgba(239,68,68,0.3); }
+            50% { box-shadow: 0 2px 16px rgba(239,68,68,0.8); }
+        }
+        .record-status {
+            font-size: 11px; color: #ef4444; font-weight: 700;
+            margin-top: 4px; min-height: 16px; text-align: right;
+        }
+        .transcript-preview {
+            font-size: 12px; color: #64748b; font-style: italic;
+            background: #fef2f2; border: 1px dashed #fca5a5;
+            border-radius: 6px; padding: 6px 10px; margin-top: 6px;
+            min-height: 32px; display: none;
+        }
+        .transcript-preview.visible { display: block; }
+
+        /* PDF 다운로드 버튼 */
+        .pdf-btn {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white; padding: 4px 12px; border-radius: 6px;
+            font-size: 11px; font-weight: bold; cursor: pointer;
+            transition: all 0.2s; box-shadow: 0 2px 5px rgba(14,165,233,0.3);
+            border: none; margin-left: 6px;
+        }
+        .pdf-btn:hover { transform: scale(1.05); }
+        .pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* PDF 출력용 숨겨진 영역 */
+        @media print {
+            body * { visibility: hidden; }
+            #pdfPrintArea, #pdfPrintArea * { visibility: visible; }
+            #pdfPrintArea { position: fixed; left: 0; top: 0; width: 100%; }
+        }
     </style>
 </head>
 <body class="p-3">
@@ -662,8 +712,14 @@
                             onblur="app.handleMeetingBlur()">
                         <label class="meeting-label">
                             <span>📝 모임 내용 정리</span>
-                            <button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button>
+                            <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end">
+                                <button class="record-btn" id="recBtn_${mid}" onclick="app.toggleRecording('${mid}')">🎙 녹음 시작</button>
+                                <button class="pdf-btn" onclick="app.downloadPDF('${mid}')">📄 PDF 저장</button>
+                                <button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button>
+                            </span>
                         </label>
+                        <div class="record-status" id="recStatus_${mid}"></div>
+                        <div class="transcript-preview" id="recPreview_${mid}"></div>
                         <div style="position:relative">
                             <textarea
                                 class="meeting-textarea ${hasContent ? 'has-data' : ''}"
@@ -690,6 +746,12 @@
                 card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${newId}', '${dateStr}')`);
                 card.querySelector('.ai-generate-btn').setAttribute('onclick', `app.generateAIMeetingMinutes('${newId}')`);
                 card.querySelector('.ai-generate-btn').dataset.mid = newId;
+                const recBtn = card.querySelector('.record-btn');
+                if (recBtn) { recBtn.id = `recBtn_${newId}`; recBtn.setAttribute('onclick', `app.toggleRecording('${newId}')`); }
+                const recStatus = card.querySelector('.record-status');
+                if (recStatus) recStatus.id = `recStatus_${newId}`;
+                const recPreview = card.querySelector('.transcript-preview');
+                if (recPreview) recPreview.id = `recPreview_${newId}`;
                 container.appendChild(card);
             },
 
@@ -1002,6 +1064,213 @@
                     cardNum++;
                 }
                 this.renderMeetingCalendar();
+            },
+
+            /* ===== PDF 다운로드 기능 ===== */
+            async downloadPDF(mid) {
+                const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+                if (!card) return;
+
+                const subjectEl = card.querySelector('[data-field="subject"]');
+                const contentEl = card.querySelector('[data-field="content"]');
+                const subject = subjectEl ? subjectEl.value.trim() : '회의록';
+                const content = contentEl ? contentEl.value.trim() : '';
+
+                if (!content) {
+                    this.showToast('📝 내용을 먼저 입력해주세요.', 'error');
+                    return;
+                }
+
+                const btn = card.querySelector('.pdf-btn');
+                if (btn) { btn.disabled = true; btn.textContent = '⏳ 생성 중...'; }
+
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+                    const pageW = 210, pageH = 297;
+                    const marginL = 20, marginR = 20, marginT = 25, marginB = 25;
+                    const contentW = pageW - marginL - marginR;
+                    let y = marginT;
+
+                    // 폰트는 기본 내장 폰트 사용 (한글 지원을 위해 NanumGothic CDN 시도)
+                    // --- 헤더 배경 ---
+                    doc.setFillColor(22, 163, 74); // green-600
+                    doc.rect(0, 0, pageW, 18, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(11);
+                    doc.text('구례중 회의록', marginL, 12);
+
+                    const dateStr = this.formatDate(this.meetingDate);
+                    doc.setFontSize(9);
+                    doc.text(dateStr, pageW - marginR, 12, { align: 'right' });
+
+                    y = 30;
+
+                    // --- 제목 ---
+                    doc.setTextColor(30, 41, 59);
+                    doc.setFontSize(16);
+                    const titleLines = doc.splitTextToSize(subject || '(제목 없음)', contentW);
+                    doc.text(titleLines, marginL, y);
+                    y += titleLines.length * 8 + 4;
+
+                    // 구분선
+                    doc.setDrawColor(22, 163, 74);
+                    doc.setLineWidth(0.8);
+                    doc.line(marginL, y, pageW - marginR, y);
+                    y += 8;
+
+                    // --- 회의 정보 박스 ---
+                    doc.setFillColor(240, 253, 244);
+                    doc.setDrawColor(187, 247, 208);
+                    doc.roundedRect(marginL, y, contentW, 18, 3, 3, 'FD');
+                    doc.setTextColor(21, 128, 61);
+                    doc.setFontSize(9);
+                    const dayOfWeek = this.days[this.meetingDate.getDay()];
+                    doc.text(`📅 회의 일자: ${dateStr} (${dayOfWeek})`, marginL + 4, y + 7);
+                    doc.text(`📋 회의 주제: ${subject || '(제목 없음)'}`, marginL + 4, y + 13);
+                    y += 26;
+
+                    // --- 회의 내용 ---
+                    doc.setTextColor(30, 41, 59);
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('회의 내용', marginL, y);
+                    doc.setFont(undefined, 'normal');
+                    y += 6;
+                    doc.setDrawColor(226, 232, 240);
+                    doc.setLineWidth(0.3);
+                    doc.line(marginL, y, pageW - marginR, y);
+                    y += 6;
+
+                    doc.setFontSize(10);
+                    doc.setTextColor(51, 65, 85);
+                    const lines = doc.splitTextToSize(content, contentW);
+
+                    for (const line of lines) {
+                        if (y + 6 > pageH - marginB) {
+                            // 푸터
+                            doc.setFontSize(8);
+                            doc.setTextColor(148, 163, 184);
+                            doc.text('구례중학교 | 회의록', pageW / 2, pageH - 10, { align: 'center' });
+                            doc.addPage();
+                            // 새 페이지 헤더
+                            doc.setFillColor(22, 163, 74);
+                            doc.rect(0, 0, pageW, 18, 'F');
+                            doc.setTextColor(255, 255, 255);
+                            doc.setFontSize(11);
+                            doc.text('구례중 회의록 (계속)', marginL, 12);
+                            doc.setFontSize(9);
+                            doc.text(dateStr, pageW - marginR, 12, { align: 'right' });
+                            y = 28;
+                            doc.setFontSize(10);
+                            doc.setTextColor(51, 65, 85);
+                        }
+                        doc.text(line, marginL, y);
+                        y += 6;
+                    }
+
+                    // 마지막 페이지 푸터
+                    y += 8;
+                    doc.setDrawColor(226, 232, 240);
+                    doc.setLineWidth(0.3);
+                    doc.line(marginL, y > pageH - 30 ? pageH - 20 : y, pageW - marginR, y > pageH - 30 ? pageH - 20 : y);
+                    doc.setFontSize(8);
+                    doc.setTextColor(148, 163, 184);
+                    doc.text('구례중학교 | 회의록', pageW / 2, pageH - 10, { align: 'center' });
+
+                    // 파일 저장
+                    const fileName = `회의록_${dateStr}_${(subject || '무제').replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
+                    doc.save(fileName);
+                    this.showToast('✅ PDF가 저장되었습니다!', 'success');
+                } catch (err) {
+                    console.error('PDF 생성 오류:', err);
+                    this.showToast('❌ PDF 생성에 실패했습니다.', 'error');
+                } finally {
+                    if (btn) { btn.disabled = false; btn.textContent = '📄 PDF 저장'; }
+                }
+            },
+
+            /* ===== 녹음 기능 ===== */
+            _recognition: null,
+            _recordingMid: null,
+            _isRecording: false,
+
+            toggleRecording(mid) {
+                if (this._isRecording && this._recordingMid === mid) {
+                    this.stopRecording();
+                } else {
+                    if (this._isRecording) this.stopRecording();
+                    this.startRecording(mid);
+                }
+            },
+
+            startRecording(mid) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    this.showToast('⚠️ 이 브라우저는 음성인식을 지원하지 않습니다. Chrome을 사용해주세요.', 'error');
+                    return;
+                }
+
+                const rec = new SpeechRecognition();
+                rec.lang = 'ko-KR';
+                rec.continuous = true;
+                rec.interimResults = true;
+
+                const btn = document.getElementById(`recBtn_${mid}`);
+                const statusEl = document.getElementById(`recStatus_${mid}`);
+                const previewEl = document.getElementById(`recPreview_${mid}`);
+                const textarea = document.querySelector(`.meeting-textarea[data-mid="${mid}"]`);
+
+                let finalTranscript = '';
+
+                rec.onstart = () => {
+                    this._isRecording = true;
+                    this._recordingMid = mid;
+                    if (btn) { btn.textContent = '⏹ 녹음 중지'; btn.classList.add('recording'); }
+                    if (statusEl) statusEl.textContent = '🔴 녹음 중... 말씀하세요';
+                    if (previewEl) previewEl.classList.add('visible');
+                };
+
+                rec.onresult = (e) => {
+                    let interim = '';
+                    for (let i = e.resultIndex; i < e.results.length; i++) {
+                        if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
+                        else interim += e.results[i][0].transcript;
+                    }
+                    if (previewEl) previewEl.textContent = interim || finalTranscript.slice(-80) + '...';
+                };
+
+                rec.onend = () => {
+                    this._isRecording = false;
+                    this._recordingMid = null;
+                    if (btn) { btn.textContent = '🎙 녹음 시작'; btn.classList.remove('recording'); }
+                    if (statusEl) statusEl.textContent = '';
+                    if (previewEl) { previewEl.classList.remove('visible'); previewEl.textContent = ''; }
+
+                    if (finalTranscript.trim() && textarea) {
+                        const existing = textarea.value.trim();
+                        textarea.value = existing ? existing + '\n\n[녹음 내용]\n' + finalTranscript.trim() : finalTranscript.trim();
+                        textarea.classList.add('has-data');
+                        this.handleCardInput(textarea);
+                        this.showToast('✅ 녹음 내용이 추가되었습니다!', 'success');
+                    }
+                };
+
+                rec.onerror = (e) => {
+                    const msgs = { 'not-allowed': '마이크 권한이 없습니다. 브라우저 설정을 확인하세요.', 'no-speech': '음성이 감지되지 않았습니다.', 'network': '네트워크 오류가 발생했습니다.' };
+                    this.showToast('⚠️ ' + (msgs[e.error] || '녹음 오류: ' + e.error), 'error');
+                };
+
+                this._recognition = rec;
+                rec.start();
+            },
+
+            stopRecording() {
+                if (this._recognition) {
+                    this._recognition.stop();
+                    this._recognition = null;
+                }
             },
 
             async generateAIMeetingMinutes(mid) {
