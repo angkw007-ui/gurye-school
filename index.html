@@ -210,7 +210,6 @@
     <div id="toast" class="toast"></div>
     <button id="installBtn" class="install-btn" style="display: none;" onclick="app.handleInstall()">📱 앱으로 설치하기</button>
 
-    <!-- iOS 설치 안내 모달 -->
     <div id="iosInstallModal" class="modal" onclick="document.getElementById('iosInstallModal').style.display='none'">
         <div class="modal-content" onclick="event.stopPropagation()" style="text-align:center;">
             <div style="font-size:32px; margin-bottom:12px;">📱</div>
@@ -756,9 +755,12 @@
                 return html + '</div>';
             },
 
+            // ✅ 월간 뷰 - 오늘 날짜 테두리 추가
             renderMonthly() {
                 const year = this.currentDate.getFullYear();
                 const month = this.currentDate.getMonth();
+                const todayStr = this.formatDate(new Date()); 
+
                 let html = '<div class="calendar-grid">';
                 this.days.forEach(w => html += `<div class="bg-slate-50 p-2 text-center text-[10px] md:text-sm font-bold text-slate-400">${w}</div>`);
                 const first = new Date(year, month, 1).getDay();
@@ -770,9 +772,14 @@
                     const holiday = this.getHoliday(dateStr);
                     const isSpecial = this.isSpecialHoliday(dateStr);
                     const isWeekend = dayIdx === 0 || dayIdx === 6;
+
+                    // 오늘 날짜 체크 (링 테두리 추가)
+                    const isToday = dateStr === todayStr;
+                    const todayClass = isToday ? 'ring-4 ring-red-500 ring-inset z-10' : '';
+
                     const colorClass = dayIdx === 0 || holiday ? 'text-sun' : (dayIdx === 6 ? 'text-sat' : 'text-slate-400');
                     const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
-                    html += `<div class="day-cell ${holidayClass}" onclick="app.showDetail('${dateStr}')">
+                    html += `<div class="day-cell ${holidayClass} ${todayClass}" onclick="app.showDetail('${dateStr}')">
                         <div class="text-[10px] md:text-sm font-black ${colorClass}">${d}</div>`;
                     if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
                     html += '<div class="mt-1">';
@@ -785,9 +792,12 @@
                 return html + '</div>';
             },
 
+            // ✅ 주간 뷰 - 오늘 날짜 테두리 추가
             renderWeekly() {
                 const monday = this.getMonday(this.currentDate);
                 const dateStr = this.formatDate(monday);
+                const todayStr = this.formatDate(new Date());
+
                 if (!this.isEditing) {
                     document.querySelectorAll('.notice-input').forEach(input => {
                         const dept = input.dataset.dept;
@@ -804,10 +814,15 @@
                     const holiday = this.getHoliday(dStr);
                     const isSpecial = this.isSpecialHoliday(dStr);
                     const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+
+                    // 오늘 날짜 체크 (카드 테두리 추가)
+                    const isToday = dStr === todayStr;
+                    const todayClass = isToday ? 'border-4 border-red-500 shadow-lg scale-[1.01]' : 'border';
+
                     const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
                     const dayOfWeek = this.days[d.getDay()];
                     const colorClass = d.getDay() === 0 || holiday ? 'text-sun' : (d.getDay() === 6 ? 'text-sat' : 'text-green-800');
-                    html += `<div class="week-item ${holidayClass} p-4 rounded-xl border flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')">
+                    html += `<div class="week-item ${holidayClass} ${todayClass} p-4 rounded-xl flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')">
                         <div class="w-20 md:w-28 week-date-label font-black ${colorClass} border-r mr-4">${d.getDate()}일(${dayOfWeek})`;
                     if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
                     html += '</div><div class="flex-1">';
