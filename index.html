@@ -107,14 +107,14 @@
         .meeting-label { font-size: 13px; font-weight: 800; color: #374151; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         @media (min-width: 768px) { .meeting-label { font-size: 14px; } }
 
-        .ai-generate-btn { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: white; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(124,58,237,0.3); }
+        .ai-generate-btn { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: white; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(124,58,237,0.3); border: none; }
         .ai-generate-btn:hover { transform: scale(1.05); }
         .ai-generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        .meeting-input { width: 100%; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px 12px; font-size: 14px; outline: none; transition: all 0.2s; font-family: 'Pretendard', sans-serif; margin-bottom: 12px; }
+        .meeting-input { width: 100%; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px 12px; font-size: 14px; outline: none; transition: all 0.2s; font-family: inherit; margin-bottom: 12px; box-sizing: border-box; }
         .meeting-input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
 
-        .meeting-textarea { width: 100%; border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px; font-size: 13px; outline: none; transition: all 0.2s; min-height: 300px; resize: vertical; line-height: 1.8; font-family: 'Pretendard', sans-serif; }
+        .meeting-textarea { width: 100%; border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px; font-size: 13px; outline: none; transition: all 0.2s; min-height: 300px; resize: vertical; line-height: 1.8; font-family: inherit; box-sizing: border-box; }
         @media (min-width: 768px) { .meeting-textarea { min-height: 380px; font-size: 14px; } }
         .meeting-textarea:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
 
@@ -134,11 +134,19 @@
         .add-meeting-btn { width: 100%; padding: 10px; border: 2px dashed #16a34a; border-radius: 10px; color: #16a34a; font-weight: 900; font-size: 14px; cursor: pointer; background: white; transition: all 0.2s; margin-top: 4px; }
         .add-meeting-btn:hover { background: #f0fdf4; }
 
+        /* AI 로딩 오버레이 */
+        .ai-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(124,58,237,0.08); border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .ai-spinner { font-size: 13px; color: #7c3aed; font-weight: 700; background: white; padding: 8px 16px; border-radius: 20px; box-shadow: 0 2px 8px rgba(124,58,237,0.2); animation: pulse-ai 1.5s infinite; }
+        @keyframes pulse-ai { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
         .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 24px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
-        .ai-loading { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%) !important; background-size: 1000px 100% !important; animation: shimmer 2s infinite !important; border-color: #d1d5db !important; }
+        /* 에러 토스트 */
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity 0.3s; max-width: 90vw; text-align: center; }
+        .toast.show { opacity: 1; }
+        .toast.error { background: #dc2626; }
+        .toast.success { background: #16a34a; }
     </style>
 </head>
 <body class="p-3">
@@ -192,6 +200,7 @@
         </footer>
     </div>
 
+    <div id="toast" class="toast"></div>
     <button id="installBtn" class="install-btn" style="display: none;">📱 앱으로 설치하기</button>
 
     <div id="detailModal" class="modal" onclick="app.closeModal()">
@@ -204,11 +213,11 @@
 
     <script>
         const app = {
-            // ✅ 새 GAS 배포 주소로 업데이트
+            // ✅ GAS 배포 주소 - 재배포 후 새 URL로 교체하세요
             API_URL: 'https://script.google.com/macros/s/AKfycbxf0a56E_z4mlSr3b8xpii24MDEXNEHHUaV261J7wFgse6y_3qg4Uj2bC6y58GI4776/exec',
             events: [],
             localChanges: {},
-            localDeletes: new Set(), // ✅ 삭제된 항목 추적
+            localDeletes: new Set(),
             currentDate: new Date(),
             viewMode: 'weekly',
             isSyncing: false,
@@ -229,6 +238,15 @@
                 '2026-10-05:대체공휴일', '2026-10-09:한글날', '2026-12-25:크리스마스'
             ],
 
+            // ===== 토스트 알림 =====
+            showToast(msg, type = 'info', duration = 3500) {
+                const toast = document.getElementById('toast');
+                toast.textContent = msg;
+                toast.className = `toast show ${type}`;
+                clearTimeout(this._toastTimer);
+                this._toastTimer = setTimeout(() => { toast.className = 'toast'; }, duration);
+            },
+
             getHoliday(dateStr) {
                 const found = this.holidays.find(h => h.startsWith(dateStr));
                 return found ? found.split(':')[1] : null;
@@ -244,10 +262,6 @@
                 return activeEl.closest('.meeting-card') !== null ||
                        activeEl.classList.contains('meeting-input') ||
                        activeEl.classList.contains('meeting-textarea');
-            },
-
-            getMeetingContent(meetingData) {
-                return (meetingData && meetingData.content) ? meetingData.content : '';
             },
 
             getMeetingsForDate(dateStr) {
@@ -314,7 +328,6 @@
             },
 
             mergeEvents(serverEvents) {
-                // ✅ 서버 데이터에서 로컬 삭제 목록에 있는 항목 먼저 제거
                 const filtered = serverEvents.filter(e => !this.localDeletes.has(String(e.id)));
                 const merged = [...filtered];
                 Object.keys(this.localChanges).forEach(id => {
@@ -329,10 +342,10 @@
             async saveToServer(action, data) {
                 if (action === 'add') {
                     this.localChanges[data.id] = data;
-                    this.localDeletes.delete(data.id); // 재등록 시 삭제 목록에서 제거
+                    this.localDeletes.delete(data.id);
                 } else if (action === 'delete') {
                     delete this.localChanges[data.id];
-                    this.localDeletes.add(data.id); // ✅ 삭제 목록에 추가
+                    this.localDeletes.add(data.id);
                 }
 
                 if (this.savingInProgress) {
@@ -351,7 +364,7 @@
                         const savedId = data.id;
                         setTimeout(() => {
                             delete this.localChanges[savedId];
-                            this.localDeletes.delete(savedId); // ✅ 서버 저장 확인 후 삭제 목록에서도 제거
+                            this.localDeletes.delete(savedId);
                         }, 15000);
                         this.showSaveIndicator('saved');
                     }
@@ -512,7 +525,6 @@
                 const meetings = this.getMeetingsForDate(dateStr);
 
                 if (meetings.length === 0) {
-                    // 빈 카드 1개 자동 생성
                     container.innerHTML = this.buildCardHTML(null, dateStr, 1, 1);
                 } else {
                     container.innerHTML = meetings.map((m, i) =>
@@ -544,15 +556,17 @@
                             onblur="app.handleMeetingBlur()">
                         <label class="meeting-label">
                             <span>📝 모임 내용 정리</span>
-                            <button class="ai-generate-btn" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button>
+                            <button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button>
                         </label>
-                        <textarea
-                            class="meeting-textarea ${hasContent ? 'has-data' : ''}"
-                            data-mid="${mid}" data-field="content"
-                            oninput="app.handleCardInput(this)"
-                            onfocus="app.handleMeetingFocus()"
-                            onblur="app.handleMeetingBlur()"
-                        >${safeContent}</textarea>
+                        <div style="position:relative">
+                            <textarea
+                                class="meeting-textarea ${hasContent ? 'has-data' : ''}"
+                                data-mid="${mid}" data-field="content"
+                                oninput="app.handleCardInput(this)"
+                                onfocus="app.handleMeetingFocus()"
+                                onblur="app.handleMeetingBlur()"
+                            >${safeContent}</textarea>
+                        </div>
                     </div>`;
             },
 
@@ -564,23 +578,22 @@
                 if (!container) return;
                 const newCard = document.createElement('div');
                 newCard.innerHTML = this.buildCardHTML(null, dateStr, meetings.length + 1, meetings.length + 1);
-                // 새 카드의 data-mid를 실제 id로 설정
                 const card = newCard.firstElementChild;
                 card.dataset.mid = newId;
                 card.querySelectorAll('[data-mid]').forEach(el => el.dataset.mid = newId);
                 card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${newId}', '${dateStr}')`);
+                card.querySelector('.ai-generate-btn').setAttribute('onclick', `app.generateAIMeetingMinutes('${newId}')`);
+                card.querySelector('.ai-generate-btn').dataset.mid = newId;
                 container.appendChild(card);
             },
 
             async deleteMeetingCard(mid, dateStr) {
                 if (mid.startsWith('__new__')) {
-                    // 저장 안 된 빈 카드 - 그냥 DOM에서 제거
                     const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
                     if (card) card.remove();
                     this.renumberCards();
                     return;
                 }
-                // 저장된 데이터 삭제
                 const idx = this.events.findIndex(e => e.id === mid);
                 if (idx !== -1) this.events.splice(idx, 1);
                 this.localDeletes.add(mid);
@@ -825,7 +838,6 @@
                     const content = contentEl?.value.trim() || '';
 
                     if (!subject && !content) {
-                        // 빈 카드 - 저장된 데이터 있으면 삭제
                         if (!oldMid.startsWith('__new__')) {
                             const idx = this.events.findIndex(e => e.id === oldMid);
                             if (idx !== -1) this.events.splice(idx, 1);
@@ -836,13 +848,17 @@
                         continue;
                     }
 
-                    // 실제 ID 결정 (새 카드면 id 생성)
                     let mid = oldMid;
                     if (oldMid.startsWith('__new__')) {
                         mid = `meeting_${dateStr}_${cardNum}`;
                         card.dataset.mid = mid;
                         card.querySelectorAll('[data-mid]').forEach(el => el.dataset.mid = mid);
                         card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${mid}', '${dateStr}')`);
+                        const aiBtn = card.querySelector('.ai-generate-btn');
+                        if (aiBtn) {
+                            aiBtn.setAttribute('onclick', `app.generateAIMeetingMinutes('${mid}')`);
+                            aiBtn.dataset.mid = mid;
+                        }
                     }
 
                     const meetingData = {
@@ -861,57 +877,124 @@
                 this.renderMeetingCalendar();
             },
 
+            // =====================================================
+            // ✅ AI 회의록 생성 - 수정된 버전
+            // =====================================================
             async generateAIMeetingMinutes(mid) {
+                console.log('🤖 AI 회의록 생성 시작, mid:', mid);
+
+                // ✅ 카드 찾기 - CSS.escape 사용하여 특수문자 처리
                 const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
-                if (!card) return;
+                if (!card) {
+                    console.error('카드를 찾을 수 없음:', mid);
+                    this.showToast('❌ 카드를 찾을 수 없습니다.', 'error');
+                    return;
+                }
+
                 const subjectEl = card.querySelector('[data-field="subject"]');
                 const contentEl = card.querySelector('[data-field="content"]');
                 const aiBtn = card.querySelector('.ai-generate-btn');
 
-                if (!contentEl.value.trim()) return alert('내용을 입력해주세요.');
+                if (!subjectEl || !contentEl) {
+                    this.showToast('❌ 입력 요소를 찾을 수 없습니다.', 'error');
+                    return;
+                }
 
-                aiBtn.disabled = true;
-                aiBtn.innerHTML = '⏳ AI 분석중...';
-                contentEl.style.opacity = '0.5';
+                const subject = subjectEl.value.trim();
+                const content = contentEl.value.trim();
+
+                console.log('주제:', subject, '내용 길이:', content.length);
+
+                // ✅ 내용 검증 - 주제 또는 내용 중 하나라도 있으면 진행
+                if (!content) {
+                    this.showToast('📝 모임 내용을 먼저 입력해주세요.', 'error');
+                    contentEl.focus();
+                    return;
+                }
+
+                // ✅ 새 카드(__new__)이면 먼저 저장 처리
+                if (mid.startsWith('__new__')) {
+                    this.showToast('💾 먼저 내용을 저장합니다...', 'info', 1500);
+                    await this.saveAllCards();
+                    // saveAllCards 후 mid가 변경되었을 수 있음
+                    const updatedMid = card.dataset.mid;
+                    if (updatedMid !== mid) {
+                        console.log('mid 업데이트:', mid, '->', updatedMid);
+                        mid = updatedMid;
+                    }
+                }
+
+                // ✅ 버튼 비활성화 및 로딩 표시
+                if (aiBtn) {
+                    aiBtn.disabled = true;
+                    aiBtn.innerHTML = '⏳ AI 분석중...';
+                }
+
+                // ✅ textarea 위에 로딩 오버레이 추가
+                const textareaWrapper = contentEl.parentElement;
+                const overlay = document.createElement('div');
+                overlay.className = 'ai-overlay';
+                overlay.innerHTML = '<div class="ai-spinner">🤖 AI가 회의록을 작성하고 있습니다...</div>';
+                textareaWrapper.appendChild(overlay);
+                contentEl.style.opacity = '0.4';
 
                 try {
+                    const requestBody = {
+                        action: 'generateAI',
+                        subject: subject,
+                        content: content,
+                        meetingDate: this.formatDate(this.meetingDate)
+                    };
+                    console.log('요청 데이터:', JSON.stringify(requestBody));
+
                     const response = await fetch(this.API_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify({
-                            action: 'generateAI',
-                            subject: subjectEl.value,
-                            content: contentEl.value,
-                            meetingDate: this.formatDate(this.meetingDate)
-                        })
+                        body: JSON.stringify(requestBody)
                     });
-                    const resData = await response.json();
-                    if (resData.success) {
-                        contentEl.value = resData.minutes;
-                        this.handleCardInput(contentEl);
-                        alert('AI가 회의록을 정리했습니다.');
-                    } else {
-                        throw new Error(resData.error || '알 수 없는 오류');
+
+                    console.log('HTTP 상태:', response.status, response.statusText);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP 오류: ${response.status} ${response.statusText}`);
                     }
+
+                    const responseText = await response.text();
+                    console.log('응답 원문 (첫 200자):', responseText.substring(0, 200));
+
+                    let resData;
+                    try {
+                        resData = JSON.parse(responseText);
+                    } catch (parseErr) {
+                        console.error('JSON 파싱 실패:', responseText);
+                        throw new Error('서버 응답 파싱 실패: ' + responseText.substring(0, 100));
+                    }
+
+                    console.log('파싱된 응답:', resData.success, resData.error ? resData.error.substring(0, 100) : 'OK');
+
+                    if (resData.success && resData.minutes) {
+                        contentEl.value = resData.minutes;
+                        contentEl.classList.add('has-data');
+                        this.handleCardInput(contentEl);
+                        this.showToast('✅ AI 회의록이 완성되었습니다!', 'success');
+                    } else {
+                        const errMsg = resData.error || '알 수 없는 오류가 발생했습니다.';
+                        console.error('AI 오류:', errMsg);
+                        this.showToast('❌ ' + errMsg, 'error', 5000);
+                    }
+
                 } catch (err) {
-                    alert('AI 통신 오류: ' + err.message);
+                    console.error('AI 통신 오류:', err);
+                    this.showToast('❌ 통신 오류: ' + err.message, 'error', 5000);
                 } finally {
-                    aiBtn.disabled = false;
-                    aiBtn.innerHTML = '🤖 AI 회의록';
+                    // ✅ UI 복원
+                    if (aiBtn) {
+                        aiBtn.disabled = false;
+                        aiBtn.innerHTML = '🤖 AI 회의록';
+                    }
+                    if (overlay && overlay.parentElement) overlay.remove();
                     contentEl.style.opacity = '1';
                 }
-            },
-
-            cleanAIMinutes(text) {
-                return text
-                    .replace(/━+/g, '').replace(/─+/g, '')
-                    .replace(/[\-]{4,}/g, '').replace(/[=]{4,}/g, '')
-                    .replace(/\n{3,}/g, '\n\n').trim();
-            },
-
-            formatMeetingMinutesLocal(subject, rawContent, dateStr, dayOfWeek) {
-                const body = rawContent ? rawContent.split('\n').map(l => '   ' + l).join('\n') : '';
-                return `1. 참여인원: \n\n2. 일시: ${dateStr} (${dayOfWeek})\n\n3. 장소: \n\n4. 주요안건\n   ${subject}\n\n5. 협의내용\n${body}\n\n\n\n6. 협의 결과\n   \n\n\n   * [회의록 내부결재가 필요한 경우] 구례중학교 위임전결규정에 의거 협의회 서명은 참여위원의 전자문서 공람 및 관리자 결재로 갈음함.`;
             },
 
             render() {
