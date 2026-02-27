@@ -255,6 +255,16 @@
         .pdf-btn:hover { transform: scale(1.05); }
         .pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
+        /* 녹음파일 등록 버튼 */
+        .audio-upload-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white; padding: 4px 12px; border-radius: 6px;
+            font-size: 11px; font-weight: bold; cursor: pointer;
+            transition: all 0.2s; box-shadow: 0 2px 5px rgba(245,158,11,0.3);
+            display: inline-flex; align-items: center; margin-left: 6px;
+        }
+        .audio-upload-btn:hover { transform: scale(1.05); }
+
         /* PDF 출력용 숨겨진 영역 */
         @media print {
             body * { visibility: hidden; }
@@ -701,7 +711,7 @@
                             <span class="meeting-card-num">회의 ${num}</span>
                             <span class="meeting-card-del" onclick="app.deleteMeetingCard('${mid}', '${dateStr}')">🗑 삭제</span>
                         </div>
-                        <label class="meeting-label">📋 모임 주제</label>
+                        <label class="meeting-label">📋 회의 주제</label>
                         <input type="text"
                             class="meeting-input ${hasSubject ? 'has-data' : ''}"
                             data-mid="${mid}" data-field="subject"
@@ -711,11 +721,15 @@
                             onfocus="app.handleMeetingFocus()"
                             onblur="app.handleMeetingBlur()">
                         <label class="meeting-label">
-                            <span>📝 모임 내용 정리</span>
+                            <span>📝 회의 내용 정리</span>
                             <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end">
-                                <button class="record-btn" id="recBtn_${mid}" onclick="app.toggleRecording('${mid}')">🎙 녹음 시작</button>
-                                <button class="pdf-btn" onclick="app.downloadPDF('${mid}')">📄 PDF 저장</button>
                                 <button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button>
+                                <button class="pdf-btn" onclick="app.downloadPDF('${mid}')">📄 PDF 저장</button>
+                                <label class="audio-upload-btn" title="녹음파일 등록 후 텍스트 변환">
+                                    🎵 녹음파일 등록
+                                    <input type="file" accept="audio/*" style="display:none" onchange="app.handleAudioFile(event,'${mid}')">
+                                </label>
+                                <button class="record-btn" id="recBtn_${mid}" onclick="app.toggleRecording('${mid}')">🎙 녹음 시작</button>
                             </span>
                         </label>
                         <div class="record-status" id="recStatus_${mid}"></div>
@@ -752,6 +766,8 @@
                 if (recStatus) recStatus.id = `recStatus_${newId}`;
                 const recPreview = card.querySelector('.transcript-preview');
                 if (recPreview) recPreview.id = `recPreview_${newId}`;
+                const audioInput = card.querySelector('input[type="file"]');
+                if (audioInput) audioInput.setAttribute('onchange', `app.handleAudioFile(event,'${newId}')`);
                 container.appendChild(card);
             },
 
@@ -1282,6 +1298,93 @@
                     try { this._recognition.stop(); } catch(e) {}
                     this._recognition = null;
                 }
+            },
+
+            /* ===== 녹음파일 등록 → 텍스트 변환 ===== */
+            handleAudioFile(event, mid) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    this.showToast('⚠️ 이 브라우저는 음성인식을 지원하지 않습니다. Chrome을 사용해주세요.', 'error');
+                    return;
+                }
+
+                const statusEl = document.getElementById(`recStatus_${mid}`);
+                const previewEl = document.getElementById(`recPreview_${mid}`);
+                const textarea = document.querySelector(`.meeting-textarea[data-mid="${mid}"]`);
+
+                // 오디오 파일을 Audio 엘리먼트로 재생하면서 Web Speech API로 인식
+                const url = URL.createObjectURL(file);
+                const audio = new Audio(url);
+                audio.playbackRate = 1.0;
+
+                if (statusEl) statusEl.textContent = '🎵 파일 변환 중... 잠시 기다려주세요';
+                if (previewEl) previewEl.classList.add('visible');
+
+                const rec = new SpeechRecognition();
+                rec.lang = 'ko-KR';
+                rec.continuous = true;
+                rec.interimResults = true;
+
+                let fullText = '';
+
+                rec.onresult = (e) => {
+                    let interim = '';
+                    for (let i = e.resultIndex; i < e.results.length; i++) {
+                        if (e.results[i].isFinal) fullText += e.results[i][0].transcript;
+                        else interim += e.results[i][0].transcript;
+                    }
+                    if (previewEl) previewEl.textContent = interim || fullText.slice(-80) + '...';
+                };
+
+                rec.onend = () => {
+                    audio.pause();
+                    URL.revokeObjectURL(url);
+                    if (statusEl) statusEl.textContent = '';
+                    if (previewEl) { previewEl.classList.remove('visible'); previewEl.textContent = ''; }
+
+                    const finalText = fullText.trim();
+                    if (finalText && textarea) {
+                        const existing = textarea.value.trim();
+                        textarea.value = existing
+                            ? existing + '\n\n[🎵 파일 변환 내용]\n' + finalText
+                            : finalText;
+                        textarea.classList.add('has-data');
+                        this.handleCardInput(textarea);
+                        this.showToast('✅ 녹음파일이 텍스트로 변환되어 저장되었습니다!', 'success');
+                    } else {
+                        this.showToast('⚠️ 변환된 텍스트가 없습니다. 파일을 확인해주세요.', 'error');
+                    }
+                };
+
+                rec.onerror = (e) => {
+                    if (e.error === 'no-speech' || e.error === 'aborted') return;
+                    audio.pause();
+                    URL.revokeObjectURL(url);
+                    if (statusEl) statusEl.textContent = '';
+                    if (previewEl) previewEl.classList.remove('visible');
+                    this.showToast('⚠️ 변환 오류: ' + e.error, 'error');
+                };
+
+                // 오디오 재생 시작과 함께 인식 시작
+                audio.oncanplaythrough = () => {
+                    rec.start();
+                    audio.play();
+                };
+
+                audio.onended = () => {
+                    setTimeout(() => { try { rec.stop(); } catch(e) {} }, 1000);
+                };
+
+                audio.onerror = () => {
+                    this.showToast('❌ 오디오 파일을 읽을 수 없습니다.', 'error');
+                    if (statusEl) statusEl.textContent = '';
+                };
+
+                // 파일 input 초기화 (같은 파일 재선택 가능하도록)
+                event.target.value = '';
             },
 
             async generateAIMeetingMinutes(mid) {
