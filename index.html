@@ -22,17 +22,7 @@
         @media (min-width: 768px) { .day-cell { min-height: 140px; padding: 12px; } }
         .day-cell:hover { background-color: #f1f5f9; }
 
-        /* ✅ 1. 월간 일정 고정 높이 및 줄간격 일정 유지 */
-        .day-cell-header { font-size: 10px; font-weight: black; margin-bottom: 4px; flex-shrink: 0; }
-        @media (min-width: 768px) { .day-cell-header { font-size: 14px; margin-bottom: 8px; } }
-        
-        .day-cell-holiday { font-size: 11px; color: #dc2626; font-weight: 700; margin-bottom: 2px; flex-shrink: 0; }
-        @media (min-width: 768px) { .day-cell-holiday { font-size: 13px; } }
-        
-        /* 고정 높이의 이벤트 컨테이너 */
-        .day-cell-events { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 0px; min-height: 0; max-height: 100%; }
-        
-        /* 일정 항목: 고정 높이 한 줄, 넘치는 텍스트는 말줄임 */
+        /* ✅ 월간뷰 일정: 고정 높이 한 줄, 말줄임 */
         .event-item { 
             font-size: 13px; 
             padding: 4px 6px; 
@@ -59,6 +49,32 @@
             } 
         }
         .event-item:hover { background-color: #e0f2fe; }
+
+        /* ✅ 주간뷰 일정: 가변 높이, 삭제버튼 포함 flex */
+        .event-item-week {
+            font-size: 13px;
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            border-radius: 5px;
+            background-color: #f1f5f9;
+            border-left: 3px solid #16a34a;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            word-break: break-all;
+        }
+        @media (min-width: 768px) { .event-item-week { font-size: 14px; } }
+        .event-item-week:hover { background-color: #e0f2fe; }
+
+        /* ✅ 월간뷰 날짜 셀 내부 구조 */
+        .day-cell-header { font-size: 10px; font-weight: 900; margin-bottom: 2px; flex-shrink: 0; }
+        @media (min-width: 768px) { .day-cell-header { font-size: 13px; margin-bottom: 4px; } }
+        .day-cell-holiday { font-size: 10px; color: #dc2626; font-weight: 700; margin-bottom: 2px; flex-shrink: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        @media (min-width: 768px) { .day-cell-holiday { font-size: 12px; } }
+        .day-cell-events { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 1px; min-height: 0; }
 
         /* ✅ 2. 오늘 날짜 빨간 테두리 스타일 */
         .today-border { outline: 3px solid #ef4444 !important; outline-offset: -3px; z-index: 10; position: relative; border-radius: 8px; }
@@ -877,7 +893,7 @@
                     if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
                     html += '</div><div class="flex-1">';
                     this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
-                        html += `<div class="event-item mb-1 p-2 dept-${e.dapt}" onclick="event.stopPropagation()">
+                        html += `<div class="event-item-week dept-${e.dapt}" onclick="event.stopPropagation()">
                             <span>${e.title} (${e.dapt})</span>
                             <span class="del-x" onclick="app.deleteEvent('${e.id}')">✕</span>
                         </div>`;
