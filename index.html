@@ -22,12 +22,12 @@
         @media (min-width: 768px) { .day-cell { min-height: 140px; padding: 12px; } }
         .day-cell:hover { background-color: #f1f5f9; }
 
-        /* ✅ 1. 월간 일정 한 줄 출력 및 말줄임 처리 */
-        .event-item { font-size: 12px; padding: 3px 6px; margin-top: 3px; border-radius: 4px; background-color: #f1f5f9; border-left: 2px solid #16a34a; font-weight: 700; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        @media (min-width: 768px) { .event-item { font-size: 13px; padding: 4px 8px; margin-top: 5px; } }
+        /* ✅ 1. 월간 일정 한 줄 출력 및 말줄임 처리 (PC/모바일 공통 적용) */
+        .event-item { font-size: 13px; padding: 4px 6px; margin-top: 3px; border-radius: 3px; background-color: #f1f5f9; border-left: 2px solid #16a34a; font-weight: 700; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        @media (min-width: 768px) { .event-item { font-size: 14px; padding: 6px 8px; margin-top: 5px; white-space: nowrap; } }
 
         /* ✅ 2. 오늘 날짜 빨간 테두리 스타일 */
-        .today-border { outline: 3px solid #ef4444 !important; outline-offset: -3px; z-index: 10; }
+        .today-border { outline: 3px solid #ef4444 !important; outline-offset: -3px; z-index: 10; position: relative; border-radius: 8px; }
 
         .dept-교무 { color: #15803d; border-left-color: #15803d; }
         .dept-연구 { color: #059669; border-left-color: #059669; }
@@ -38,32 +38,126 @@
         .dept-2학년 { color: #db2777; border-left-color: #db2777; }
         .dept-3학년 { color: #0891b2; border-left-color: #0891b2; }
         .dept-학사 { color: #1e293b; border-left-color: #1e293b; }
-        .dept-meeting { color: #16a34a; border-left-color: #16a34a; }
 
         .holiday-badge { font-size: 11px; color: #dc2626; font-weight: 700; margin-top: 1px; }
+        @media (min-width: 768px) { .holiday-badge { font-size: 13px; } }
+
         .text-sun { color: #ef4444; } .text-sat { color: #3b82f6; }
         .del-x { color: #ef4444; cursor: pointer; margin-left: 4px; font-weight: bold; }
 
         .year-view { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
         .year-month { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .year-month-title { font-weight: 900; color: #1e293b; margin-bottom: 8px; font-size: 16px; }
+        @media (min-width: 768px) { .year-month-title { font-size: 18px; } }
+
         .mini-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 10px; }
+        @media (min-width: 768px) { .mini-calendar { font-size: 12px; } }
+
         .mini-day { padding: 4px; text-align: center; min-height: 30px; background: #f8fafc; border-radius: 4px; cursor: pointer; }
+        @media (min-width: 768px) { .mini-day { min-height: 36px; padding: 6px; } }
         .mini-day.has-event { background: #dcfce7; font-weight: 700; }
         .mini-day.weekend { background: #fee2e2; }
 
-        .week-item { background-color: white; transition: all 0.2s; }
+        .week-item { background-color: white; }
         .weekend-bg, .holiday-bg { background-color: #fff1f2 !important; }
 
         .notice-section { background-color: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-top: 20px; }
-        .notice-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; outline: none; min-height: 60px; resize: vertical; }
-        .notice-input.has-content { background-color: #fef9c3 !important; }
+        .notice-list { display: flex; flex-direction: column; gap: 12px; }
+        .notice-box { display: flex; flex-direction: column; gap: 4px; position: relative; }
+        .notice-header { display: flex; justify-content: space-between; align-items: center; }
+        .notice-label { font-size: 13px; font-weight: 800; color: #15803d; }
+        @media (min-width: 768px) { .notice-label { font-size: 15px; } }
+
+        .notice-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; outline: none; transition: all 0.2s; min-height: 60px; resize: vertical; background-color: white; font-weight: normal; }
+        @media (min-width: 768px) { .notice-input { font-size: 15px; padding: 12px; min-height: 70px; } }
+        .notice-input.has-content { background-color: #fef9c3 !important; border-color: #facc15; }
+        .notice-input:focus { border-color: #16a34a; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 24px; border-radius: 20px; width: 90%; max-width: 400px; }
+        .modal-content { background: white; padding: 24px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
 
-        .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 9000; font-size: 13px; border: none; }
-        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .week-date-label { font-size: 15px; font-weight: 900; line-height: 1.3; }
+        @media (min-width: 768px) { .week-date-label { font-size: 17px; } }
+
+        /* ===== 회의메모 뷰 ===== */
+        .meeting-wrapper { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+        @media (min-width: 768px) { .meeting-wrapper { flex-direction: row; align-items: flex-start; gap: 20px; } }
+
+        .meeting-cal-panel { background: white; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; flex-shrink: 0; }
+        @media (min-width: 768px) { .meeting-cal-panel { width: 300px; } }
+
+        .meeting-calendar-header { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); padding: 10px 14px; color: white; }
+        .meeting-calendar-header button { background: rgba(255,255,255,0.25); color: white; font-weight: bold; padding: 4px 10px; border-radius: 6px; font-size: 14px; transition: all 0.2s; }
+        .meeting-calendar-header button:hover { background: rgba(255,255,255,0.4); }
+        .meeting-calendar-title { font-size: 15px; font-weight: 900; }
+
+        .meeting-calendar-body { padding: 8px; }
+        .meeting-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+        .meeting-calendar-day-header { text-align: center; font-weight: 700; color: #64748b; padding: 4px 2px; font-size: 11px; }
+
+        .meeting-calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.15s; background: #f8fafc; position: relative; }
+        .meeting-calendar-day:hover { background: #e0f2fe; transform: scale(1.05); }
+        .meeting-calendar-day.selected { background: #16a34a !important; color: white !important; font-weight: 900; box-shadow: 0 2px 6px rgba(22,163,74,0.4); }
+        .meeting-calendar-day.today-border { outline: 3px solid #ef4444 !important; outline-offset: -3px; }
+        .meeting-calendar-day.weekend { background: #fef2f2; color: #ef4444; }
+        .meeting-calendar-day.other-month { color: #cbd5e1; background: transparent; font-size: 10px; }
+        .meeting-calendar-day.has-meeting::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: #16a34a; }
+        .meeting-calendar-day.selected.has-meeting::after { background: white; }
+
+        .meeting-input-panel { flex: 1; background: white; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); padding: 16px; min-width: 0; }
+        .meeting-panel-title { font-size: 14px; font-weight: 900; color: #15803d; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #dcfce7; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .meeting-date-badge { background: #dcfce7; color: #15803d; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+        .meeting-label { font-size: 13px; font-weight: 800; color: #374151; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        @media (min-width: 768px) { .meeting-label { font-size: 14px; } }
+
+        .ai-generate-btn { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: white; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(124,58,237,0.3); border: none; }
+        .ai-generate-btn:hover { transform: scale(1.05); }
+        .ai-generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .meeting-input { width: 100%; border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px 12px; font-size: 14px; outline: none; transition: all 0.2s; font-family: inherit; margin-bottom: 12px; box-sizing: border-box; }
+        .meeting-input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
+
+        .meeting-textarea { width: 100%; border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px; font-size: 13px; outline: none; transition: all 0.2s; min-height: 300px; resize: vertical; line-height: 1.8; font-family: inherit; box-sizing: border-box; }
+        @media (min-width: 768px) { .meeting-textarea { min-height: 380px; font-size: 14px; } }
+        .meeting-textarea:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
+
+        .meeting-input.has-data, .meeting-textarea.has-data { background-color: #fefce8; border-color: #facc15; }
+
+        .save-indicator { font-size: 11px; color: #94a3b8; text-align: right; margin-top: 6px; }
+        .save-indicator.saving { color: #f59e0b; }
+        .save-indicator.saved { color: #16a34a; }
+
+        /* ===== 복수 회의 카드 ===== */
+        .meeting-card { background: #f8fafc; border: 2px solid #e5e7eb; border-radius: 12px; padding: 14px; margin-bottom: 12px; position: relative; transition: border-color 0.2s; }
+        .meeting-card:hover { border-color: #16a34a; }
+        .meeting-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .meeting-card-num { font-size: 12px; font-weight: 900; color: #16a34a; background: #dcfce7; padding: 2px 10px; border-radius: 20px; }
+        .meeting-card-del { font-size: 13px; color: #ef4444; cursor: pointer; font-weight: bold; padding: 2px 8px; border-radius: 6px; background: #fee2e2; transition: all 0.2s; }
+        .meeting-card-del:hover { background: #fca5a5; }
+        .add-meeting-btn { width: 100%; padding: 10px; border: 2px dashed #16a34a; border-radius: 10px; color: #16a34a; font-weight: 900; font-size: 14px; cursor: pointer; background: white; transition: all 0.2s; margin-top: 4px; }
+        .add-meeting-btn:hover { background: #f0fdf4; }
+
+        /* AI 로딩 오버레이 */
+        .ai-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(124,58,237,0.08); border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .ai-spinner { font-size: 13px; color: #7c3aed; font-weight: 700; background: white; padding: 8px 16px; border-radius: 20px; box-shadow: 0 2px 8px rgba(124,58,237,0.2); animation: pulse-ai 1.5s infinite; }
+        @keyframes pulse-ai { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+        .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.25); cursor: pointer; z-index: 9000; animation: pulse 2s infinite; font-size: 13px; border: none; }
+        @media (max-width: 767px) { .install-btn { bottom: 16px; right: 12px; padding: 10px 16px; font-size: 12px; } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        /* ===== 모바일 스크롤 수정 ===== */
+        html, body { height: auto; }
+        body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .meeting-wrapper { -webkit-overflow-scrolling: touch; }
+        .meeting-textarea { touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+
+        /* 에러 토스트 */
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity 0.3s; max-width: 90vw; text-align: center; }
         .toast.show { opacity: 1; }
+        .toast.error { background: #dc2626; }
+        .toast.success { background: #16a34a; }
     </style>
 </head>
 <body class="p-3">
@@ -71,10 +165,10 @@
         <header class="flex justify-between items-center mb-6 bg-green-800 p-4 rounded-2xl text-white shadow-lg">
             <h1 class="font-black text-sm md:text-lg">🏫 구례중 주간 계획</h1>
             <div class="flex gap-1 md:gap-2">
-                <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold">주간</button>
-                <button onclick="app.setView('monthly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold">월간</button>
-                <button onclick="app.setView('yearly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold">연간</button>
-                <button onclick="app.setView('meeting')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold">📝회의메모</button>
+                <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">주간</button>
+                <button onclick="app.setView('monthly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">월간</button>
+                <button onclick="app.setView('yearly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">연간</button>
+                <button onclick="app.setView('meeting')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">📝회의메모</button>
             </div>
         </header>
 
@@ -85,13 +179,13 @@
                 <option>교무</option><option>연구</option><option>학생</option><option>창의</option><option>행정</option>
                 <option>1학년</option><option>2학년</option><option>3학년</option>
             </select>
-            <button onclick="app.saveEvent()" class="bg-green-600 text-white rounded-xl font-bold py-2 text-sm md:text-base">저장하기</button>
+            <button onclick="app.saveEvent()" class="bg-green-600 text-white rounded-xl font-bold py-2 text-sm md:text-base hover:bg-green-700">저장하기</button>
         </section>
 
         <div class="flex justify-between items-center bg-white p-3 rounded-2xl border mb-4">
-            <button onclick="app.move(-1)" class="text-green-600 font-bold px-4 text-lg md:text-xl">❮</button>
+            <button onclick="app.move(-1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">❮</button>
             <h2 id="titleText" class="text-sm md:text-xl font-black text-slate-700">로딩 중...</h2>
-            <button onclick="app.move(1)" class="text-green-600 font-bold px-4 text-lg md:text-xl">❯</button>
+            <button onclick="app.move(1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">❯</button>
         </div>
 
         <div id="viewPort"></div>
@@ -100,71 +194,578 @@
             <div class="notice-section">
                 <h3 class="font-black text-green-800 mb-4 flex items-center gap-2 text-base md:text-lg">📢 주간 안내사항</h3>
                 <div class="notice-list">
-                    <div class="notice-box"><label class="notice-label font-bold text-green-700">교장</label><textarea data-dept="교장" class="notice-input w-full" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><label class="notice-label font-bold text-green-700">교감</label><textarea data-dept="교감" class="notice-input w-full" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><label class="notice-label font-bold text-green-700">행정실</label><textarea data-dept="행정실" class="notice-input w-full" oninput="app.handleNoticeInput(this)"></textarea></div>
-                    <div class="notice-box"><label class="notice-label font-bold text-green-700">교무부</label><textarea data-dept="교무부" class="notice-input w-full" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교장</label></div><textarea data-dept="교장" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교감</label></div><textarea data-dept="교감" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">행정실장</label></div><textarea data-dept="행정실" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">교무부</label></div><textarea data-dept="교무부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">연구부</label></div><textarea data-dept="연구부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">학생부</label></div><textarea data-dept="학생부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">창의인성부</label></div><textarea data-dept="창의인성부" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
+                    <div class="notice-box"><div class="notice-header"><label class="notice-label">학년실</label></div><textarea data-dept="학년실" class="notice-input" oninput="app.handleNoticeInput(this)"></textarea></div>
                 </div>
             </div>
         </div>
 
-        <footer class="text-center py-8 text-slate-400 text-[10px]">
-            © Developed by Choi Gwang-cheol of Gurye Middle School in 2026.
+        <footer class="text-center py-8 text-slate-400 text-[10px] md:text-xs">
+            © Developed by Choi Gwang-cheol of Gurye Middle School in 2026. All rights reserved.
         </footer>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <button id="installBtn" class="install-btn" style="display: none;" onclick="app.handleInstall()">📱 앱으로 설치하기</button>
+
+    <div id="iosInstallModal" class="modal" onclick="document.getElementById('iosInstallModal').style.display='none'">
+        <div class="modal-content" onclick="event.stopPropagation()" style="text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">📱</div>
+            <h3 style="font-weight:900; color:#15803d; margin-bottom:12px; font-size:16px;">홈 화면에 추가하기</h3>
+            <div style="background:#f0fdf4; border-radius:12px; padding:16px; margin-bottom:16px; text-align:left; font-size:14px; line-height:1.8;">
+                <div style="margin-bottom:8px;">1️⃣ 하단 <strong>공유 버튼</strong> 탭 <span style="font-size:18px;">⬆️</span></div>
+                <div style="margin-bottom:8px;">2️⃣ <strong>"홈 화면에 추가"</strong> 선택</div>
+                <div>3️⃣ 오른쪽 위 <strong>"추가"</strong> 탭</div>
+            </div>
+            <button onclick="document.getElementById('iosInstallModal').style.display='none'"
+                style="width:100%; background:#15803d; color:white; font-weight:bold; padding:12px; border-radius:12px; border:none; font-size:15px; cursor:pointer;">확인</button>
+        </div>
     </div>
 
     <div id="detailModal" class="modal" onclick="app.closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="modalDate" class="font-black text-green-800 mb-2"></h3>
-            <div id="modalContent" class="space-y-2 mb-4"></div>
-            <button onclick="app.closeModal()" class="w-full bg-green-600 text-white font-bold py-2 rounded-xl">닫기</button>
+            <h3 id="modalDate" class="font-black text-green-800 mb-2 text-base md:text-lg"></h3>
+            <div id="modalContent" class="space-y-2 max-h-60 overflow-y-auto mb-4 text-sm md:text-base"></div>
+            <button onclick="app.closeModal()" class="w-full bg-green-600 text-white font-bold py-2 rounded-xl text-sm md:text-base hover:bg-green-700">닫기</button>
         </div>
     </div>
 
     <script>
         const app = {
+            // ✅ GAS 배포 주소
             API_URL: 'https://script.google.com/macros/s/AKfycbxf0a56E_z4mlSr3b8xpii24MDEXNEHHUaV261J7wFgse6y_3qg4Uj2bC6y58GI4776/exec',
             events: [],
+            localChanges: {},
+            localDeletes: new Set(),
             currentDate: new Date(),
             viewMode: 'weekly',
+            isSyncing: false,
+            isEditing: false,
+            meetingInputFocused: false,
+            saveTimers: {},
+            savingInProgress: false,
+            pendingSave: null,
+            aiGenerating: false,
+            meetingDate: new Date(),
+            meetingCalendarDate: new Date(),
             days: ['일', '월', '화', '수', '목', '금', '토'],
-            holidays: ['2026-01-01:신정', '2026-03-01:삼일절', '2026-05-05:어린이날'], // 예시
 
-            // ✅ 3. 날짜 오류 해결 (로컬 타임존 강제 지정)
+            holidays: [
+                '2026-01-01:신정', '2026-02-16:설날연휴', '2026-02-17:설날', '2026-02-18:설날연휴',
+                '2026-03-01:삼일절', '2026-03-02:대체공휴일', '2026-05-05:어린이날', '2026-05-24:부처님오신날',
+                '2026-05-25:대체공휴일', '2026-06-06:현충일', '2026-08-15:광복절', '2026-08-17:대체공휴일',
+                '2026-09-24:추석연휴', '2026-09-25:추석', '2026-09-26:추석연휴', '2026-10-03:개천절',
+                '2026-10-05:대체공휴일', '2026-10-09:한글날', '2026-12-25:크리스마스'
+            ],
+
+            // ✅ 3. 날짜 하루 앞당겨지는 오류 해결 (모든 문자열 날짜 변환 시 T00:00:00 강제 결합)
             parseLocalDate(dateStr) {
                 return new Date(dateStr + 'T00:00:00');
             },
 
-            formatDate(date) {
-                const y = date.getFullYear();
-                const m = String(date.getMonth() + 1).padStart(2, '0');
-                const d = String(date.getDate()).padStart(2, '0');
-                return `${y}-${m}-${d}`;
+            // ✅ 2. 오늘 날짜 확인 로직
+            isToday(dateStr) {
+                const today = this.formatDate(new Date());
+                return dateStr === today;
             },
 
-            // ✅ 2. 오늘 날짜 체크
-            isToday(dateStr) {
-                return dateStr === this.formatDate(new Date());
+            showToast(msg, type = 'info', duration = 3500) {
+                const toast = document.getElementById('toast');
+                toast.textContent = msg;
+                toast.className = `toast show ${type}`;
+                clearTimeout(this._toastTimer);
+                this._toastTimer = setTimeout(() => { toast.className = 'toast'; }, duration);
+            },
+
+            getHoliday(dateStr) {
+                const found = this.holidays.find(h => h.startsWith(dateStr));
+                return found ? found.split(':')[1] : null;
+            },
+
+            isSpecialHoliday(dateStr) {
+                return this.events.some(e => e.date === dateStr && (e.title.includes('재량휴업일') || e.title.includes('휴업일') || e.title.includes('휴무일')));
+            },
+
+            isMeetingInputActive() {
+                const activeEl = document.activeElement;
+                if (!activeEl) return false;
+                return activeEl.closest('.meeting-card') !== null ||
+                       activeEl.classList.contains('meeting-input') ||
+                       activeEl.classList.contains('meeting-textarea');
+            },
+
+            getMeetingsForDate(dateStr) {
+                const prefix = `meeting_${dateStr}_`;
+                const all = this.events.filter(e => e.id.startsWith(prefix)).map(e => ({...e}));
+                Object.keys(this.localChanges).forEach(id => {
+                    if (id.startsWith(prefix) && !all.find(e => e.id === id)) {
+                        all.push({...this.localChanges[id]});
+                    }
+                });
+                return all.filter(e => !this.localDeletes.has(e.id))
+                          .sort((a, b) => a.id.localeCompare(b.id));
+            },
+
+            newMeetingId(dateStr) {
+                const existing = this.getMeetingsForDate(dateStr);
+                const nums = existing.map(e => parseInt(e.id.split('_').pop()) || 0);
+                const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+                return `meeting_${dateStr}_${next}`;
             },
 
             async loadFromServer() {
+                if (this.isSyncing) return;
+                if (this.aiGenerating) return;
                 try {
-                    const res = await fetch(this.API_URL + '?t=' + Date.now());
-                    const data = await res.json();
-                    this.events = data.map(i => ({...i, date: i.date.split('T')[0]}));
-                    this.render();
-                } catch(e) { console.error(e); }
+                    this.isSyncing = true;
+                    const response = await fetch(this.API_URL + '?t=' + Date.now());
+                    const data = await response.json();
+
+                    const serverEvents = data.map(item => {
+                        let dateStr = item.date;
+                        if (typeof dateStr === 'string' && dateStr.includes('T')) dateStr = dateStr.split('T')[0];
+                        else if (typeof dateStr === 'string') dateStr = dateStr.substring(0, 10);
+                        return {
+                            id: String(item.id),
+                            date: dateStr,
+                            title: item.title,
+                            dapt: item.dapt,
+                            subject: item.subject || '',
+                            content: item.content || ''
+                        };
+                    });
+
+                    this.events = this.mergeEvents(serverEvents);
+
+                    if (this.viewMode === 'meeting') {
+                        this.renderMeetingCalendar();
+                        if (!this.isMeetingInputActive() && !this.meetingInputFocused) {
+                            this.syncMeetingInputsFromData();
+                        }
+                    } else if (!this.isEditing) {
+                        this.render();
+                    }
+                } catch (error) {
+                    console.error('로드 오류:', error);
+                } finally {
+                    this.isSyncing = false;
+                }
+            },
+
+            syncMeetingInputsFromData() {
+                if (!document.getElementById('meetingCardsContainer')) return;
+                this.renderMeetingCards();
+                this.updateMeetingPanelDate();
+            },
+
+            mergeEvents(serverEvents) {
+                const filtered = serverEvents.filter(e => !this.localDeletes.has(String(e.id)));
+                const merged = [...filtered];
+                Object.keys(this.localChanges).forEach(id => {
+                    const localData = this.localChanges[id];
+                    const serverIndex = merged.findIndex(e => String(e.id) === String(id));
+                    if (serverIndex !== -1) merged[serverIndex] = { ...merged[serverIndex], ...localData };
+                    else merged.push(localData);
+                });
+                return merged;
+            },
+
+            async saveToServer(action, data) {
+                if (action === 'add') {
+                    this.localChanges[data.id] = data;
+                    this.localDeletes.delete(data.id);
+                } else if (action === 'delete') {
+                    delete this.localChanges[data.id];
+                    this.localDeletes.add(data.id);
+                }
+
+                if (this.savingInProgress) {
+                    this.pendingSave = { action, data };
+                    return;
+                }
+                this.savingInProgress = true;
+                try {
+                    const response = await fetch(this.API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({ action, ...data })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        const savedId = data.id;
+                        setTimeout(() => {
+                            delete this.localChanges[savedId];
+                            this.localDeletes.delete(savedId);
+                        }, 15000);
+                        this.showSaveIndicator('saved');
+                    }
+                } catch (error) {
+                    console.error('저장 오류:', error);
+                } finally {
+                    this.savingInProgress = false;
+                    if (this.pendingSave) {
+                        const pending = this.pendingSave;
+                        this.pendingSave = null;
+                        await this.saveToServer(pending.action, pending.data);
+                    }
+                }
+            },
+
+            showSaveIndicator(status) {
+                const el = document.getElementById('meetingSaveIndicator');
+                if (!el) return;
+                el.className = 'save-indicator ' + status;
+                if (status === 'saving') el.textContent = '💾 저장 중...';
+                else if (status === 'saved') el.textContent = '✅ 저장 완료';
+                else el.textContent = '💡 입력 2초 후 자동 저장';
+            },
+
+            handleNoticeInput(input) {
+                this.isEditing = true;
+                this.updateInputStyle(input);
+                const dept = input.dataset.dept;
+                if (this.saveTimers[dept]) clearTimeout(this.saveTimers[dept]);
+                this.saveTimers[dept] = setTimeout(() => { this.saveNotice(input); }, 2000);
+            },
+
+            updateInputStyle(input) {
+                if (input.value.trim() !== '') input.classList.add('has-content');
+                else input.classList.remove('has-content');
+            },
+
+            async saveNotice(input) {
+                this.isEditing = false;
+                const dept = input.dataset.dept;
+                const content = input.value.trim();
+                const monday = this.getMonday(this.currentDate);
+                const dateStr = this.formatDate(monday);
+                const noticeId = `notice_${dateStr}_${dept}`;
+                const existingIndex = this.events.findIndex(e => e.id === noticeId);
+                if (content === '') {
+                    if (existingIndex !== -1) {
+                        this.events.splice(existingIndex, 1);
+                        await this.saveToServer('delete', { id: noticeId });
+                    }
+                } else {
+                    const newNotice = { id: noticeId, date: dateStr, title: content, dapt: dept };
+                    if (existingIndex !== -1) this.events[existingIndex] = newNotice;
+                    else this.events.push(newNotice);
+                    await this.saveToServer('add', newNotice);
+                }
+            },
+
+            moveMeetingCalendar(direction) {
+                this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth() + direction);
+                this.renderMeetingCalendar();
+            },
+
+            selectMeetingDate(dateStr) {
+                this.meetingDate = this.parseLocalDate(dateStr);
+                this.meetingCalendarDate = this.parseLocalDate(dateStr);
+                this.updateMeetingPanelDate();
+                this.renderMeetingCards();
+                this.renderMeetingCalendar();
+            },
+
+            updateMeetingPanelDate() {
+                const el = document.getElementById('meetingPanelDate');
+                if (!el) return;
+                const dateStr = this.formatDate(this.meetingDate);
+                const dayOfWeek = this.days[this.meetingDate.getDay()];
+                el.textContent = `${dateStr} (${dayOfWeek})`;
+            },
+
+            renderMeetingCalendar() {
+                const year = this.meetingCalendarDate.getFullYear();
+                const month = this.meetingCalendarDate.getMonth();
+                const selectedDateStr = this.formatDate(this.meetingDate);
+                const firstDay = new Date(year, month, 1).getDay();
+                const lastDate = new Date(year, month + 1, 0).getDate();
+                const prevLastDate = new Date(year, month, 0).getDate();
+
+                let html = `
+                    <div class="meeting-calendar-header">
+                        <button onclick="app.moveMeetingCalendar(-1)">◀</button>
+                        <div class="meeting-calendar-title">${year}년 ${month + 1}월</div>
+                        <button onclick="app.moveMeetingCalendar(1)">▶</button>
+                    </div>
+                    <div class="meeting-calendar-body">
+                        <div class="meeting-calendar-grid">`;
+
+                this.days.forEach(day => {
+                    const colorClass = day === '일' ? 'text-red-500' : (day === '토' ? 'text-blue-500' : '');
+                    html += `<div class="meeting-calendar-day-header ${colorClass}">${day}</div>`;
+                });
+                for (let i = firstDay - 1; i >= 0; i--) html += `<div class="meeting-calendar-day other-month">${prevLastDate - i}</div>`;
+                for (let day = 1; day <= lastDate; day++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const dayOfWeek = new Date(year, month, day).getDay();
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                    const isSelected = dateStr === selectedDateStr;
+                    const hasMeeting = this.getMeetingsForDate(dateStr).length > 0;
+                    
+                    // ✅ 회의메모 오늘 날짜 빨간 테두리 적용
+                    const todayClass = this.isToday(dateStr) ? 'today-border' : '';
+                    let classes = `meeting-calendar-day ${todayClass}`;
+                    
+                    if (isWeekend && !isSelected) classes += ' weekend';
+                    if (isSelected) classes += ' selected';
+                    if (hasMeeting) classes += ' has-meeting';
+                    html += `<div class="${classes}" onclick="app.selectMeetingDate('${dateStr}')">${day}</div>`;
+                }
+                const totalCells = firstDay + lastDate;
+                const remainingCells = 7 - (totalCells % 7);
+                if (remainingCells < 7) for (let day = 1; day <= remainingCells; day++) html += `<div class="meeting-calendar-day other-month">${day}</div>`;
+                html += '</div></div>';
+
+                const calendarContainer = document.getElementById('meetingCalendar');
+                if (calendarContainer) calendarContainer.innerHTML = html;
+            },
+
+            renderMeetingView() {
+                const viewPort = document.getElementById('viewPort');
+                const dateStr = this.formatDate(this.meetingDate);
+                const dayOfWeek = this.days[this.meetingDate.getDay()];
+
+                if (!viewPort.querySelector('.meeting-wrapper')) {
+                    viewPort.innerHTML = `
+                        <div class="meeting-wrapper">
+                            <div class="meeting-cal-panel">
+                                <div id="meetingCalendar"></div>
+                            </div>
+                            <div class="meeting-input-panel">
+                                <div class="meeting-panel-title">
+                                    📝 회의메모
+                                    <span id="meetingPanelDate" class="meeting-date-badge">${dateStr} (${dayOfWeek})</span>
+                                </div>
+                                <div id="meetingCardsContainer"></div>
+                                <button class="add-meeting-btn" onclick="app.addMeetingCard()">＋ 회의 추가</button>
+                                <div id="meetingSaveIndicator" class="save-indicator">💡 입력 2초 후 자동 저장</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                this.meetingCalendarDate = new Date(this.meetingDate);
+                this.renderMeetingCalendar();
+                this.renderMeetingCards();
+            },
+
+            renderMeetingCards() {
+                const container = document.getElementById('meetingCardsContainer');
+                if (!container) return;
+                if (this.aiGenerating) return;
+                const dateStr = this.formatDate(this.meetingDate);
+                const meetings = this.getMeetingsForDate(dateStr);
+
+                if (meetings.length === 0) {
+                    container.innerHTML = this.buildCardHTML(null, dateStr, 1, 1);
+                } else {
+                    container.innerHTML = meetings.map((m, i) =>
+                        this.buildCardHTML(m, dateStr, i + 1, meetings.length)
+                    ).join('');
+                }
+            },
+
+            buildCardHTML(meetingData, dateStr, num, total) {
+                const mid = meetingData ? meetingData.id : `__new__${dateStr}`;
+                const safeSubject = (meetingData?.subject || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                const safeContent = (meetingData?.content || '').replace(/</g, '&lt;');
+                const hasSubject = !!(meetingData?.subject);
+                const hasContent = !!(meetingData?.content);
+                return `
+                    <div class="meeting-card" data-mid="${mid}">
+                        <div class="meeting-card-header">
+                            <span class="meeting-card-num">회의 ${num}</span>
+                            <span class="meeting-card-del" onclick="app.deleteMeetingCard('${mid}', '${dateStr}')">🗑 삭제</span>
+                        </div>
+                        <label class="meeting-label">📋 모임 주제</label>
+                        <input type="text"
+                            class="meeting-input ${hasSubject ? 'has-data' : ''}"
+                            data-mid="${mid}" data-field="subject"
+                            placeholder="예: 학생생활규정 개정 협의회"
+                            value="${safeSubject}"
+                            oninput="app.handleCardInput(this)"
+                            onfocus="app.handleMeetingFocus()"
+                            onblur="app.handleMeetingBlur()">
+                        <label class="meeting-label">
+                            <span>📝 모임 내용 정리</span>
+                            <button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button>
+                        </label>
+                        <div style="position:relative">
+                            <textarea
+                                class="meeting-textarea ${hasContent ? 'has-data' : ''}"
+                                data-mid="${mid}" data-field="content"
+                                oninput="app.handleCardInput(this)"
+                                onfocus="app.handleMeetingFocus()"
+                                onblur="app.handleMeetingBlur()"
+                            >${safeContent}</textarea>
+                        </div>
+                    </div>`;
+            },
+
+            addMeetingCard() {
+                const dateStr = this.formatDate(this.meetingDate);
+                const newId = this.newMeetingId(dateStr);
+                const meetings = this.getMeetingsForDate(dateStr);
+                const container = document.getElementById('meetingCardsContainer');
+                if (!container) return;
+                const newCard = document.createElement('div');
+                newCard.innerHTML = this.buildCardHTML(null, dateStr, meetings.length + 1, meetings.length + 1);
+                const card = newCard.firstElementChild;
+                card.dataset.mid = newId;
+                card.querySelectorAll('[data-mid]').forEach(el => el.dataset.mid = newId);
+                card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${newId}', '${dateStr}')`);
+                card.querySelector('.ai-generate-btn').setAttribute('onclick', `app.generateAIMeetingMinutes('${newId}')`);
+                card.querySelector('.ai-generate-btn').dataset.mid = newId;
+                container.appendChild(card);
+            },
+
+            async deleteMeetingCard(mid, dateStr) {
+                if (mid.startsWith('__new__')) {
+                    const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+                    if (card) card.remove();
+                    this.renumberCards();
+                    return;
+                }
+                const idx = this.events.findIndex(e => e.id === mid);
+                if (idx !== -1) this.events.splice(idx, 1);
+                this.localDeletes.add(mid);
+                delete this.localChanges[mid];
+
+                const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+                if (card) card.remove();
+                this.renumberCards();
+                this.renderMeetingCalendar();
+                await this.saveToServer('delete', { id: mid });
+            },
+
+            renumberCards() {
+                const container = document.getElementById('meetingCardsContainer');
+                if (!container) return;
+                container.querySelectorAll('.meeting-card').forEach((card, i) => {
+                    const numEl = card.querySelector('.meeting-card-num');
+                    if (numEl) numEl.textContent = `회의 ${i + 1}`;
+                });
+            },
+
+            getMonday(d) {
+                const date = new Date(d);
+                const day = date.getDay();
+                const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+                return new Date(date.getFullYear(), date.getMonth(), diff);
+            },
+
+            formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            },
+
+            async saveEvent() {
+                const dateInput = document.getElementById('inDate').value;
+                const title = document.getElementById('inTitle').value;
+                const dapt = document.getElementById('inDept').value;
+                if (!dateInput || !title) { alert('날짜와 내용을 입력하세요.'); return; }
+                const newEvent = { id: Date.now().toString(), date: dateInput, title: title, dapt: dapt };
+                this.events.push(newEvent);
+                this.currentDate = this.parseLocalDate(dateInput);
+                this.render();
+                document.getElementById('inDate').value = '';
+                document.getElementById('inTitle').value = '';
+                await this.saveToServer('add', newEvent);
+            },
+
+            async deleteEvent(id) {
+                if (!confirm('삭제하시겠습니까?')) return;
+                this.events = this.events.filter(e => e.id !== id);
+                this.render();
+                await this.saveToServer('delete', { id });
+                this.closeModal();
+            },
+
+            showDetail(dateStr) {
+                const modal = document.getElementById('detailModal');
+                const holiday = this.getHoliday(dateStr);
+                const d = this.parseLocalDate(dateStr);
+                document.getElementById('modalDate').textContent = `${dateStr}(${this.days[d.getDay()]})` + (holiday ? ` (${holiday})` : '');
+                const modalContent = document.getElementById('modalContent');
+                modalContent.innerHTML = '';
+                const dayEvents = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
+                const meetings = this.getMeetingsForDate(dateStr);
+                meetings.forEach((meetingData, i) => {
+                    modalContent.innerHTML += `<div class="bg-green-50 p-4 rounded-lg border-2 border-green-300 mb-3">
+                        <div class="text-green-800 font-black mb-2">📝 회의메모 ${meetings.length > 1 ? (i+1) : ''}</div>
+                        <div class="font-bold text-green-700 mb-1">${meetingData.subject || '(제목 없음)'}</div>
+                        <div class="text-sm text-slate-600 whitespace-pre-wrap">${meetingData.content || ''}</div>
+                    </div>`;
+                });
+                if (dayEvents.length === 0 && meetings.length === 0) {
+                    modalContent.innerHTML = "<div class='text-slate-400 text-sm'>일정이 없습니다.</div>";
+                } else {
+                    const showDelete = this.viewMode === 'weekly';
+                    dayEvents.forEach(e => {
+                        modalContent.innerHTML += `<div class="bg-slate-50 p-3 rounded-lg flex justify-between items-center">
+                            <div class="dept-${e.dapt}"><span class="font-bold">[${e.dapt}]</span> ${e.title}</div>
+                            ${showDelete ? `<span class="del-x text-lg" onclick="app.deleteEvent('${e.id}')">✕</span>` : ''}
+                        </div>`;
+                    });
+                }
+                modal.style.display = 'flex';
+            },
+
+            closeModal() { document.getElementById('detailModal').style.display = 'none'; },
+
+            move(direction) {
+                if (this.viewMode === 'yearly') this.currentDate.setFullYear(this.currentDate.getFullYear() + direction);
+                else if (this.viewMode === 'monthly') this.currentDate.setMonth(this.currentDate.getMonth() + direction);
+                else if (this.viewMode === 'meeting') {
+                    this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth() + direction);
+                    this.renderMeetingCalendar();
+                    return;
+                } else this.currentDate.setDate(this.currentDate.getDate() + (direction * 7));
+                this.render();
+            },
+
+            setView(mode) {
+                this.viewMode = mode;
+                if (mode !== 'meeting') {
+                    this.meetingInputFocused = false;
+                    this.isEditing = false;
+                }
+                this.render();
             },
 
             renderYearly() {
                 const year = this.currentDate.getFullYear();
                 let html = '<div class="year-view">';
                 for (let m = 0; m < 12; m++) {
-                    html += `<div class="year-month"><div class="font-black mb-2">${m+1}월</div><div class="mini-calendar">`;
-                    for (let d = 1; d <= new Date(year, m+1, 0).getDate(); d++) {
-                        const dStr = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                        const todayClass = this.isToday(dStr) ? 'today-border' : '';
-                        html += `<div class="mini-day ${todayClass}" onclick="app.showDetail('${dStr}')">${d}</div>`;
+                    html += `<div class="year-month"><div class="year-month-title">${year}년 ${m + 1}월</div><div class="mini-calendar">`;
+                    this.days.forEach(w => html += `<div class="text-[9px] md:text-[11px] text-slate-400 font-bold text-center p-1">${w}</div>`);
+                    const first = new Date(year, m, 1).getDay();
+                    const last = new Date(year, m + 1, 0).getDate();
+                    for (let i = 0; i < first; i++) html += '<div></div>';
+                    for (let d = 1; d <= last; d++) {
+                        const dateStr = `${year}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                        const dayIdx = new Date(year, m, d).getDay();
+                        const hasEvent = this.events.some(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
+                        const holiday = this.getHoliday(dateStr);
+                        const isSpecial = this.isSpecialHoliday(dateStr);
+                        const isWeekend = dayIdx === 0 || dayIdx === 6;
+                        const colorClass = dayIdx === 0 || holiday ? 'text-sun' : (dayIdx === 6 ? 'text-sat' : 'text-slate-600');
+                        const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
+                        
+                        // ✅ 연간 뷰 오늘 날짜 빨간 테두리 적용
+                        const todayClass = this.isToday(dateStr) ? 'today-border' : '';
+                        const cellClass = holiday || isWeekend ? 'weekend' : (hasEvent ? 'has-event' : '');
+                        html += `<div class="mini-day ${cellClass} ${colorClass} ${holidayClass} ${todayClass}" onclick="app.showDetail('${dateStr}')">${d}</div>`;
                     }
                     html += '</div></div>';
                 }
@@ -175,78 +776,290 @@
                 const year = this.currentDate.getFullYear();
                 const month = this.currentDate.getMonth();
                 let html = '<div class="calendar-grid">';
-                this.days.forEach(d => html += `<div class="bg-slate-50 p-2 text-center text-[10px] font-bold text-slate-400">${d}</div>`);
+                this.days.forEach(w => html += `<div class="bg-slate-50 p-2 text-center text-[10px] md:text-sm font-bold text-slate-400">${w}</div>`);
+                const first = new Date(year, month, 1).getDay();
                 const last = new Date(year, month + 1, 0).getDate();
+                for (let i = 0; i < first; i++) html += '<div class="day-cell bg-slate-50/30"></div>';
                 for (let d = 1; d <= last; d++) {
-                    const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                    const todayClass = this.isToday(dStr) ? 'today-border' : '';
-                    html += `<div class="day-cell ${todayClass}" onclick="app.showDetail('${dStr}')">
-                        <div class="text-[10px] font-black">${d}</div>`;
-                    this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_')).forEach(e => {
-                        html += `<div class="event-item dept-${e.dapt}">${e.title}</div>`;
-                    });
-                    html += '</div>';
-                }
-                return html + '</div>';
-            },
-
-            renderWeekly() {
-                const monday = this.getMonday(this.currentDate);
-                let html = '<div class="flex flex-col gap-2">';
-                for (let i = 0; i < 7; i++) {
-                    const d = new Date(monday); d.setDate(monday.getDate() + i);
-                    const dStr = this.formatDate(d);
-                    const todayClass = this.isToday(dStr) ? 'today-border' : '';
-                    html += `<div class="week-item p-4 rounded-xl border flex items-center ${todayClass}" onclick="app.showDetail('${dStr}')">
-                        <div class="w-20 font-black border-r mr-4">${d.getDate()}일(${this.days[d.getDay()]})</div>
-                        <div class="flex-1">`;
-                    this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_')).forEach(e => {
-                        html += `<div class="event-item dept-${e.dapt}">${e.title}</div>`;
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    const dayIdx = new Date(year, month, d).getDay();
+                    const holiday = this.getHoliday(dateStr);
+                    const isSpecial = this.isSpecialHoliday(dateStr);
+                    const isWeekend = dayIdx === 0 || dayIdx === 6;
+                    const colorClass = dayIdx === 0 || holiday ? 'text-sun' : (dayIdx === 6 ? 'text-sat' : 'text-slate-400');
+                    const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
+                    
+                    // ✅ 월간 뷰 오늘 날짜 빨간 테두리 적용
+                    const todayClass = this.isToday(dateStr) ? 'today-border' : '';
+                    html += `<div class="day-cell ${holidayClass} ${todayClass}" onclick="app.showDetail('${dateStr}')">
+                        <div class="text-[10px] md:text-sm font-black ${colorClass}">${d}</div>`;
+                    if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
+                    html += '<div class="mt-1">';
+                    this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
+                        const displayTitle = window.innerWidth < 768 ? e.title.substring(0, 3) : e.title;
+                        html += `<div class="event-item dept-${e.dapt}" onclick="event.stopPropagation(); app.showDetail('${dateStr}')"><span>${displayTitle}</span></div>`;
                     });
                     html += '</div></div>';
                 }
                 return html + '</div>';
             },
 
-            getMonday(d) {
-                const date = new Date(d);
-                const day = date.getDay();
-                const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-                return new Date(date.getFullYear(), date.getMonth(), diff);
+            renderWeekly() {
+                const monday = this.getMonday(this.currentDate);
+                const dateStr = this.formatDate(monday);
+                if (!this.isEditing) {
+                    document.querySelectorAll('.notice-input').forEach(input => {
+                        const dept = input.dataset.dept;
+                        const notice = this.events.find(e => e.id === `notice_${dateStr}_${dept}`);
+                        input.value = notice ? notice.title : '';
+                        this.updateInputStyle(input);
+                    });
+                }
+                let html = '<div class="flex flex-col gap-2">';
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(monday);
+                    d.setDate(monday.getDate() + i);
+                    const dStr = this.formatDate(d);
+                    const holiday = this.getHoliday(dStr);
+                    const isSpecial = this.isSpecialHoliday(dStr);
+                    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                    const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
+                    const dayOfWeek = this.days[d.getDay()];
+                    const colorClass = d.getDay() === 0 || holiday ? 'text-sun' : (d.getDay() === 6 ? 'text-sat' : 'text-green-800');
+                    
+                    // ✅ 주간 뷰 오늘 날짜 빨간 테두리 적용
+                    const todayClass = this.isToday(dStr) ? 'today-border' : '';
+                    html += `<div class="week-item ${holidayClass} ${todayClass} p-4 rounded-xl border flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')">
+                        <div class="w-20 md:w-28 week-date-label font-black ${colorClass} border-r mr-4">${d.getDate()}일(${dayOfWeek})`;
+                    if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
+                    html += '</div><div class="flex-1">';
+                    this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
+                        html += `<div class="event-item mb-1 p-2 dept-${e.dapt}" onclick="event.stopPropagation()">
+                            <span>${e.title} (${e.dapt})</span>
+                            <span class="del-x" onclick="app.deleteEvent('${e.id}')">✕</span>
+                        </div>`;
+                    });
+                    html += '</div></div>';
+                }
+                return html + '</div>';
             },
 
-            async saveEvent() {
-                const d = document.getElementById('inDate').value;
-                const t = document.getElementById('inTitle').value;
-                if(!d || !t) return;
-                const ne = { id: Date.now().toString(), date: d, title: t, dapt: document.getElementById('inDept').value };
-                this.events.push(ne);
-                this.currentDate = this.parseLocalDate(d); // ✅ 오류 수정 적용
-                this.render();
-                // 서버 저장 로직 생략(기존 API_URL 사용)
+            handleCardInput(input) {
+                this.isEditing = true;
+                this.meetingInputFocused = true;
+                this.updateMeetingInputStyle(input);
+                this.showSaveIndicator('saving');
+                if (this.saveTimers['meeting']) clearTimeout(this.saveTimers['meeting']);
+                this.saveTimers['meeting'] = setTimeout(() => { this.saveAllCards(); }, 2000);
             },
 
-            setView(m) { this.viewMode = m; this.render(); },
-            move(n) {
-                if(this.viewMode==='monthly') this.currentDate.setMonth(this.currentDate.getMonth()+n);
-                else if(this.viewMode==='yearly') this.currentDate.setFullYear(this.currentDate.getFullYear()+n);
-                else this.currentDate.setDate(this.currentDate.getDate()+(n*7));
-                this.render();
+            handleMeetingFocus() { this.meetingInputFocused = true; this.isEditing = true; },
+            handleMeetingBlur() {
+                setTimeout(() => {
+                    if (!this.isMeetingInputActive()) {
+                        this.meetingInputFocused = false;
+                        this.isEditing = false;
+                    }
+                }, 300);
+            },
+
+            updateMeetingInputStyle(input) {
+                if (input.value.trim() !== '') input.classList.add('has-data');
+                else input.classList.remove('has-data');
+            },
+
+            async saveAllCards() {
+                if (!this.isMeetingInputActive()) {
+                    this.isEditing = false;
+                    this.meetingInputFocused = false;
+                }
+                const dateStr = this.formatDate(this.meetingDate);
+                const container = document.getElementById('meetingCardsContainer');
+                if (!container) return;
+
+                const cards = container.querySelectorAll('.meeting-card');
+                let cardNum = 1;
+
+                for (const card of cards) {
+                    const oldMid = card.dataset.mid;
+                    const subjectEl = card.querySelector('[data-field="subject"]');
+                    const contentEl = card.querySelector('[data-field="content"]');
+                    const subject = subjectEl?.value.trim() || '';
+                    const content = contentEl?.value.trim() || '';
+
+                    if (!subject && !content) {
+                        if (!oldMid.startsWith('__new__')) {
+                            const idx = this.events.findIndex(e => e.id === oldMid);
+                            if (idx !== -1) this.events.splice(idx, 1);
+                            this.localDeletes.add(oldMid);
+                            delete this.localChanges[oldMid];
+                            await this.saveToServer('delete', { id: oldMid });
+                        }
+                        continue;
+                    }
+
+                    let mid = oldMid;
+                    if (oldMid.startsWith('__new__')) {
+                        mid = `meeting_${dateStr}_${cardNum}`;
+                        card.dataset.mid = mid;
+                        card.querySelectorAll('[data-mid]').forEach(el => el.dataset.mid = mid);
+                        card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${mid}', '${dateStr}')`);
+                        const aiBtn = card.querySelector('.ai-generate-btn');
+                        if (aiBtn) {
+                            aiBtn.setAttribute('onclick', `app.generateAIMeetingMinutes('${mid}')`);
+                            aiBtn.dataset.mid = mid;
+                        }
+                    }
+
+                    const meetingData = {
+                        id: mid, date: dateStr,
+                        title: subject || '(제목 없음)',
+                        dapt: 'meeting', subject, content
+                    };
+                    const idx = this.events.findIndex(e => e.id === mid);
+                    if (idx !== -1) this.events[idx] = meetingData;
+                    else this.events.push(meetingData);
+
+                    this.localDeletes.delete(mid);
+                    await this.saveToServer('add', meetingData);
+                    cardNum++;
+                }
+                this.renderMeetingCalendar();
+            },
+
+            async generateAIMeetingMinutes(mid) {
+                const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+                if (!card) return;
+                const subjectEl = card.querySelector('[data-field="subject"]');
+                const contentEl = card.querySelector('[data-field="content"]');
+                const aiBtn = card.querySelector('.ai-generate-btn');
+                const subject = subjectEl.value.trim();
+                const content = contentEl.value.trim();
+
+                if (!content) { this.showToast('📝 모임 내용을 먼저 입력해주세요.', 'error'); return; }
+
+                if (mid.startsWith('__new__')) {
+                    await this.saveAllCards();
+                    mid = card.dataset.mid;
+                }
+
+                this.aiGenerating = true;
+                if (aiBtn) { aiBtn.disabled = true; aiBtn.innerHTML = '⏳ AI 분석중...'; }
+
+                const textareaWrapper = contentEl.parentElement;
+                const overlay = document.createElement('div');
+                overlay.className = 'ai-overlay';
+                overlay.innerHTML = '<div class="ai-spinner">🤖 AI가 회의록을 작성하고 있습니다...</div>';
+                textareaWrapper.appendChild(overlay);
+                contentEl.style.opacity = '0.4';
+
+                try {
+                    const response = await fetch(this.API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({ action: 'generateAI', subject, content, meetingDate: this.formatDate(this.meetingDate) })
+                    });
+                    const resData = await response.json();
+
+                    if (resData.success && resData.minutes) {
+                        contentEl.value = resData.minutes;
+                        contentEl.classList.add('has-data');
+                        const updatedData = {
+                            id: mid, date: this.formatDate(this.meetingDate),
+                            title: subject || '(제목 없음)', dapt: 'meeting',
+                            subject, content: resData.minutes
+                        };
+                        const idx = this.events.findIndex(e => e.id === mid);
+                        if (idx !== -1) this.events[idx] = updatedData;
+                        else this.events.push(updatedData);
+                        this.localChanges[mid] = updatedData;
+                        await this.saveToServer('add', updatedData);
+                        this.showToast('✅ AI 회의록 완성!', 'success');
+                    }
+                } catch (err) { console.error('AI 오류:', err); }
+                finally {
+                    this.aiGenerating = false;
+                    if (aiBtn) { aiBtn.disabled = false; aiBtn.innerHTML = '🤖 AI 회의록'; }
+                    overlay.remove(); contentEl.style.opacity = '1';
+                }
             },
 
             render() {
-                const vp = document.getElementById('viewPort');
-                const tt = document.getElementById('titleText');
-                const np = document.getElementById('noticePort');
-                if(this.viewMode==='monthly') { tt.textContent=`${this.currentDate.getFullYear()}년 ${this.currentDate.getMonth()+1}월`; vp.innerHTML=this.renderMonthly(); np.classList.add('hidden'); }
-                else if(this.viewMode==='yearly') { tt.textContent=`${this.currentDate.getFullYear()}년 학사력`; vp.innerHTML=this.renderYearly(); np.classList.add('hidden'); }
-                else { tt.textContent='주간 계획'; vp.innerHTML=this.renderWeekly(); np.classList.remove('hidden'); }
+                const viewPort = document.getElementById('viewPort');
+                const titleText = document.getElementById('titleText');
+                const noticePort = document.getElementById('noticePort');
+                const eventInputSection = document.getElementById('eventInputSection');
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth() + 1;
+
+                if (this.viewMode === 'meeting') {
+                    titleText.textContent = '📝 회의메모';
+                    noticePort.classList.add('hidden');
+                    eventInputSection.classList.add('hidden');
+                    this.renderMeetingView();
+                } else {
+                    eventInputSection.classList.remove('hidden');
+                    if (viewPort.querySelector('.meeting-wrapper')) viewPort.innerHTML = '';
+
+                    if (this.viewMode === 'yearly') {
+                        titleText.textContent = `${year}년 전체 학사력`;
+                        viewPort.innerHTML = this.renderYearly();
+                        noticePort.classList.add('hidden');
+                    } else if (this.viewMode === 'monthly') {
+                        titleText.textContent = `${year}년 ${month}월`;
+                        viewPort.innerHTML = this.renderMonthly();
+                        noticePort.classList.add('hidden');
+                    } else {
+                        titleText.textContent = `${year}년 ${month}월 주간계획`;
+                        viewPort.innerHTML = this.renderWeekly();
+                        noticePort.classList.remove('hidden');
+                    }
+                }
             },
-            
-            showDetail(d) { /* 상세 보기 모달 로직 그대로 유지 */ },
-            closeModal() { document.getElementById('detailModal').style.display='none'; }
+
+            async init() {
+                await this.loadFromServer();
+                this.render();
+                setInterval(() => {
+                    if (!this.isEditing && !this.meetingInputFocused) this.loadFromServer();
+                }, 10000);
+            }
         };
-        app.loadFromServer();
+        window.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(() => console.log('✅ Service Worker 등록 성공'))
+                    .catch(err => console.log('❌ Service Worker 등록 실패:', err));
+            });
+        }
+
+        let deferredPrompt = null;
+        const installBtn = document.getElementById('installBtn');
+        const isStandalone = window.navigator.standalone === true ||
+                             window.matchMedia('(display-mode: standalone)').matches;
+
+        if (!isStandalone) {
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            if (isIOS) installBtn.style.display = 'block';
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
+            });
+        }
+
+        app.handleInstall = async function() {
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            if (isIOS) document.getElementById('iosInstallModal').style.display = 'flex';
+            else if (deferredPrompt) {
+                deferredPrompt.prompt();
+                await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            }
+        };
     </script>
 </body>
 </html>
