@@ -226,6 +226,7 @@
             saveTimers: {},
             savingInProgress: false,
             pendingSave: null,
+            aiGenerating: false,   // ✅ AI 생성 중 플래그
             meetingDate: new Date(),
             meetingCalendarDate: new Date(),
             days: ['일', '월', '화', '수', '목', '금', '토'],
@@ -285,6 +286,7 @@
 
             async loadFromServer() {
                 if (this.isSyncing) return;
+                if (this.aiGenerating) return;  // ✅ AI 생성 중 서버 동기화 차단
                 try {
                     this.isSyncing = true;
                     const response = await fetch(this.API_URL + '?t=' + Date.now());
@@ -521,6 +523,8 @@
             renderMeetingCards() {
                 const container = document.getElementById('meetingCardsContainer');
                 if (!container) return;
+                // ✅ AI 생성 중에는 카드를 다시 그리지 않음 (AI 결과 덮어쓰기 방지)
+                if (this.aiGenerating) return;
                 const dateStr = this.formatDate(this.meetingDate);
                 const meetings = this.getMeetingsForDate(dateStr);
 
@@ -878,12 +882,11 @@
             },
 
             // =====================================================
-            // ✅ AI 회의록 생성 - 수정된 버전
+            // ✅ AI 회의록 생성 - 재렌더링 방지 수정버전
             // =====================================================
             async generateAIMeetingMinutes(mid) {
                 console.log('🤖 AI 회의록 생성 시작, mid:', mid);
 
-                // ✅ 카드 찾기 - CSS.escape 사용하여 특수문자 처리
                 const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
                 if (!card) {
                     console.error('카드를 찾을 수 없음:', mid);
@@ -905,18 +908,16 @@
 
                 console.log('주제:', subject, '내용 길이:', content.length);
 
-                // ✅ 내용 검증 - 주제 또는 내용 중 하나라도 있으면 진행
                 if (!content) {
                     this.showToast('📝 모임 내용을 먼저 입력해주세요.', 'error');
                     contentEl.focus();
                     return;
                 }
 
-                // ✅ 새 카드(__new__)이면 먼저 저장 처리
+                // ✅ 새 카드(__new__)이면 먼저 저장
                 if (mid.startsWith('__new__')) {
                     this.showToast('💾 먼저 내용을 저장합니다...', 'info', 1500);
                     await this.saveAllCards();
-                    // saveAllCards 후 mid가 변경되었을 수 있음
                     const updatedMid = card.dataset.mid;
                     if (updatedMid !== mid) {
                         console.log('mid 업데이트:', mid, '->', updatedMid);
@@ -924,13 +925,20 @@
                     }
                 }
 
-                // ✅ 버튼 비활성화 및 로딩 표시
+                // ✅ AI 생성 시작 - 렌더링/동기화 완전 차단
+                this.aiGenerating = true;
+
+                // ✅ 진행 중인 자동저장 타이머 취소 (AI 결과를 덮어쓰지 않도록)
+                if (this.saveTimers['meeting']) {
+                    clearTimeout(this.saveTimers['meeting']);
+                    this.saveTimers['meeting'] = null;
+                }
+
                 if (aiBtn) {
                     aiBtn.disabled = true;
                     aiBtn.innerHTML = '⏳ AI 분석중...';
                 }
 
-                // ✅ textarea 위에 로딩 오버레이 추가
                 const textareaWrapper = contentEl.parentElement;
                 const overlay = document.createElement('div');
                 overlay.className = 'ai-overlay';
@@ -973,9 +981,31 @@
                     console.log('파싱된 응답:', resData.success, resData.error ? resData.error.substring(0, 100) : 'OK');
 
                     if (resData.success && resData.minutes) {
+                        // ✅ textarea에 AI 결과 직접 삽입
                         contentEl.value = resData.minutes;
                         contentEl.classList.add('has-data');
-                        this.handleCardInput(contentEl);
+                        contentEl.style.opacity = '1';
+
+                        // ✅ events 배열과 localChanges도 즉시 업데이트 (서버 동기화 시 덮어쓰기 방지)
+                        const dateStr = this.formatDate(this.meetingDate);
+                        const currentMid = card.dataset.mid;
+                        const existingIdx = this.events.findIndex(e => e.id === currentMid);
+                        const updatedData = {
+                            id: currentMid, date: dateStr,
+                            title: subject || '(제목 없음)',
+                            dapt: 'meeting',
+                            subject: subjectEl.value.trim(),
+                            content: resData.minutes
+                        };
+                        if (existingIdx !== -1) this.events[existingIdx] = updatedData;
+                        else this.events.push(updatedData);
+                        this.localChanges[currentMid] = updatedData;
+
+                        // ✅ 서버에 AI 결과 저장 (타이머 없이 즉시)
+                        this.showSaveIndicator('saving');
+                        await this.saveToServer('add', updatedData);
+                        this.showSaveIndicator('saved');
+
                         this.showToast('✅ AI 회의록이 완성되었습니다!', 'success');
                     } else {
                         const errMsg = resData.error || '알 수 없는 오류가 발생했습니다.';
@@ -987,7 +1017,9 @@
                     console.error('AI 통신 오류:', err);
                     this.showToast('❌ 통신 오류: ' + err.message, 'error', 5000);
                 } finally {
-                    // ✅ UI 복원
+                    // ✅ AI 생성 완료 - 렌더링 차단 해제
+                    this.aiGenerating = false;
+
                     if (aiBtn) {
                         aiBtn.disabled = false;
                         aiBtn.innerHTML = '🤖 AI 회의록';
