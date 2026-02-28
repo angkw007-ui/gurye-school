@@ -24,7 +24,6 @@
         @media (min-width: 768px) { .day-cell { height: 120px; padding: 8px; } }
         .day-cell:hover { background-color: #f1f5f9; }
 
-        /* ✅ 월간뷰 일정: 고정 높이 한 줄, 말줄임 */
         .event-item { 
             font-size: 11px; 
             padding: 2px 4px; 
@@ -55,7 +54,6 @@
         .event-more { font-size: 10px; color: #64748b; font-weight: 700; padding: 1px 4px; flex-shrink: 0; }
         @media (min-width: 768px) { .event-more { font-size: 11px; } }
 
-        /* ✅ 주간뷰 일정: 가변 높이, 삭제버튼 포함 flex */
         .event-item-week {
             font-size: 13px;
             padding: 6px 8px;
@@ -74,14 +72,12 @@
         @media (min-width: 768px) { .event-item-week { font-size: 14px; } }
         .event-item-week:hover { background-color: #e0f2fe; }
 
-        /* ✅ 월간뷰 날짜 셀 내부 구조 */
         .day-cell-header { font-size: 10px; font-weight: 900; margin-bottom: 2px; flex-shrink: 0; }
         @media (min-width: 768px) { .day-cell-header { font-size: 13px; margin-bottom: 4px; } }
         .day-cell-holiday { font-size: 10px; color: #dc2626; font-weight: 700; margin-bottom: 2px; flex-shrink: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         @media (min-width: 768px) { .day-cell-holiday { font-size: 12px; } }
         .day-cell-events { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 1px; min-height: 0; }
 
-        /* ✅ 2. 오늘 날짜 빨간 테두리 스타일 */
         .today-border { outline: 3px solid #ef4444 !important; outline-offset: -3px; z-index: 10; position: relative; border-radius: 8px; }
 
         .dept-교무 { color: #15803d; border-left-color: #15803d; }
@@ -214,36 +210,6 @@
         .toast.error { background: #dc2626; }
         .toast.success { background: #16a34a; }
 
-        /* ===== 녹음 기능 ===== */
-        .record-btn {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white; padding: 4px 12px; border-radius: 6px;
-            font-size: 11px; font-weight: bold; cursor: pointer;
-            transition: all 0.2s; box-shadow: 0 2px 5px rgba(239,68,68,0.3);
-            border: none; margin-left: 6px;
-        }
-        .record-btn:hover { transform: scale(1.05); }
-        .record-btn.recording {
-            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
-            animation: pulse-red 1s infinite;
-        }
-        .record-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        @keyframes pulse-red {
-            0%, 100% { box-shadow: 0 2px 5px rgba(239,68,68,0.3); }
-            50% { box-shadow: 0 2px 16px rgba(239,68,68,0.8); }
-        }
-        .record-status {
-            font-size: 11px; color: #ef4444; font-weight: 700;
-            margin-top: 4px; min-height: 16px; text-align: right;
-        }
-        .transcript-preview {
-            font-size: 12px; color: #64748b; font-style: italic;
-            background: #fef2f2; border: 1px dashed #fca5a5;
-            border-radius: 6px; padding: 6px 10px; margin-top: 6px;
-            min-height: 32px; display: none;
-        }
-        .transcript-preview.visible { display: block; }
-
         /* PDF 다운로드 버튼 */
         .pdf-btn {
             background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
@@ -254,16 +220,6 @@
         }
         .pdf-btn:hover { transform: scale(1.05); }
         .pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        /* 녹음파일 등록 버튼 */
-        .audio-upload-btn {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white; padding: 4px 12px; border-radius: 6px;
-            font-size: 11px; font-weight: bold; cursor: pointer;
-            transition: all 0.2s; box-shadow: 0 2px 5px rgba(245,158,11,0.3);
-            display: inline-flex; align-items: center; margin-left: 6px;
-        }
-        .audio-upload-btn:hover { transform: scale(1.05); }
 
         /* PDF 출력용 숨겨진 영역 */
         @media print {
@@ -377,16 +333,12 @@
                 '2026-10-05:대체공휴일', '2026-10-09:한글날', '2026-12-25:크리스마스'
             ],
 
-            // ✅ 3. 날짜 문자열을 그대로 사용하여 타임존 문제 완벽히 해결
             parseLocalDate(dateStr) {
-                // dateStr 형식: "YYYY-MM-DD" (input[type="date"]의 값)
-                // 타임존 영향을 받지 않도록 직접 파싱
                 const parts = dateStr.split('-');
                 if (parts.length !== 3) return new Date();
                 return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
             },
 
-            // ✅ 2. 오늘 날짜 확인 로직
             isToday(dateStr) {
                 const today = this.formatDate(new Date());
                 return dateStr === today;
@@ -447,11 +399,9 @@
                     const serverEvents = data.map(item => {
                         let dateStr = item.date;
                         if (typeof dateStr === 'number') {
-                            // 구글 시트 직렬 날짜 (1900-01-01 기준 일수)
                             const d = new Date(Math.round((dateStr - 25569) * 86400 * 1000));
                             dateStr = this.formatDate(new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
                         } else if (typeof dateStr === 'string' && dateStr.includes('T')) {
-                            // ISO 문자열 → 한국 시간(UTC+9) 기준 날짜 추출
                             const d = new Date(dateStr);
                             const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
                             dateStr = this.formatDate(new Date(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate()));
@@ -635,11 +585,8 @@
                     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
                     const isSelected = dateStr === selectedDateStr;
                     const hasMeeting = this.getMeetingsForDate(dateStr).length > 0;
-                    
-                    // ✅ 회의메모 오늘 날짜 빨간 테두리 적용
                     const todayClass = this.isToday(dateStr) ? 'today-border' : '';
                     let classes = `meeting-calendar-day ${todayClass}`;
-                    
                     if (isWeekend && !isSelected) classes += ' weekend';
                     if (isSelected) classes += ' selected';
                     if (hasMeeting) classes += ' has-meeting';
@@ -725,15 +672,8 @@
                             <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end">
                                 <button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button>
                                 <button class="pdf-btn" onclick="app.downloadPDF('${mid}')">📄 PDF 저장</button>
-                                <label class="audio-upload-btn" title="녹음파일 등록 후 텍스트 변환">
-                                    🎵 녹음파일 등록
-                                    <input type="file" accept="audio/*" style="display:none" onchange="app.handleAudioFile(event,'${mid}')">
-                                </label>
-                                <button class="record-btn" id="recBtn_${mid}" onclick="app.toggleRecording('${mid}')">🎙 녹음 시작</button>
                             </span>
                         </label>
-                        <div class="record-status" id="recStatus_${mid}"></div>
-                        <div class="transcript-preview" id="recPreview_${mid}"></div>
                         <div style="position:relative">
                             <textarea
                                 class="meeting-textarea ${hasContent ? 'has-data' : ''}"
@@ -760,14 +700,6 @@
                 card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${newId}', '${dateStr}')`);
                 card.querySelector('.ai-generate-btn').setAttribute('onclick', `app.generateAIMeetingMinutes('${newId}')`);
                 card.querySelector('.ai-generate-btn').dataset.mid = newId;
-                const recBtn = card.querySelector('.record-btn');
-                if (recBtn) { recBtn.id = `recBtn_${newId}`; recBtn.setAttribute('onclick', `app.toggleRecording('${newId}')`); }
-                const recStatus = card.querySelector('.record-status');
-                if (recStatus) recStatus.id = `recStatus_${newId}`;
-                const recPreview = card.querySelector('.transcript-preview');
-                if (recPreview) recPreview.id = `recPreview_${newId}`;
-                const audioInput = card.querySelector('input[type="file"]');
-                if (audioInput) audioInput.setAttribute('onchange', `app.handleAudioFile(event,'${newId}')`);
                 container.appendChild(card);
             },
 
@@ -818,9 +750,6 @@
                 const title = document.getElementById('inTitle').value;
                 const dapt = document.getElementById('inDept').value;
                 if (!dateInput || !title) { alert('날짜와 내용을 입력하세요.'); return; }
-                
-                // ✅ 오류 수정: 날짜 입력값을 그대로 사용하여 타임존 문제 완벽히 해결
-                // dateInput은 "YYYY-MM-DD" 형식의 문자열
                 const newEvent = { id: Date.now().toString(), date: dateInput, title: title, dapt: dapt };
                 this.events.push(newEvent);
                 this.currentDate = this.parseLocalDate(dateInput);
@@ -911,8 +840,6 @@
                         const isWeekend = dayIdx === 0 || dayIdx === 6;
                         const colorClass = dayIdx === 0 || holiday ? 'text-sun' : (dayIdx === 6 ? 'text-sat' : 'text-slate-600');
                         const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
-                        
-                        // ✅ 연간 뷰 오늘 날짜 빨간 테두리 적용
                         const todayClass = this.isToday(dateStr) ? 'today-border' : '';
                         const cellClass = holiday || isWeekend ? 'weekend' : (hasEvent ? 'has-event' : '');
                         html += `<div class="mini-day ${cellClass} ${colorClass} ${holidayClass} ${todayClass}" onclick="app.showDetail('${dateStr}')">${d}</div>`;
@@ -938,8 +865,6 @@
                     const isWeekend = dayIdx === 0 || dayIdx === 6;
                     const colorClass = dayIdx === 0 || holiday ? 'text-sun' : (dayIdx === 6 ? 'text-sat' : 'text-slate-400');
                     const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
-                    
-                    // ✅ 월간 뷰 오늘 날짜 빨간 테두리 적용
                     const todayClass = this.isToday(dateStr) ? 'today-border' : '';
                     html += `<div class="day-cell ${holidayClass} ${todayClass}" onclick="app.showDetail('${dateStr}')">
                         <div class="day-cell-header ${colorClass}">${d}</div>`;
@@ -981,8 +906,6 @@
                     const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
                     const dayOfWeek = this.days[d.getDay()];
                     const colorClass = d.getDay() === 0 || holiday ? 'text-sun' : (d.getDay() === 6 ? 'text-sat' : 'text-green-800');
-                    
-                    // ✅ 주간 뷰 오늘 날짜 빨간 테두리 적용
                     const todayClass = this.isToday(dStr) ? 'today-border' : '';
                     html += `<div class="week-item ${holidayClass} ${todayClass} p-4 rounded-xl border flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')">
                         <div class="w-20 md:w-28 week-date-label font-black ${colorClass} border-r mr-4">${d.getDate()}일(${dayOfWeek})`;
@@ -1101,7 +1024,6 @@
                     const dateStr = this.formatDate(this.meetingDate);
                     const dayOfWeek = this.days[this.meetingDate.getDay()];
 
-                    // ── 화면에 보이지 않는 인쇄용 DOM 생성 ──
                     const printDiv = document.createElement('div');
                     printDiv.style.cssText = `
                         position:fixed; left:-9999px; top:0;
@@ -1110,7 +1032,6 @@
                         font-size:14px; line-height:1.8; color:#1e293b; padding:0;
                     `;
 
-                    // 헤더
                     printDiv.innerHTML = `
                         <div style="background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;">
                             <span style="font-size:18px;font-weight:900;">🏫 구례중 회의록</span>
@@ -1135,7 +1056,6 @@
                     `;
                     document.body.appendChild(printDiv);
 
-                    // html2canvas 캡처
                     const canvas = await html2canvas(printDiv, {
                         scale: 2,
                         useCORS: true,
@@ -1144,22 +1064,17 @@
                     });
                     document.body.removeChild(printDiv);
 
-                    // jsPDF에 이미지로 삽입 (A4 크기에 맞게)
                     const { jsPDF } = window.jspdf;
                     const imgData = canvas.toDataURL('image/png');
-                    const pdfW = 210; // A4 mm
+                    const pdfW = 210;
                     const pdfH = (canvas.height * pdfW) / canvas.width;
-
-                    // 긴 내용은 여러 페이지로 분할
                     const pageHeight = 297;
                     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
                     if (pdfH <= pageHeight) {
                         doc.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
                     } else {
-                        // 페이지 분할
                         let yOffset = 0;
-                        const ratio = canvas.width / pdfW;
                         while (yOffset < pdfH) {
                             if (yOffset > 0) doc.addPage();
                             doc.addImage(imgData, 'PNG', 0, -yOffset, pdfW, pdfH);
@@ -1176,215 +1091,6 @@
                 } finally {
                     if (btn) { btn.disabled = false; btn.textContent = '📄 PDF 저장'; }
                 }
-            },
-
-            /* ===== 녹음 기능 (동기화 + 모바일 30분+ 지원) ===== */
-            _recognition: null,
-            _recordingMid: null,
-            _isRecording: false,
-            _recordingFinalText: '',   // 세션 전체 누적 텍스트
-            _recordingUserStopped: false,
-
-            toggleRecording(mid) {
-                if (this._isRecording && this._recordingMid === mid) {
-                    this._recordingUserStopped = true;
-                    this.stopRecording();
-                } else {
-                    if (this._isRecording) {
-                        this._recordingUserStopped = true;
-                        this.stopRecording();
-                    }
-                    this.startRecording(mid);
-                }
-            },
-
-            startRecording(mid) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SpeechRecognition) {
-                    this.showToast('⚠️ 이 브라우저는 음성인식을 지원하지 않습니다. Chrome을 사용해주세요.', 'error');
-                    return;
-                }
-
-                // 새 세션 시작 시 초기화
-                this._recordingMid = mid;
-                this._isRecording = true;
-                this._recordingUserStopped = false;
-                if (!this._recordingFinalText) this._recordingFinalText = '';
-
-                const btn = document.getElementById(`recBtn_${mid}`);
-                const statusEl = document.getElementById(`recStatus_${mid}`);
-                const previewEl = document.getElementById(`recPreview_${mid}`);
-                const getTextarea = () => document.querySelector(`.meeting-textarea[data-mid="${mid}"]`);
-
-                // UI 업데이트
-                if (btn) { btn.textContent = '⏹ 녹음 중지'; btn.classList.add('recording'); }
-                if (statusEl) statusEl.textContent = '🔴 녹음 중... 말씀하세요';
-                if (previewEl) previewEl.classList.add('visible');
-
-                const rec = new SpeechRecognition();
-                rec.lang = 'ko-KR';
-                rec.continuous = true;
-                rec.interimResults = true;
-                rec.maxAlternatives = 1;
-
-                let sessionFinal = '';  // 이번 recognition 세션의 확정 텍스트
-
-                rec.onresult = (e) => {
-                    let interim = '';
-                    for (let i = e.resultIndex; i < e.results.length; i++) {
-                        if (e.results[i].isFinal) sessionFinal += e.results[i][0].transcript;
-                        else interim += e.results[i][0].transcript;
-                    }
-                    if (previewEl) {
-                        const combined = this._recordingFinalText + sessionFinal;
-                        previewEl.textContent = (interim || (combined.slice(-60) + (combined.length > 60 ? '...' : '')));
-                    }
-                };
-
-                rec.onend = () => {
-                    // 이번 세션 텍스트를 전체 누적에 추가
-                    this._recordingFinalText += sessionFinal;
-
-                    if (!this._recordingUserStopped && this._isRecording) {
-                        // 모바일에서 자동 중단됐을 때 → 즉시 재시작 (30분+ 연속 녹음)
-                        setTimeout(() => {
-                            if (!this._recordingUserStopped && this._isRecording) {
-                                this.startRecording(mid);
-                            }
-                        }, 300);
-                        return;
-                    }
-
-                    // 사용자가 중지 버튼을 눌렀을 때
-                    this._isRecording = false;
-                    this._recordingMid = null;
-                    if (btn) { btn.textContent = '🎙 녹음 시작'; btn.classList.remove('recording'); }
-                    if (statusEl) statusEl.textContent = '';
-                    if (previewEl) { previewEl.classList.remove('visible'); previewEl.textContent = ''; }
-
-                    const finalText = this._recordingFinalText.trim();
-                    this._recordingFinalText = '';  // 초기화
-
-                    if (finalText) {
-                        const textarea = getTextarea();
-                        if (textarea) {
-                            const existing = textarea.value.trim();
-                            textarea.value = existing
-                                ? existing + '\n\n[🎙 녹음 내용]\n' + finalText
-                                : finalText;
-                            textarea.classList.add('has-data');
-                            // ✅ 핵심: handleCardInput → saveAllCards → saveToServer 호출로 동기화
-                            this.handleCardInput(textarea);
-                            this.showToast('✅ 녹음 내용이 저장·동기화되었습니다!', 'success');
-                        }
-                    }
-                };
-
-                rec.onerror = (e) => {
-                    if (e.error === 'no-speech' || e.error === 'aborted') return; // 무시 (자동 재시작)
-                    const msgs = {
-                        'not-allowed': '마이크 권한이 없습니다. 브라우저 설정을 확인하세요.',
-                        'network': '네트워크 오류가 발생했습니다.'
-                    };
-                    this.showToast('⚠️ ' + (msgs[e.error] || '녹음 오류: ' + e.error), 'error');
-                };
-
-                this._recognition = rec;
-                try { rec.start(); } catch(e) { /* 이미 시작된 경우 무시 */ }
-            },
-
-            stopRecording() {
-                if (this._recognition) {
-                    try { this._recognition.stop(); } catch(e) {}
-                    this._recognition = null;
-                }
-            },
-
-            /* ===== 녹음파일 등록 → 텍스트 변환 ===== */
-            handleAudioFile(event, mid) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SpeechRecognition) {
-                    this.showToast('⚠️ 이 브라우저는 음성인식을 지원하지 않습니다. Chrome을 사용해주세요.', 'error');
-                    return;
-                }
-
-                const statusEl = document.getElementById(`recStatus_${mid}`);
-                const previewEl = document.getElementById(`recPreview_${mid}`);
-                const textarea = document.querySelector(`.meeting-textarea[data-mid="${mid}"]`);
-
-                // 오디오 파일을 Audio 엘리먼트로 재생하면서 Web Speech API로 인식
-                const url = URL.createObjectURL(file);
-                const audio = new Audio(url);
-                audio.playbackRate = 1.0;
-
-                if (statusEl) statusEl.textContent = '🎵 파일 변환 중... 잠시 기다려주세요';
-                if (previewEl) previewEl.classList.add('visible');
-
-                const rec = new SpeechRecognition();
-                rec.lang = 'ko-KR';
-                rec.continuous = true;
-                rec.interimResults = true;
-
-                let fullText = '';
-
-                rec.onresult = (e) => {
-                    let interim = '';
-                    for (let i = e.resultIndex; i < e.results.length; i++) {
-                        if (e.results[i].isFinal) fullText += e.results[i][0].transcript;
-                        else interim += e.results[i][0].transcript;
-                    }
-                    if (previewEl) previewEl.textContent = interim || fullText.slice(-80) + '...';
-                };
-
-                rec.onend = () => {
-                    audio.pause();
-                    URL.revokeObjectURL(url);
-                    if (statusEl) statusEl.textContent = '';
-                    if (previewEl) { previewEl.classList.remove('visible'); previewEl.textContent = ''; }
-
-                    const finalText = fullText.trim();
-                    if (finalText && textarea) {
-                        const existing = textarea.value.trim();
-                        textarea.value = existing
-                            ? existing + '\n\n[🎵 파일 변환 내용]\n' + finalText
-                            : finalText;
-                        textarea.classList.add('has-data');
-                        this.handleCardInput(textarea);
-                        this.showToast('✅ 녹음파일이 텍스트로 변환되어 저장되었습니다!', 'success');
-                    } else {
-                        this.showToast('⚠️ 변환된 텍스트가 없습니다. 파일을 확인해주세요.', 'error');
-                    }
-                };
-
-                rec.onerror = (e) => {
-                    if (e.error === 'no-speech' || e.error === 'aborted') return;
-                    audio.pause();
-                    URL.revokeObjectURL(url);
-                    if (statusEl) statusEl.textContent = '';
-                    if (previewEl) previewEl.classList.remove('visible');
-                    this.showToast('⚠️ 변환 오류: ' + e.error, 'error');
-                };
-
-                // 오디오 재생 시작과 함께 인식 시작
-                audio.oncanplaythrough = () => {
-                    rec.start();
-                    audio.play();
-                };
-
-                audio.onended = () => {
-                    setTimeout(() => { try { rec.stop(); } catch(e) {} }, 1000);
-                };
-
-                audio.onerror = () => {
-                    this.showToast('❌ 오디오 파일을 읽을 수 없습니다.', 'error');
-                    if (statusEl) statusEl.textContent = '';
-                };
-
-                // 파일 input 초기화 (같은 파일 재선택 가능하도록)
-                event.target.value = '';
             },
 
             async generateAIMeetingMinutes(mid) {
