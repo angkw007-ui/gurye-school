@@ -232,7 +232,10 @@
 <body class="p-3">
     <div class="max-w-6xl mx-auto">
         <header class="flex justify-between items-center mb-6 bg-green-800 p-4 rounded-2xl text-white shadow-lg">
-            <h1 class="font-black text-sm md:text-lg">🏫 구례중 주간 계획</h1>
+            <h1 class="font-black text-sm md:text-lg flex items-center gap-2">
+                <img src="./icons/icon-192.png" style="width:28px;height:28px;object-fit:contain;border-radius:6px;" alt="구례중 로고">
+                구례중 주간 계획
+            </h1>
             <div class="flex gap-1 md:gap-2">
                 <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">주간</button>
                 <button onclick="app.setView('monthly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">월간</button>
@@ -306,6 +309,7 @@
     </div>
 
     <script>
+        // 아이콘을 base64로 변환하여 저장 (PDF용)
         const app = {
             // ✅ GAS 배포 주소
             API_URL: 'https://script.google.com/macros/s/AKfycbzQqONXTaXF09QGbN94DvUxJyrjF0HHMFbPE97Onl32IA19t12B9HvuEZMZlwcmLIOu/exec',
@@ -324,6 +328,29 @@
             meetingDate: new Date(),
             meetingCalendarDate: new Date(),
             days: ['일', '월', '화', '수', '목', '금', '토'],
+            _logoBase64: null,
+
+            // 로고를 base64로 로드 (PDF에서 사용)
+            async loadLogoBase64() {
+                try {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    await new Promise((resolve, reject) => {
+                        img.onload = resolve;
+                        img.onerror = reject;
+                        img.src = './icons/icon-192.png';
+                    });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width || 192;
+                    canvas.height = img.height || 192;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    this._logoBase64 = canvas.toDataURL('image/png');
+                } catch(e) {
+                    console.log('로고 로드 실패, 텍스트로 대체');
+                    this._logoBase64 = null;
+                }
+            },
 
             holidays: [
                 '2026-01-01:신정', '2026-02-16:설날연휴', '2026-02-17:설날', '2026-02-18:설날연휴',
@@ -1005,7 +1032,7 @@
                 this.renderMeetingCalendar();
             },
 
-            /* ===== PDF 다운로드 기능 (html2canvas 방식 - 한글 완벽 지원) ===== */
+            /* ===== PDF 다운로드 기능 (html2canvas + 구례중학교 로고 적용) ===== */
             async downloadPDF(mid) {
                 const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
                 if (!card) return;
@@ -1024,6 +1051,10 @@
                     const dateStr = this.formatDate(this.meetingDate);
                     const dayOfWeek = this.days[this.meetingDate.getDay()];
 
+                    // 로고 img 태그 (base64 또는 파일 경로)
+                    const logoSrc = this._logoBase64 || './icons/icon-192.png';
+                    const logoHtml = `<img src="${logoSrc}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;vertical-align:middle;margin-right:10px;" crossorigin="anonymous">`;
+
                     const printDiv = document.createElement('div');
                     printDiv.style.cssText = `
                         position:fixed; left:-9999px; top:0;
@@ -1034,7 +1065,9 @@
 
                     printDiv.innerHTML = `
                         <div style="background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;">
-                            <span style="font-size:18px;font-weight:900;">🏫 구례중 회의록</span>
+                            <span style="font-size:18px;font-weight:900;display:flex;align-items:center;">
+                                ${logoHtml}구례중학교 회의록
+                            </span>
                             <span style="font-size:13px;opacity:0.9;">${dateStr} (${dayOfWeek})</span>
                         </div>
                         <div style="padding:28px 32px 32px;">
@@ -1059,6 +1092,7 @@
                     const canvas = await html2canvas(printDiv, {
                         scale: 2,
                         useCORS: true,
+                        allowTaint: true,
                         backgroundColor: '#ffffff',
                         logging: false
                     });
@@ -1184,6 +1218,8 @@
             },
 
             async init() {
+                // 로고 base64 미리 로드 (PDF에서 사용)
+                await this.loadLogoBase64();
                 await this.loadFromServer();
                 this.render();
                 setInterval(() => {
