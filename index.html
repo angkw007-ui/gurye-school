@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>구례중 주간계획1.0</title>
+    <title>구례중 주간계획1.1</title>
 
     <link rel="manifest" href="./manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
@@ -24,51 +24,13 @@
         @media (min-width: 768px) { .day-cell { height: 120px; padding: 8px; } }
         .day-cell:hover { background-color: #f1f5f9; }
 
-        .event-item { 
-            font-size: 11px; 
-            padding: 2px 4px; 
-            border-radius: 3px; 
-            background-color: #f1f5f9; 
-            border-left: 2px solid #16a34a; 
-            font-weight: 700; 
-            display: block; 
-            overflow: hidden; 
-            white-space: nowrap; 
-            text-overflow: ellipsis; 
-            cursor: pointer; 
-            transition: all 0.2s; 
-            flex-shrink: 0;
-            height: 18px;
-            line-height: 14px;
-            box-sizing: border-box;
-        }
-        @media (min-width: 768px) { 
-            .event-item { 
-                font-size: 12px; 
-                padding: 3px 6px; 
-                height: 20px;
-                line-height: 14px;
-            } 
-        }
+        .event-item { font-size: 11px; padding: 2px 4px; border-radius: 3px; background-color: #f1f5f9; border-left: 2px solid #16a34a; font-weight: 700; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: pointer; transition: all 0.2s; flex-shrink: 0; height: 18px; line-height: 14px; box-sizing: border-box; }
+        @media (min-width: 768px) { .event-item { font-size: 12px; padding: 3px 6px; height: 20px; line-height: 14px; } }
         .event-item:hover { background-color: #e0f2fe; }
         .event-more { font-size: 10px; color: #64748b; font-weight: 700; padding: 1px 4px; flex-shrink: 0; }
         @media (min-width: 768px) { .event-more { font-size: 11px; } }
 
-        .event-item-week {
-            font-size: 13px;
-            padding: 6px 8px;
-            margin-bottom: 4px;
-            border-radius: 5px;
-            background-color: #f1f5f9;
-            border-left: 3px solid #16a34a;
-            font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            word-break: break-all;
-        }
+        .event-item-week { font-size: 13px; padding: 6px 8px; margin-bottom: 4px; border-radius: 5px; background-color: #f1f5f9; border-left: 3px solid #16a34a; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; word-break: break-all; }
         @media (min-width: 768px) { .event-item-week { font-size: 14px; } }
         .event-item-week:hover { background-color: #e0f2fe; }
 
@@ -96,7 +58,8 @@
         .text-sun { color: #ef4444; } .text-sat { color: #3b82f6; }
         .del-x { color: #ef4444; cursor: pointer; margin-left: 4px; font-weight: bold; }
 
-        .year-view { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        /* ===== 연간 뷰 ===== */
+        .year-view { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
         .year-month { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .year-month-title { font-weight: 900; color: #1e293b; margin-bottom: 8px; font-size: 16px; }
         @media (min-width: 768px) { .year-month-title { font-size: 18px; } }
@@ -104,10 +67,37 @@
         .mini-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 10px; }
         @media (min-width: 768px) { .mini-calendar { font-size: 12px; } }
 
-        .mini-day { padding: 4px; text-align: center; min-height: 30px; background: #f8fafc; border-radius: 4px; cursor: pointer; }
-        @media (min-width: 768px) { .mini-day { min-height: 36px; padding: 6px; } }
+        /* 연간 미니 캘린더 셀 - 이벤트 텍스트 표시 지원 */
+        .mini-day {
+            padding: 2px;
+            text-align: center;
+            min-height: 48px;
+            background: #f8fafc;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        @media (min-width: 768px) { .mini-day { min-height: 60px; padding: 3px 2px; } }
         .mini-day.has-event { background: #dcfce7; font-weight: 700; }
         .mini-day.weekend { background: #fee2e2; }
+
+        /* 연간 뷰 이벤트 라벨 */
+        .mini-ev {
+            font-size: 8px;
+            font-weight: 700;
+            max-width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+            width: 100%;
+            text-align: center;
+            border-radius: 2px;
+            padding: 0 1px;
+        }
+        @media (min-width: 768px) { .mini-ev { font-size: 9px; } }
 
         .week-item { background-color: white; }
         .weekend-bg, .holiday-bg { background-color: #fff1f2 !important; }
@@ -179,7 +169,6 @@
         .save-indicator.saving { color: #f59e0b; }
         .save-indicator.saved { color: #16a34a; }
 
-        /* ===== 복수 회의 카드 ===== */
         .meeting-card { background: #f8fafc; border: 2px solid #e5e7eb; border-radius: 12px; padding: 14px; margin-bottom: 12px; position: relative; transition: border-color 0.2s; }
         .meeting-card:hover { border-color: #16a34a; }
         .meeting-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -189,9 +178,7 @@
         .add-meeting-btn { width: 100%; padding: 10px; border: 2px dashed #16a34a; border-radius: 10px; color: #16a34a; font-weight: 900; font-size: 14px; cursor: pointer; background: white; transition: all 0.2s; margin-top: 4px; }
         .add-meeting-btn:hover { background: #f0fdf4; }
 
-        /* AI 로딩 오버레이 */
-        .ai-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(124,58,237,0.08);
-            border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .ai-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(124,58,237,0.08); border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 100; }
         .ai-spinner { font-size: 13px; font-weight: 700; color: #7c3aed; text-align: center; }
 
         .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(22,163,74,0.3); cursor: pointer; border: none; transition: all 0.3s; z-index: 999; }
@@ -204,24 +191,15 @@
             .meeting-textarea { touch-action: pan-y; -webkit-overflow-scrolling: touch; }
         }
 
-        /* 에러 토스트 */
         .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity 0.3s; max-width: 90vw; text-align: center; }
         .toast.show { opacity: 1; }
         .toast.error { background: #dc2626; }
         .toast.success { background: #16a34a; }
 
-        /* PDF 다운로드 버튼 */
-        .pdf-btn {
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-            color: white; padding: 4px 12px; border-radius: 6px;
-            font-size: 11px; font-weight: bold; cursor: pointer;
-            transition: all 0.2s; box-shadow: 0 2px 5px rgba(14,165,233,0.3);
-            border: none; margin-left: 6px;
-        }
+        .pdf-btn { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(14,165,233,0.3); border: none; margin-left: 6px; }
         .pdf-btn:hover { transform: scale(1.05); }
         .pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        /* PDF 출력용 숨겨진 영역 */
         @media print {
             body * { visibility: hidden; }
             #pdfPrintArea, #pdfPrintArea * { visibility: visible; }
@@ -309,15 +287,14 @@
     </div>
 
     <script>
-        // 아이콘을 base64로 변환하여 저장 (PDF용)
         const app = {
-            // ✅ GAS 배포 주소
             API_URL: 'https://script.google.com/macros/s/AKfycbxFyog7n0_ciSjwqtv9kz61AmzeQxSjcvM4S2u1MyOB80FLe9_fc_Qm1Yzg2IIpWOal/exec',
             events: [],
             localChanges: {},
             localDeletes: new Set(),
             currentDate: new Date(),
-            viewMode: 'weekly',
+            // ✅ 수정1: 첫 화면을 월간(monthly)으로 변경
+            viewMode: 'monthly',
             isSyncing: false,
             isEditing: false,
             meetingInputFocused: false,
@@ -330,7 +307,6 @@
             days: ['일', '월', '화', '수', '목', '금', '토'],
             _logoBase64: null,
 
-            // 로고를 base64로 로드 (PDF에서 사용)
             async loadLogoBase64() {
                 try {
                     const img = new Image();
@@ -347,7 +323,6 @@
                     ctx.drawImage(img, 0, 0);
                     this._logoBase64 = canvas.toDataURL('image/png');
                 } catch(e) {
-                    console.log('로고 로드 실패, 텍스트로 대체');
                     this._logoBase64 = null;
                 }
             },
@@ -849,6 +824,7 @@
                 this.render();
             },
 
+            // ✅ 수정2: 연간 뷰에서 이벤트 내용 텍스트 표시
             renderYearly() {
                 const year = this.currentDate.getFullYear();
                 let html = '<div class="year-view">';
@@ -868,8 +844,25 @@
                         const colorClass = dayIdx === 0 || holiday ? 'text-sun' : (dayIdx === 6 ? 'text-sat' : 'text-slate-600');
                         const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
                         const todayClass = this.isToday(dateStr) ? 'today-border' : '';
+
+                        // 이벤트 라벨 생성
+                        const yEvts = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
+                        let yEvHtml = '';
+                        if (holiday) {
+                            const hShort = holiday.length > 5 ? holiday.substring(0, 4) + '…' : holiday;
+                            yEvHtml += `<div class="mini-ev" style="color:#dc2626;">${hShort}</div>`;
+                        }
+                        const evSlot = holiday ? 1 : 2;
+                        yEvts.slice(0, evSlot).forEach(ev => {
+                            const t = ev.title.length > 6 ? ev.title.substring(0, 5) + '…' : ev.title;
+                            yEvHtml += `<div class="mini-ev dept-${ev.dapt}">${t}</div>`;
+                        });
+                        if (yEvts.length > evSlot) {
+                            yEvHtml += `<div class="mini-ev" style="color:#64748b;">+${yEvts.length - evSlot}</div>`;
+                        }
+
                         const cellClass = holiday || isWeekend ? 'weekend' : (hasEvent ? 'has-event' : '');
-                        html += `<div class="mini-day ${cellClass} ${colorClass} ${holidayClass} ${todayClass}" onclick="app.showDetail('${dateStr}')">${d}</div>`;
+                        html += `<div class="mini-day ${cellClass} ${colorClass} ${holidayClass} ${todayClass}" onclick="app.showDetail('${dateStr}')"><span>${d}</span>${yEvHtml}</div>`;
                     }
                     html += '</div></div>';
                 }
@@ -1032,79 +1025,48 @@
                 this.renderMeetingCalendar();
             },
 
-            /* ===== PDF 다운로드 기능 (html2canvas + 구례중학교 로고 적용) ===== */
             async downloadPDF(mid) {
                 const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
                 if (!card) return;
-
                 const subjectEl = card.querySelector('[data-field="subject"]');
                 const contentEl = card.querySelector('[data-field="content"]');
                 const subject = subjectEl ? subjectEl.value.trim() : '회의록';
                 const content = contentEl ? contentEl.value.trim() : '';
-
                 if (!content) { this.showToast('📝 내용을 먼저 입력해주세요.', 'error'); return; }
-
                 const btn = card.querySelector('.pdf-btn');
                 if (btn) { btn.disabled = true; btn.textContent = '⏳ 생성 중...'; }
-
                 try {
                     const dateStr = this.formatDate(this.meetingDate);
                     const dayOfWeek = this.days[this.meetingDate.getDay()];
-
-                    // 로고 img 태그 (base64 또는 파일 경로)
                     const logoSrc = this._logoBase64 || './icons/icon-192.png';
                     const logoHtml = `<img src="${logoSrc}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;vertical-align:middle;margin-right:10px;" crossorigin="anonymous">`;
-
                     const printDiv = document.createElement('div');
-                    printDiv.style.cssText = `
-                        position:fixed; left:-9999px; top:0;
-                        width:794px; background:white;
-                        font-family:'Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',sans-serif;
-                        font-size:14px; line-height:1.8; color:#1e293b; padding:0;
-                    `;
-
+                    printDiv.style.cssText = `position:fixed; left:-9999px; top:0; width:794px; background:white; font-family:'Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',sans-serif; font-size:14px; line-height:1.8; color:#1e293b; padding:0;`;
                     printDiv.innerHTML = `
                         <div style="background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;">
-                            <span style="font-size:18px;font-weight:900;display:flex;align-items:center;">
-                                ${logoHtml}구례중학교 회의록
-                            </span>
+                            <span style="font-size:18px;font-weight:900;display:flex;align-items:center;">${logoHtml}구례중학교 회의록</span>
                             <span style="font-size:13px;opacity:0.9;">${dateStr} (${dayOfWeek})</span>
                         </div>
                         <div style="padding:28px 32px 32px;">
                             <h1 style="font-size:22px;font-weight:900;color:#1e293b;margin:0 0 12px 0;line-height:1.4;">${subject || '(제목 없음)'}</h1>
                             <div style="height:3px;background:linear-gradient(90deg,#16a34a,#86efac);border-radius:2px;margin-bottom:20px;"></div>
-
                             <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:13px;color:#15803d;">
                                 <div style="margin-bottom:6px;">📅 <strong>회의 일자</strong> : ${dateStr} (${dayOfWeek})</div>
                                 <div>📋 <strong>회의 주제</strong> : ${subject || '(제목 없음)'}</div>
                             </div>
-
                             <div style="font-size:15px;font-weight:900;color:#1e293b;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;">📝 회의 내용</div>
                             <div style="font-size:14px;color:#334155;line-height:2;white-space:pre-wrap;word-break:break-all;">${content.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-
-                            <div style="margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8;">
-                                구례중학교 | 회의록 | ${dateStr}
-                            </div>
-                        </div>
-                    `;
+                            <div style="margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8;">구례중학교 | 회의록 | ${dateStr}</div>
+                        </div>`;
                     document.body.appendChild(printDiv);
-
-                    const canvas = await html2canvas(printDiv, {
-                        scale: 2,
-                        useCORS: true,
-                        allowTaint: true,
-                        backgroundColor: '#ffffff',
-                        logging: false
-                    });
+                    const canvas = await html2canvas(printDiv, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', logging: false });
                     document.body.removeChild(printDiv);
-
                     const { jsPDF } = window.jspdf;
                     const imgData = canvas.toDataURL('image/png');
                     const pdfW = 210;
                     const pdfH = (canvas.height * pdfW) / canvas.width;
                     const pageHeight = 297;
                     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
                     if (pdfH <= pageHeight) {
                         doc.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
                     } else {
@@ -1115,12 +1077,10 @@
                             yOffset += pageHeight;
                         }
                     }
-
                     const fileName = `회의록_${dateStr}_${(subject || '무제').replace(/[\/\\?%*:|"<>]/g, '_')}.pdf`;
                     doc.save(fileName);
                     this.showToast('✅ PDF가 저장되었습니다!', 'success');
                 } catch (err) {
-                    console.error('PDF 오류:', err);
                     this.showToast('❌ PDF 생성 실패: ' + err.message, 'error');
                 } finally {
                     if (btn) { btn.disabled = false; btn.textContent = '📄 PDF 저장'; }
@@ -1135,24 +1095,19 @@
                 const aiBtn = card.querySelector('.ai-generate-btn');
                 const subject = subjectEl.value.trim();
                 const content = contentEl.value.trim();
-
                 if (!content) { this.showToast('📝 모임 내용을 먼저 입력해주세요.', 'error'); return; }
-
                 if (mid.startsWith('__new__')) {
                     await this.saveAllCards();
                     mid = card.dataset.mid;
                 }
-
                 this.aiGenerating = true;
                 if (aiBtn) { aiBtn.disabled = true; aiBtn.innerHTML = '⏳ AI 분석중...'; }
-
                 const textareaWrapper = contentEl.parentElement;
                 const overlay = document.createElement('div');
                 overlay.className = 'ai-overlay';
                 overlay.innerHTML = '<div class="ai-spinner">🤖 AI가 회의록을 작성하고 있습니다...</div>';
                 textareaWrapper.appendChild(overlay);
                 contentEl.style.opacity = '0.4';
-
                 try {
                     const response = await fetch(this.API_URL, {
                         method: 'POST',
@@ -1160,15 +1115,10 @@
                         body: JSON.stringify({ action: 'generateAI', subject, content, meetingDate: this.formatDate(this.meetingDate) })
                     });
                     const resData = await response.json();
-
                     if (resData.success && resData.minutes) {
                         contentEl.value = resData.minutes;
                         contentEl.classList.add('has-data');
-                        const updatedData = {
-                            id: mid, date: this.formatDate(this.meetingDate),
-                            title: subject || '(제목 없음)', dapt: 'meeting',
-                            subject, content: resData.minutes
-                        };
+                        const updatedData = { id: mid, date: this.formatDate(this.meetingDate), title: subject || '(제목 없음)', dapt: 'meeting', subject, content: resData.minutes };
                         const idx = this.events.findIndex(e => e.id === mid);
                         if (idx !== -1) this.events[idx] = updatedData;
                         else this.events.push(updatedData);
@@ -1218,7 +1168,6 @@
             },
 
             async init() {
-                // 로고 base64 미리 로드 (PDF에서 사용)
                 await this.loadLogoBase64();
                 await this.loadFromServer();
                 this.render();
