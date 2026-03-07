@@ -30,9 +30,33 @@
         .event-more { font-size: 10px; color: #64748b; font-weight: 700; padding: 1px 4px; flex-shrink: 0; }
         @media (min-width: 768px) { .event-more { font-size: 11px; } }
 
-        .event-item-week { font-size: 13px; padding: 6px 8px; margin-bottom: 4px; border-radius: 5px; background-color: #f1f5f9; border-left: 3px solid #16a34a; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; word-break: break-all; }
+        /* ===== 주간 뷰 업무 항목 - 텍스트 기본 검은색 ===== */
+        .event-item-week { font-size: 13px; padding: 6px 8px; margin-bottom: 4px; border-radius: 5px; background-color: #f8fafc; border-left: 3px solid #cbd5e1; font-weight: 500; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; word-break: break-all; color: #1e293b; }
         @media (min-width: 768px) { .event-item-week { font-size: 14px; } }
         .event-item-week:hover { background-color: #e0f2fe; }
+
+        /* 부서별 왼쪽 보더 색상만 구분 */
+        .event-item-week.dept-교무 { border-left-color: #15803d; }
+        .event-item-week.dept-연구 { border-left-color: #059669; }
+        .event-item-week.dept-학생 { border-left-color: #d97706; }
+        .event-item-week.dept-창의 { border-left-color: #7c3aed; }
+        .event-item-week.dept-행정 { border-left-color: #475569; }
+        .event-item-week.dept-1학년 { border-left-color: #2563eb; }
+        .event-item-week.dept-2학년 { border-left-color: #db2777; }
+        .event-item-week.dept-3학년 { border-left-color: #0891b2; }
+        .event-item-week.dept-학사 { border-left-color: #1e293b; }
+
+        /* 부서명 색상 배지 */
+        .dept-badge { font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 10px; white-space: nowrap; margin-left: 4px; }
+        .dept-badge.dept-교무 { color: #15803d; background: #dcfce7; }
+        .dept-badge.dept-연구 { color: #059669; background: #d1fae5; }
+        .dept-badge.dept-학생 { color: #d97706; background: #fef3c7; }
+        .dept-badge.dept-창의 { color: #7c3aed; background: #ede9fe; }
+        .dept-badge.dept-행정 { color: #475569; background: #f1f5f9; }
+        .dept-badge.dept-1학년 { color: #2563eb; background: #dbeafe; }
+        .dept-badge.dept-2학년 { color: #db2777; background: #fce7f3; }
+        .dept-badge.dept-3학년 { color: #0891b2; background: #cffafe; }
+        .dept-badge.dept-학사 { color: #1e293b; background: #e2e8f0; }
 
         .day-cell-header { font-size: 10px; font-weight: 900; margin-bottom: 2px; flex-shrink: 0; }
         @media (min-width: 768px) { .day-cell-header { font-size: 13px; margin-bottom: 4px; } }
@@ -64,10 +88,20 @@
         .year-month-title { font-weight: 900; color: #1e293b; margin-bottom: 8px; font-size: 16px; }
         @media (min-width: 768px) { .year-month-title { font-size: 18px; } }
 
-        .mini-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 10px; }
-        @media (min-width: 768px) { .mini-calendar { font-size: 12px; } }
+        .mini-calendar {
+            display: grid;
+            /* 일(좁) 월~금(넓) 토(좁) - 토일 셀 고정 너비 */
+            grid-template-columns: 28px 1fr 1fr 1fr 1fr 1fr 28px;
+            gap: 2px;
+            font-size: 10px;
+        }
+        @media (min-width: 768px) {
+            .mini-calendar {
+                grid-template-columns: 32px 1fr 1fr 1fr 1fr 1fr 32px;
+                font-size: 12px;
+            }
+        }
 
-        /* 연간 미니 캘린더 셀 - 이벤트 텍스트 표시 지원 */
         .mini-day {
             padding: 2px;
             text-align: center;
@@ -78,24 +112,29 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow: hidden;
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
         }
         @media (min-width: 768px) { .mini-day { min-height: 60px; padding: 3px 2px; } }
         .mini-day.has-event { background: #dcfce7; font-weight: 700; }
         .mini-day.weekend { background: #fee2e2; }
 
-        /* 연간 뷰 이벤트 라벨 */
         .mini-ev {
             font-size: 8px;
             font-weight: 700;
             max-width: 100%;
+            width: 100%;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             line-height: 1.3;
-            width: 100%;
-            text-align: center;
+            text-align: left;
             border-radius: 2px;
-            padding: 0 1px;
+            padding: 0 2px;
+            box-sizing: border-box;
+            display: block;
         }
         @media (min-width: 768px) { .mini-ev { font-size: 9px; } }
 
@@ -117,8 +156,9 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 24px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
 
-        .week-date-label { font-size: 15px; font-weight: 900; line-height: 1.3; }
-        @media (min-width: 768px) { .week-date-label { font-size: 17px; } }
+        /* ===== 주간 날짜 레이블 - 더 좁게 ===== */
+        .week-date-label { font-size: 14px; font-weight: 900; line-height: 1.3; }
+        @media (min-width: 768px) { .week-date-label { font-size: 16px; } }
 
         /* ===== 회의메모 뷰 ===== */
         .meeting-wrapper { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
@@ -223,7 +263,7 @@
         </header>
 
         <section id="eventInputSection" class="bg-white p-4 rounded-2xl shadow-sm border mb-4 grid grid-cols-2 md:grid-cols-4 gap-2">
-            <input type="date" id="inDate" class="border p-2 rounded-xl text-sm md:text-base outline-none">
+            <input type="date" id="inDate" class="border p-2 rounded-xl text-sm md:text-base outline-none" onchange="this.blur()">
             <input type="text" id="inTitle" placeholder="업무 행사 입력" class="border p-2 rounded-xl text-sm md:text-base outline-none">
             <select id="inDept" class="border p-2 rounded-xl text-sm md:text-base outline-none">
                 <option>교무</option><option>연구</option><option>학생</option><option>창의</option><option>행정</option>
@@ -293,7 +333,6 @@
             localChanges: {},
             localDeletes: new Set(),
             currentDate: new Date(),
-            // ✅ 수정1: 첫 화면을 월간(monthly)으로 변경
             viewMode: 'monthly',
             isSyncing: false,
             isEditing: false,
@@ -306,6 +345,15 @@
             meetingCalendarDate: new Date(),
             days: ['일', '월', '화', '수', '목', '금', '토'],
             _logoBase64: null,
+
+            deptColor(dapt) {
+                const map = { '교무':'#15803d','연구':'#059669','학생':'#d97706','창의':'#7c3aed','행정':'#475569','1학년':'#2563eb','2학년':'#db2777','3학년':'#0891b2','학사':'#1e293b' };
+                return map[dapt] || '#16a34a';
+            },
+            deptBg(dapt) {
+                const map = { '교무':'#dcfce7','연구':'#d1fae5','학생':'#fef3c7','창의':'#ede9fe','행정':'#f1f5f9','1학년':'#dbeafe','2학년':'#fce7f3','3학년':'#cffafe','학사':'#e2e8f0' };
+                return map[dapt] || '#f1f5f9';
+            },
 
             async loadLogoBase64() {
                 try {
@@ -781,21 +829,30 @@
                 
                 const dayEvents = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
                 const meetings = this.getMeetingsForDate(dateStr);
+
+                // 회의메모: 제목만 표시 (내용 숨김)
                 meetings.forEach((meetingData, i) => {
-                    modalContent.innerHTML += `<div class="bg-green-50 p-4 rounded-lg border-2 border-green-300 mb-3">
-                        <div class="text-green-800 font-black mb-2">📝 회의메모 ${meetings.length > 1 ? (i+1) : ''}</div>
-                        <div class="font-bold text-green-700 mb-1">${meetingData.subject || '(제목 없음)'}</div>
-                        <div class="text-sm text-slate-600 whitespace-pre-wrap">${meetingData.content || ''}</div>
+                    const label = meetings.length > 1 ? ` ${i+1}` : '';
+                    modalContent.innerHTML += `<div style="background:#f0fdf4; padding:10px 14px; border-radius:10px; border-left:4px solid #16a34a; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:15px;">📝</span>
+                        <span style="font-size:13px; font-weight:800; color:#15803d;">회의${label}</span>
+                        <span style="font-size:13px; color:#1e293b; font-weight:600;">${meetingData.subject || '(제목 없음)'}</span>
                     </div>`;
                 });
+
                 if (dayEvents.length === 0 && meetings.length === 0) {
-                    modalContent.innerHTML = "<div class='text-slate-400 text-sm'>일정이 없습니다.</div>";
+                    modalContent.innerHTML = "<div style='color:#94a3b8; font-size:13px; text-align:center; padding:12px 0;'>일정이 없습니다.</div>";
                 } else {
                     const showDelete = this.viewMode === 'weekly';
                     dayEvents.forEach(e => {
-                        modalContent.innerHTML += `<div class="bg-slate-50 p-3 rounded-lg flex justify-between items-center">
-                            <div class="dept-${e.dapt}"><span class="font-bold">[${e.dapt}]</span> ${e.title}</div>
-                            ${showDelete ? `<span class="del-x text-lg" onclick="app.deleteEvent('${e.id}')">✕</span>` : ''}
+                        const dColor = this.deptColor(e.dapt);
+                        const dBg = this.deptBg(e.dapt);
+                        modalContent.innerHTML += `<div style="background:#f8fafc; padding:10px 14px; border-radius:10px; border-left:4px solid ${dColor}; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+                                <span style="font-size:11px; font-weight:800; color:${dColor}; background:${dBg}; padding:2px 8px; border-radius:10px; white-space:nowrap; flex-shrink:0;">${e.dapt}</span>
+                                <span style="font-size:13px; color:#1e293b; font-weight:500; word-break:break-all;">${e.title}</span>
+                            </div>
+                            ${showDelete ? `<span class="del-x flex-shrink-0" onclick="app.deleteEvent('${e.id}')">✕</span>` : ''}
                         </div>`;
                     });
                 }
@@ -824,16 +881,20 @@
                 this.render();
             },
 
-            // ✅ 수정2: 연간 뷰에서 이벤트 내용 텍스트 표시
             renderYearly() {
                 const year = this.currentDate.getFullYear();
                 let html = '<div class="year-view">';
                 for (let m = 0; m < 12; m++) {
                     html += `<div class="year-month"><div class="year-month-title">${year}년 ${m + 1}월</div><div class="mini-calendar">`;
-                    this.days.forEach(w => html += `<div class="text-[9px] md:text-[11px] text-slate-400 font-bold text-center p-1">${w}</div>`);
+                    this.days.forEach((w, wi) => {
+                        const isWknd = wi === 0 || wi === 6;
+                        const col = wi === 0 ? 'text-red-400' : (wi === 6 ? 'text-blue-400' : 'text-slate-400');
+                        const px = isWknd ? 'style="padding:2px 0;overflow:hidden;"' : 'style="padding:2px 1px;"';
+                        html += `<div class="text-[9px] md:text-[11px] font-bold text-center ${col}" ${px}>${w}</div>`;
+                    });
                     const first = new Date(year, m, 1).getDay();
                     const last = new Date(year, m + 1, 0).getDate();
-                    for (let i = 0; i < first; i++) html += '<div></div>';
+                    for (let i = 0; i < first; i++) html += '<div style="min-width:0"></div>';
                     for (let d = 1; d <= last; d++) {
                         const dateStr = `${year}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                         const dayIdx = new Date(year, m, d).getDay();
@@ -845,7 +906,6 @@
                         const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
                         const todayClass = this.isToday(dateStr) ? 'today-border' : '';
 
-                        // 이벤트 라벨 생성
                         const yEvts = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
                         let yEvHtml = '';
                         if (holiday) {
@@ -855,7 +915,7 @@
                         const evSlot = holiday ? 1 : 2;
                         yEvts.slice(0, evSlot).forEach(ev => {
                             const t = ev.title.length > 6 ? ev.title.substring(0, 5) + '…' : ev.title;
-                            yEvHtml += `<div class="mini-ev dept-${ev.dapt}">${t}</div>`;
+                            yEvHtml += `<div class="mini-ev" style="color:#1e293b; background:${app.deptBg(ev.dapt)}; border-left:2px solid ${app.deptColor(ev.dapt)};">${t}</div>`;
                         });
                         if (yEvts.length > evSlot) {
                             yEvHtml += `<div class="mini-ev" style="color:#64748b;">+${yEvts.length - evSlot}</div>`;
@@ -894,7 +954,7 @@
                     const maxShow = window.innerWidth < 768 ? 2 : 3;
                     dayEvts.slice(0, maxShow).forEach(e => {
                         const displayTitle = window.innerWidth < 768 ? e.title.substring(0, 4) : e.title;
-                        html += `<div class="event-item dept-${e.dapt}" onclick="event.stopPropagation(); app.showDetail('${dateStr}')" title="${e.title}">${displayTitle}</div>`;
+                        html += `<div class="event-item" style="color:#1e293b; border-left-color:${app.deptColor(e.dapt)};" onclick="event.stopPropagation(); app.showDetail('${dateStr}')" title="${e.title}">${displayTitle}</div>`;
                     });
                     if (dayEvts.length > maxShow) {
                         html += `<div class="event-more" onclick="event.stopPropagation(); app.showDetail('${dateStr}')">+${dayEvts.length - maxShow}개 더</div>`;
@@ -927,14 +987,19 @@
                     const dayOfWeek = this.days[d.getDay()];
                     const colorClass = d.getDay() === 0 || holiday ? 'text-sun' : (d.getDay() === 6 ? 'text-sat' : 'text-green-800');
                     const todayClass = this.isToday(dStr) ? 'today-border' : '';
-                    html += `<div class="week-item ${holidayClass} ${todayClass} p-4 rounded-xl border flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')">
-                        <div class="w-20 md:w-28 week-date-label font-black ${colorClass} border-r mr-4">${d.getDate()}일(${dayOfWeek})`;
+
+                    /* ✅ 날짜 셀 너비 축소: w-16 md:w-20 (기존 w-20 md:w-28에서 줄임) */
+                    html += `<div class="week-item ${holidayClass} ${todayClass} p-3 rounded-xl border flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')">
+                        <div class="w-16 md:w-20 week-date-label font-black ${colorClass} border-r mr-3 pr-2 flex-shrink-0">
+                            <div>${d.getDate()}일(${dayOfWeek})</div>`;
                     if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
-                    html += '</div><div class="flex-1">';
+                    html += `</div><div class="flex-1 min-w-0">`;
+
                     this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
+                        /* ✅ 업무내용 검은색 텍스트 + 담당부서 색상 배지 */
                         html += `<div class="event-item-week dept-${e.dapt}" onclick="event.stopPropagation()">
-                            <span>${e.title} (${e.dapt})</span>
-                            <span class="del-x" onclick="app.deleteEvent('${e.id}')">✕</span>
+                            <span class="text-slate-800 font-medium flex-1 min-w-0">${e.title} <span class="dept-badge dept-${e.dapt}">${e.dapt}</span></span>
+                            <span class="del-x flex-shrink-0" onclick="app.deleteEvent('${e.id}')">✕</span>
                         </div>`;
                     });
                     html += '</div></div>';
