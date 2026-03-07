@@ -36,27 +36,27 @@
         .event-item-week:hover { background-color: #e0f2fe; }
 
         /* 부서별 왼쪽 보더 색상만 구분 */
-        .event-item-week.dept-교무 { border-left-color: #15803d; }
-        .event-item-week.dept-연구 { border-left-color: #059669; }
-        .event-item-week.dept-학생 { border-left-color: #d97706; }
-        .event-item-week.dept-창의 { border-left-color: #7c3aed; }
-        .event-item-week.dept-행정 { border-left-color: #475569; }
-        .event-item-week.dept-1학년 { border-left-color: #2563eb; }
+        .event-item-week.dept-교무 { border-left-color: #2563eb; }
+        .event-item-week.dept-연구 { border-left-color: #16a34a; }
+        .event-item-week.dept-학생 { border-left-color: #7c3aed; }
+        .event-item-week.dept-창의 { border-left-color: #ea580c; }
+        .event-item-week.dept-행정 { border-left-color: #1e3a8a; }
+        .event-item-week.dept-1학년 { border-left-color: #0891b2; }
         .event-item-week.dept-2학년 { border-left-color: #db2777; }
-        .event-item-week.dept-3학년 { border-left-color: #0891b2; }
-        .event-item-week.dept-학사 { border-left-color: #1e293b; }
+        .event-item-week.dept-3학년 { border-left-color: #0369a1; }
+        .event-item-week.dept-학사 { border-left-color: #334155; }
 
         /* 부서명 색상 배지 */
         .dept-badge { font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 10px; white-space: nowrap; margin-left: 4px; }
-        .dept-badge.dept-교무 { color: #15803d; background: #dcfce7; }
-        .dept-badge.dept-연구 { color: #059669; background: #d1fae5; }
-        .dept-badge.dept-학생 { color: #d97706; background: #fef3c7; }
-        .dept-badge.dept-창의 { color: #7c3aed; background: #ede9fe; }
-        .dept-badge.dept-행정 { color: #475569; background: #f1f5f9; }
-        .dept-badge.dept-1학년 { color: #2563eb; background: #dbeafe; }
+        .dept-badge.dept-교무 { color: #2563eb; background: #dbeafe; }
+        .dept-badge.dept-연구 { color: #16a34a; background: #dcfce7; }
+        .dept-badge.dept-학생 { color: #7c3aed; background: #ede9fe; }
+        .dept-badge.dept-창의 { color: #ea580c; background: #ffedd5; }
+        .dept-badge.dept-행정 { color: #1e3a8a; background: #e0e7ff; }
+        .dept-badge.dept-1학년 { color: #0891b2; background: #cffafe; }
         .dept-badge.dept-2학년 { color: #db2777; background: #fce7f3; }
-        .dept-badge.dept-3학년 { color: #0891b2; background: #cffafe; }
-        .dept-badge.dept-학사 { color: #1e293b; background: #e2e8f0; }
+        .dept-badge.dept-3학년 { color: #0369a1; background: #e0f2fe; }
+        .dept-badge.dept-학사 { color: #334155; background: #f1f5f9; }
 
         .day-cell-header { font-size: 10px; font-weight: 900; margin-bottom: 2px; flex-shrink: 0; }
         @media (min-width: 768px) { .day-cell-header { font-size: 13px; margin-bottom: 4px; } }
@@ -66,15 +66,15 @@
 
         .today-border { outline: 3px solid #ef4444 !important; outline-offset: -3px; z-index: 10; position: relative; border-radius: 8px; }
 
-        .dept-교무 { color: #15803d; border-left-color: #15803d; }
-        .dept-연구 { color: #059669; border-left-color: #059669; }
-        .dept-학생 { color: #d97706; border-left-color: #d97706; }
-        .dept-창의 { color: #7c3aed; border-left-color: #7c3aed; }
-        .dept-행정 { color: #475569; border-left-color: #475569; }
-        .dept-1학년 { color: #2563eb; border-left-color: #2563eb; }
+        .dept-교무 { color: #2563eb; border-left-color: #2563eb; }
+        .dept-연구 { color: #16a34a; border-left-color: #16a34a; }
+        .dept-학생 { color: #7c3aed; border-left-color: #7c3aed; }
+        .dept-창의 { color: #ea580c; border-left-color: #ea580c; }
+        .dept-행정 { color: #1e3a8a; border-left-color: #1e3a8a; }
+        .dept-1학년 { color: #0891b2; border-left-color: #0891b2; }
         .dept-2학년 { color: #db2777; border-left-color: #db2777; }
-        .dept-3학년 { color: #0891b2; border-left-color: #0891b2; }
-        .dept-학사 { color: #1e293b; border-left-color: #1e293b; }
+        .dept-3학년 { color: #0369a1; border-left-color: #0369a1; }
+        .dept-학사 { color: #334155; border-left-color: #334155; }
 
         .holiday-badge { font-size: 11px; color: #dc2626; font-weight: 700; margin-top: 1px; }
         @media (min-width: 768px) { .holiday-badge { font-size: 13px; } }
@@ -346,13 +346,23 @@
             days: ['일', '월', '화', '수', '목', '금', '토'],
             _logoBase64: null,
 
+            // 부서 정렬 순서: 교무>연구>학생>창의>행정>학년>기타
+            deptOrder: ['교무','연구','학생','창의','행정','1학년','2학년','3학년','학사'],
+            sortByDept(evts) {
+                return [...evts].sort((a, b) => {
+                    const ai = this.deptOrder.indexOf(a.dapt);
+                    const bi = this.deptOrder.indexOf(b.dapt);
+                    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+                });
+            },
             deptColor(dapt) {
-                const map = { '교무':'#15803d','연구':'#059669','학생':'#d97706','창의':'#7c3aed','행정':'#475569','1학년':'#2563eb','2학년':'#db2777','3학년':'#0891b2','학사':'#1e293b' };
-                return map[dapt] || '#16a34a';
+                // 교무:파랑, 연구:녹색, 학생:보라, 창의:주황, 행정:남색
+                const map = { '교무':'#2563eb','연구':'#16a34a','학생':'#7c3aed','창의':'#ea580c','행정':'#1e3a8a','1학년':'#0891b2','2학년':'#db2777','3학년':'#0369a1','학사':'#334155' };
+                return map[dapt] || '#2563eb';
             },
             deptBg(dapt) {
-                const map = { '교무':'#dcfce7','연구':'#d1fae5','학생':'#fef3c7','창의':'#ede9fe','행정':'#f1f5f9','1학년':'#dbeafe','2학년':'#fce7f3','3학년':'#cffafe','학사':'#e2e8f0' };
-                return map[dapt] || '#f1f5f9';
+                const map = { '교무':'#dbeafe','연구':'#dcfce7','학생':'#ede9fe','창의':'#ffedd5','행정':'#e0e7ff','1학년':'#cffafe','2학년':'#fce7f3','3학년':'#e0f2fe','학사':'#f1f5f9' };
+                return map[dapt] || '#dbeafe';
             },
 
             async loadLogoBase64() {
@@ -882,9 +892,13 @@
             },
 
             renderYearly() {
-                const year = this.currentDate.getFullYear();
+                // 항상 3월부터 다음해 2월까지 표시 (학사년도 기준)
+                const baseYear = 2026;
                 let html = '<div class="year-view">';
-                for (let m = 0; m < 12; m++) {
+                const months = [];
+                for (let m = 2; m < 12; m++) months.push({year: baseYear, month: m});       // 3~12월
+                for (let m = 0; m < 2; m++) months.push({year: baseYear + 1, month: m});    // 1~2월
+                for (const {year, month: m} of months) {
                     html += `<div class="year-month"><div class="year-month-title">${year}년 ${m + 1}월</div><div class="mini-calendar">`;
                     this.days.forEach((w, wi) => {
                         const isWknd = wi === 0 || wi === 6;
@@ -906,7 +920,7 @@
                         const holidayClass = (holiday || isSpecial || isWeekend) ? 'holiday-bg' : '';
                         const todayClass = this.isToday(dateStr) ? 'today-border' : '';
 
-                        const yEvts = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
+                        const yEvts = this.sortByDept(this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')));
                         let yEvHtml = '';
                         if (holiday) {
                             const hShort = holiday.length > 5 ? holiday.substring(0, 4) + '…' : holiday;
@@ -950,7 +964,7 @@
                         <div class="day-cell-header ${colorClass}">${d}</div>`;
                     if (holiday) html += `<div class="day-cell-holiday">${holiday}</div>`;
                     html += '<div class="day-cell-events">';
-                    const dayEvts = this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
+                    const dayEvts = this.sortByDept(this.events.filter(e => e.date === dateStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')));
                     const maxShow = window.innerWidth < 768 ? 2 : 3;
                     dayEvts.slice(0, maxShow).forEach(e => {
                         const displayTitle = window.innerWidth < 768 ? e.title.substring(0, 4) : e.title;
@@ -995,7 +1009,7 @@
                     if (holiday) html += `<div class="holiday-badge">${holiday}</div>`;
                     html += `</div><div class="flex-1 min-w-0">`;
 
-                    this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')).forEach(e => {
+                    this.sortByDept(this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'))).forEach(e => {
                         /* ✅ 업무내용 검은색 텍스트 + 담당부서 색상 배지 */
                         html += `<div class="event-item-week dept-${e.dapt}" onclick="event.stopPropagation()">
                             <span class="text-slate-800 font-medium flex-1 min-w-0">${e.title} <span class="dept-badge dept-${e.dapt}">${e.dapt}</span></span>
@@ -1217,7 +1231,7 @@
                     if (viewPort.querySelector('.meeting-wrapper')) viewPort.innerHTML = '';
 
                     if (this.viewMode === 'yearly') {
-                        titleText.textContent = `${year}년 전체 학사력`;
+                        titleText.textContent = `2026년 3월 ~ 2027년 2월 학사력`;
                         viewPort.innerHTML = this.renderYearly();
                         noticePort.classList.add('hidden');
                     } else if (this.viewMode === 'monthly') {
