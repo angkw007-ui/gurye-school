@@ -1,20 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>구례중 주간계획1.1</title>
-    <link rel="manifest" href="./manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="구례중">
-    <link rel="apple-touch-icon" href="./icons/icon-192.png">
     <meta name="theme-color" content="#166534">
-    <script src="https://cdn.tailwindcss.com"><\/script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: #f8fafc; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
@@ -162,8 +159,6 @@
         .pdf-btn { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(14,165,233,0.3); border: none; margin-left: 6px; }
         .pdf-btn:hover { transform: scale(1.05); }
         .pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        /* ===== 주간 PDF 출력 버튼 ===== */
         .weekly-pdf-btn {
             background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
             color: white; padding: 7px 16px; border-radius: 8px;
@@ -173,28 +168,26 @@
         }
         .weekly-pdf-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(14,165,233,0.4); }
         .weekly-pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        /* PDF 히든 렌더 영역 */
         #weeklyPdfTemplate {
-            display: none;
-            position: fixed; left: -9999px; top: 0;
+            display: none; position: fixed; left: -9999px; top: 0;
             width: 794px; background: white;
             font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
             color: #1e293b; padding: 0;
         }
-
         @media print {
             body * { visibility: hidden; }
             #pdfPrintArea, #pdfPrintArea * { visibility: visible; }
             #pdfPrintArea { position: fixed; left: 0; top: 0; width: 100%; }
         }
+        /* 로고 텍스트 대체 (이미지 로드 실패 시) */
+        .logo-text { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 6px; font-size: 14px; font-weight: 900; color: #15803d; flex-shrink: 0; }
     </style>
 </head>
 <body class="p-3">
 <div class="max-w-6xl mx-auto">
     <header class="flex justify-between items-center mb-6 bg-green-800 p-4 rounded-2xl text-white shadow-lg">
         <h1 class="font-black text-sm md:text-lg flex items-center gap-2">
-            <img src="./icons/icon-192.png" style="width:28px;height:28px;object-fit:contain;border-radius:6px;" alt="구례중 로고">
+            <span class="logo-text" id="headerLogo">🏫</span>
             구례중 주간 계획
         </h1>
         <div class="flex gap-1 md:gap-2">
@@ -221,7 +214,6 @@
         <button onclick="app.move(1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">&#10095;</button>
     </div>
 
-    <!-- 주간 PDF 버튼 바 (주간 뷰 전용) -->
     <div id="weeklyPdfBar" class="hidden flex justify-end mb-3">
         <button id="weeklyPdfBtnEl" class="weekly-pdf-btn" onclick="app.downloadWeeklyPDF()">
             &#128196; 주간계획 PDF 출력
@@ -259,9 +251,7 @@
     </footer>
 </div>
 
-<!-- PDF 히든 렌더링 영역 -->
 <div id="weeklyPdfTemplate"></div>
-
 <div id="toast" class="toast"></div>
 <button id="installBtn" class="install-btn" style="display:none;" onclick="app.handleInstall()">📱 앱으로 설치하기</button>
 
@@ -297,6 +287,7 @@ const app = {
     aiGenerating: false, meetingDate: new Date(), meetingCalendarDate: new Date(),
     days: ['일','월','화','수','목','금','토'], _logoBase64: null,
     deptOrder: ['교무','연구','학생','창의','행정','1학년','2학년','3학년','학사'],
+    _isLocalFile: location.protocol === 'file:',
 
     sortByDept(evts) {
         return [...evts].sort((a,b)=>{
@@ -312,11 +303,15 @@ const app = {
     },
 
     async loadLogoBase64(){
+        if(this._isLocalFile){this._logoBase64=null;return;}
         try{
             const img=new Image(); img.crossOrigin='anonymous';
             await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src='./icons/icon-192.png';});
             const c=document.createElement('canvas'); c.width=img.width||192; c.height=img.height||192;
             c.getContext('2d').drawImage(img,0,0); this._logoBase64=c.toDataURL('image/png');
+            // 성공 시 헤더 로고도 이미지로 교체
+            const hl=document.getElementById('headerLogo');
+            if(hl){hl.outerHTML=`<img src="./icons/icon-192.png" style="width:28px;height:28px;object-fit:contain;border-radius:6px;" alt="구례중 로고">`;}
         }catch(e){this._logoBase64=null;}
     },
 
@@ -596,12 +591,10 @@ const app = {
     renderWeekly(){
         const monday=this.getMonday(this.currentDate), ds=this.formatDate(monday);
         if(!this.isEditing){
-            /* 안내사항 불러오기 */
             document.querySelectorAll('.notice-input').forEach(inp=>{
                 const dept=inp.dataset.dept, n=this.events.find(e=>e.id===`notice_${ds}_${dept}`);
                 inp.value=n?n.title:''; this.updateInputStyle(inp);
             });
-            /* 협의할 내용들 불러오기 */
             const discInput=document.getElementById('discussionInput');
             if(discInput){
                 const dn=this.events.find(e=>e.id===`notice_${ds}_협의`);
@@ -641,7 +634,6 @@ const app = {
             const sun=wdates[6];
             const rangeStr=`${monday.getFullYear()}년 ${monday.getMonth()+1}월 ${monday.getDate()}일(월) ~ ${sun.getMonth()+1}월 ${sun.getDate()}일(일)`;
 
-            // 안내사항 수집
             const noticeCfg=[
                 {key:'교장',label:'교장'},{key:'교감',label:'교감'},{key:'행정실',label:'행정실장'},
                 {key:'교무부',label:'교무부'},{key:'연구부',label:'연구부'},{key:'학생부',label:'학생부'},
@@ -652,16 +644,13 @@ const app = {
                 return{label:nc.label,text:ev?ev.title:''};
             }).filter(n=>n.text.trim()!=='');
 
-            // 협의할 내용들 수집
             const discEv=this.events.find(e=>e.id===`notice_${mondayStr}_협의`);
             const discText=discEv?discEv.title.trim():'';
 
-            // 로고 태그
             const logoTag=this._logoBase64
                 ?`<img src="${this._logoBase64}" style="width:38px;height:38px;object-fit:contain;border-radius:8px;margin-right:10px;vertical-align:middle;">`
-                :'';
+                :'<span style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:rgba(255,255,255,0.2);border-radius:8px;font-size:20px;margin-right:10px;">🏫</span>';
 
-            // 날짜별 행 생성
             const dayNames=['일','월','화','수','목','금','토'];
             let rowsHtml='';
             for(const d of wdates){
@@ -688,7 +677,6 @@ const app = {
                 </tr>`;
             }
 
-            // 협의할 내용들 HTML
             let discHtml='';
             if(discText){
                 discHtml=`<div style="margin-top:18px;">
@@ -697,7 +685,6 @@ const app = {
                 </div>`;
             }
 
-            // 안내사항 테이블
             let noticeHtml='';
             if(notices.length>0){
                 noticeHtml=`<div style="margin-top:18px;">
@@ -713,7 +700,6 @@ const app = {
                 noticeHtml+='</table></div>';
             }
 
-            // 히든 렌더링
             const tpl=document.getElementById('weeklyPdfTemplate');
             tpl.style.display='block';
             tpl.innerHTML=`<div style="width:794px;background:white;padding:0;">
@@ -797,11 +783,12 @@ const app = {
         const btn=card.querySelector('.pdf-btn'); if(btn){btn.disabled=true;btn.textContent='⏳ 생성 중...';}
         try{
             const ds=this.formatDate(this.meetingDate), dow=this.days[this.meetingDate.getDay()];
-            const logo=this._logoBase64||'./icons/icon-192.png';
-            const lg=`<img src="${logo}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;vertical-align:middle;margin-right:10px;" crossorigin="anonymous">`;
+            const logoHtml=this._logoBase64
+                ?`<img src="${this._logoBase64}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;vertical-align:middle;margin-right:10px;">`
+                :'<span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;font-size:18px;margin-right:10px;">🏫</span>';
             const pd=document.createElement('div');
             pd.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",sans-serif;font-size:14px;line-height:1.8;color:#1e293b;padding:0;';
-            pd.innerHTML=`<div style="background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:18px;font-weight:900;display:flex;align-items:center;">${lg}구례중학교 회의록</span><span style="font-size:13px;opacity:0.9;">${ds} (${dow})</span></div><div style="padding:28px 32px 32px;"><h1 style="font-size:22px;font-weight:900;color:#1e293b;margin:0 0 12px;line-height:1.4;">${sub||'(제목 없음)'}</h1><div style="height:3px;background:linear-gradient(90deg,#16a34a,#86efac);border-radius:2px;margin-bottom:20px;"></div><div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:13px;color:#15803d;"><div style="margin-bottom:6px;">📅 <strong>회의 일자</strong> : ${ds} (${dow})</div><div>📋 <strong>회의 주제</strong> : ${sub||'(제목 없음)'}</div></div><div style="font-size:15px;font-weight:900;color:#1e293b;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;">📝 회의 내용</div><div style="font-size:14px;color:#334155;line-height:2;white-space:pre-wrap;word-break:break-all;">${con.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div style="margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8;">구례중학교 | 회의록 | ${ds}</div></div>`;
+            pd.innerHTML=`<div style="background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:18px;font-weight:900;display:flex;align-items:center;">${logoHtml}구례중학교 회의록</span><span style="font-size:13px;opacity:0.9;">${ds} (${dow})</span></div><div style="padding:28px 32px 32px;"><h1 style="font-size:22px;font-weight:900;color:#1e293b;margin:0 0 12px;line-height:1.4;">${sub||'(제목 없음)'}</h1><div style="height:3px;background:linear-gradient(90deg,#16a34a,#86efac);border-radius:2px;margin-bottom:20px;"></div><div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:13px;color:#15803d;"><div style="margin-bottom:6px;">📅 <strong>회의 일자</strong> : ${ds} (${dow})</div><div>📋 <strong>회의 주제</strong> : ${sub||'(제목 없음)'}</div></div><div style="font-size:15px;font-weight:900;color:#1e293b;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;">📝 회의 내용</div><div style="font-size:14px;color:#334155;line-height:2;white-space:pre-wrap;word-break:break-all;">${con.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div style="margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8;">구례중학교 | 회의록 | ${ds}</div></div>`;
             document.body.appendChild(pd);
             const cv=await html2canvas(pd,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false});
             document.body.removeChild(pd);
@@ -810,7 +797,7 @@ const app = {
             const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
             if(pH<=pgH){doc.addImage(img,'PNG',0,0,pW,pH);}
             else{let yo=0;while(yo<pH){if(yo>0)doc.addPage();doc.addImage(img,'PNG',0,-yo,pW,pH);yo+=pgH;}}
-            doc.save(`회의록_${ds}_${(sub||'무제').replace(/[\\/\\\\?%*:|"<>]/g,'_')}.pdf`);
+            doc.save(`회의록_${ds}_${(sub||'무제').replace(/[\/\\?%*:|"<>]/g,'_')}.pdf`);
             this.showToast('✅ PDF가 저장되었습니다!','success');
         }catch(err){this.showToast('❌ PDF 생성 실패: '+err.message,'error');}
         finally{if(btn){btn.disabled=false;btn.textContent='📄 PDF 저장';}}
@@ -879,29 +866,45 @@ const app = {
     }
 };
 window.addEventListener('DOMContentLoaded',()=>app.init());
-<\/script>
+</script>
 
 <script>
-if('serviceWorker' in navigator){
-    window.addEventListener('load',()=>{
-        navigator.serviceWorker.register('./service-worker.js')
-            .then(()=>console.log('✅ Service Worker 등록 성공'))
-            .catch(e=>console.log('❌ Service Worker 등록 실패:',e));
-    });
-}
-let deferredPrompt=null;
-const installBtn=document.getElementById('installBtn');
-const isStandalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
-if(!isStandalone){
-    const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+/* ===== PWA: manifest & service worker (웹서버 환경에서만 동작) ===== */
+(function(){
+    // http/https 환경에서만 manifest 링크 추가
+    if(location.protocol.startsWith('http')){
+        var link=document.createElement('link');
+        link.rel='manifest'; link.href='./manifest.json';
+        document.head.appendChild(link);
+        // apple-touch-icon
+        var appleIcon=document.createElement('link');
+        appleIcon.rel='apple-touch-icon'; appleIcon.href='./icons/icon-192.png';
+        document.head.appendChild(appleIcon);
+    }
+    // Service Worker 등록 (http/https에서만)
+    if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+        window.addEventListener('load',function(){
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(function(){console.log('✅ Service Worker 등록 성공');})
+                .catch(function(e){console.log('ℹ️ Service Worker 미등록 (정상):',e.message);});
+        });
+    }
+})();
+
+/* ===== 앱 설치 프롬프트 ===== */
+var deferredPrompt=null;
+var installBtn=document.getElementById('installBtn');
+var isStandalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
+if(!isStandalone && location.protocol.startsWith('http')){
+    var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
     if(isIOS) installBtn.style.display='block';
-    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;installBtn.style.display='block';});
+    window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;installBtn.style.display='block';});
 }
 app.handleInstall=async function(){
-    const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
     if(isIOS) document.getElementById('iosInstallModal').style.display='flex';
     else if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.style.display='none';}
 };
-<\/script>
+</script>
 </body>
 </html>
