@@ -51,15 +51,7 @@
         @media (min-width: 768px) { .day-cell-holiday { font-size: 12px; } }
         .day-cell-events { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 1px; min-height: 0; }
         .today-border { outline: 3px solid #ef4444 !important; outline-offset: -3px; z-index: 10; position: relative; border-radius: 8px; }
-        .dept-교무 { color: #2563eb; border-left-color: #2563eb; }
-        .dept-연구 { color: #16a34a; border-left-color: #16a34a; }
-        .dept-학생 { color: #7c3aed; border-left-color: #7c3aed; }
-        .dept-창의 { color: #ea580c; border-left-color: #ea580c; }
-        .dept-행정 { color: #1e3a8a; border-left-color: #1e3a8a; }
-        .dept-1학년 { color: #0891b2; border-left-color: #0891b2; }
-        .dept-2학년 { color: #db2777; border-left-color: #db2777; }
-        .dept-3학년 { color: #0369a1; border-left-color: #0369a1; }
-        .dept-학사 { color: #334155; border-left-color: #334155; }
+        .dept-교무 { color: #2563eb; } .dept-연구 { color: #16a34a; } .dept-학생 { color: #7c3aed; } .dept-창의 { color: #ea580c; } .dept-행정 { color: #1e3a8a; } .dept-1학년 { color: #0891b2; } .dept-2학년 { color: #db2777; } .dept-3학년 { color: #0369a1; } .dept-학사 { color: #334155; }
         .holiday-badge { font-size: 11px; color: #dc2626; font-weight: 700; margin-top: 1px; }
         @media (min-width: 768px) { .holiday-badge { font-size: 13px; } }
         .text-sun { color: #ef4444; } .text-sat { color: #3b82f6; }
@@ -80,7 +72,7 @@
         .weekend-bg, .holiday-bg { background-color: #fff1f2 !important; }
         .notice-section { background-color: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-top: 20px; }
         .notice-list { display: flex; flex-direction: column; gap: 12px; }
-        .notice-box { display: flex; flex-direction: column; gap: 4px; position: relative; }
+        .notice-box { display: flex; flex-direction: column; gap: 4px; }
         .notice-header { display: flex; justify-content: space-between; align-items: center; }
         .notice-label { font-size: 13px; font-weight: 800; color: #15803d; }
         @media (min-width: 768px) { .notice-label { font-size: 15px; } }
@@ -88,10 +80,9 @@
         @media (min-width: 768px) { .notice-input { font-size: 15px; padding: 12px; min-height: 70px; } }
         .notice-input.has-content { background-color: #fef9c3 !important; border-color: #facc15; }
         .notice-input:focus { border-color: #16a34a; }
-        /* 협의할 내용들 전용 스타일 */
         .discussion-section { background-color: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; border-left: 5px solid #f59e0b; margin-top: 20px; }
-        .discussion-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-size: 14px; outline: none; transition: all 0.2s; min-height: 160px; resize: vertical; background-color: white; font-weight: normal; width: 100%; box-sizing: border-box; line-height: 1.8; }
-        @media (min-width: 768px) { .discussion-input { font-size: 15px; padding: 14px; min-height: 200px; } }
+        .discussion-input { border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px; font-size: 14px; outline: none; transition: all 0.2s; min-height: 180px; resize: vertical; background-color: #fffef5; font-weight: normal; width: 100%; box-sizing: border-box; line-height: 2; font-family: inherit; }
+        @media (min-width: 768px) { .discussion-input { font-size: 15px; padding: 14px 16px; min-height: 220px; } }
         .discussion-input.has-content { background-color: #fefce8 !important; border-color: #f59e0b; }
         .discussion-input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.15); }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
@@ -146,40 +137,15 @@
         .ai-spinner { font-size: 13px; font-weight: 700; color: #7c3aed; text-align: center; }
         .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(22,163,74,0.3); cursor: pointer; border: none; transition: all 0.3s; z-index: 999; }
         .install-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(22,163,74,0.4); }
-        @media (max-width: 767px) {
-            html, body { height: auto; }
-            body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-            .meeting-wrapper { -webkit-overflow-scrolling: touch; }
-            .meeting-textarea { touch-action: pan-y; -webkit-overflow-scrolling: touch; }
-        }
+        @media (max-width: 767px) { html, body { height: auto; } body { overflow-y: auto; -webkit-overflow-scrolling: touch; } .meeting-wrapper { -webkit-overflow-scrolling: touch; } .meeting-textarea { touch-action: pan-y; -webkit-overflow-scrolling: touch; } }
         .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity 0.3s; max-width: 90vw; text-align: center; }
-        .toast.show { opacity: 1; }
-        .toast.error { background: #dc2626; }
-        .toast.success { background: #16a34a; }
+        .toast.show { opacity: 1; } .toast.error { background: #dc2626; } .toast.success { background: #16a34a; }
         .pdf-btn { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(14,165,233,0.3); border: none; margin-left: 6px; }
-        .pdf-btn:hover { transform: scale(1.05); }
-        .pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .weekly-pdf-btn {
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-            color: white; padding: 7px 16px; border-radius: 8px;
-            font-size: 13px; font-weight: 800; cursor: pointer; border: none;
-            box-shadow: 0 2px 6px rgba(14,165,233,0.35);
-            transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px;
-        }
+        .pdf-btn:hover { transform: scale(1.05); } .pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .weekly-pdf-btn { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(14,165,233,0.35); transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; }
         .weekly-pdf-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(14,165,233,0.4); }
         .weekly-pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        #weeklyPdfTemplate {
-            display: none; position: fixed; left: -9999px; top: 0;
-            width: 794px; background: white;
-            font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
-            color: #1e293b; padding: 0;
-        }
-        @media print {
-            body * { visibility: hidden; }
-            #pdfPrintArea, #pdfPrintArea * { visibility: visible; }
-            #pdfPrintArea { position: fixed; left: 0; top: 0; width: 100%; }
-        }
-        /* 로고 텍스트 대체 (이미지 로드 실패 시) */
+        #weeklyPdfTemplate { display: none; position: fixed; left: -9999px; top: 0; width: 794px; background: white; font-family: 'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif; color: #1e293b; padding: 0; }
         .logo-text { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 6px; font-size: 14px; font-weight: 900; color: #15803d; flex-shrink: 0; }
     </style>
 </head>
@@ -187,8 +153,7 @@
 <div class="max-w-6xl mx-auto">
     <header class="flex justify-between items-center mb-6 bg-green-800 p-4 rounded-2xl text-white shadow-lg">
         <h1 class="font-black text-sm md:text-lg flex items-center gap-2">
-            <span class="logo-text" id="headerLogo">🏫</span>
-            구례중 주간 계획
+            <span class="logo-text" id="headerLogo">🏫</span> 구례중 주간 계획
         </h1>
         <div class="flex gap-1 md:gap-2">
             <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">주간</button>
@@ -197,36 +162,28 @@
             <button onclick="app.setView('meeting')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">📝회의메모</button>
         </div>
     </header>
-
     <section id="eventInputSection" class="bg-white p-4 rounded-2xl shadow-sm border mb-4 grid grid-cols-2 md:grid-cols-4 gap-2">
         <input type="date" id="inDate" class="border p-2 rounded-xl text-sm md:text-base outline-none" onchange="this.blur()">
         <input type="text" id="inTitle" placeholder="업무 행사 입력" class="border p-2 rounded-xl text-sm md:text-base outline-none">
-        <select id="inDept" class="border p-2 rounded-xl text-sm md:text-base outline-none">
-            <option>교무</option><option>연구</option><option>학생</option><option>창의</option><option>행정</option>
-            <option>1학년</option><option>2학년</option><option>3학년</option>
-        </select>
+        <select id="inDept" class="border p-2 rounded-xl text-sm md:text-base outline-none"><option>교무</option><option>연구</option><option>학생</option><option>창의</option><option>행정</option><option>1학년</option><option>2학년</option><option>3학년</option></select>
         <button onclick="app.saveEvent()" class="bg-green-600 text-white rounded-xl font-bold py-2 text-sm md:text-base hover:bg-green-700">저장하기</button>
     </section>
-
     <div class="flex justify-between items-center bg-white p-3 rounded-2xl border mb-4">
         <button onclick="app.move(-1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">&#10094;</button>
         <h2 id="titleText" class="text-sm md:text-xl font-black text-slate-700">로딩 중...</h2>
         <button onclick="app.move(1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">&#10095;</button>
     </div>
-
-    <div id="weeklyPdfBar" class="hidden flex justify-end mb-3">
-        <button id="weeklyPdfBtnEl" class="weekly-pdf-btn" onclick="app.downloadWeeklyPDF()">
-            &#128196; 주간계획 PDF 출력
-        </button>
+    <div id="weeklyPdfBar" class="hidden flex justify-end items-center gap-3 mb-3">
+        <span style="font-size:12px;color:#94a3b8;font-weight:500;">🖨️ 종이가 편하신 분을 위해</span>
+        <button id="weeklyPdfBtnEl" class="weekly-pdf-btn" onclick="app.downloadWeeklyPDF()">&#128196; 주간계획 PDF 출력</button>
     </div>
-
     <div id="viewPort"></div>
 
-    <!-- ===== 협의할 내용들 (주간 뷰 전용) ===== -->
+    <!-- 협의 내용 -->
     <div id="discussionPort" class="hidden">
         <div class="discussion-section">
-            <h3 class="font-black text-amber-700 mb-4 flex items-center gap-2 text-base md:text-lg">💬 협의할 내용들</h3>
-            <textarea id="discussionInput" data-dept="협의" class="discussion-input" placeholder="이번 주 협의할 내용을 입력하세요..." oninput="app.handleDiscussionInput(this)"></textarea>
+            <h3 class="font-black text-amber-700 mb-4 flex items-center gap-2 text-base md:text-lg">💬 협의 내용</h3>
+            <textarea id="discussionInput" class="discussion-input" placeholder="예시) 학업성적관리규정안 개정에 대한 협의(연구부)" oninput="app.handleDiscussionInput(this)" onkeydown="app.handleDiscussionKeydown(event,this)" onfocus="app.handleDiscussionFocus(this)"></textarea>
         </div>
     </div>
 
@@ -245,30 +202,23 @@
             </div>
         </div>
     </div>
-
-    <footer class="text-center py-8 text-slate-400 text-[10px] md:text-xs">
-        © Developed by Choi Gwang-cheol of Gurye Middle School in 2026. All rights reserved.
-    </footer>
+    <footer class="text-center py-8 text-slate-400 text-[10px] md:text-xs">© Developed by Choi Gwang-cheol of Gurye Middle School in 2026. All rights reserved.</footer>
 </div>
-
 <div id="weeklyPdfTemplate"></div>
 <div id="toast" class="toast"></div>
 <button id="installBtn" class="install-btn" style="display:none;" onclick="app.handleInstall()">📱 앱으로 설치하기</button>
-
 <div id="iosInstallModal" class="modal" onclick="document.getElementById('iosInstallModal').style.display='none'">
     <div class="modal-content" onclick="event.stopPropagation()" style="text-align:center;">
         <div style="font-size:32px;margin-bottom:12px;">📱</div>
         <h3 style="font-weight:900;color:#15803d;margin-bottom:12px;font-size:16px;">홈 화면에 추가하기</h3>
         <div style="background:#f0fdf4;border-radius:12px;padding:16px;margin-bottom:16px;text-align:left;font-size:14px;line-height:1.8;">
-            <div style="margin-bottom:8px;">1️⃣ 하단 <strong>공유 버튼</strong> 탭 <span style="font-size:18px;">⬆️</span></div>
+            <div style="margin-bottom:8px;">1️⃣ 하단 <strong>공유 버튼</strong> 탭 ⬆️</div>
             <div style="margin-bottom:8px;">2️⃣ <strong>"홈 화면에 추가"</strong> 선택</div>
             <div>3️⃣ 오른쪽 위 <strong>"추가"</strong> 탭</div>
         </div>
-        <button onclick="document.getElementById('iosInstallModal').style.display='none'"
-            style="width:100%;background:#15803d;color:white;font-weight:bold;padding:12px;border-radius:12px;border:none;font-size:15px;cursor:pointer;">확인</button>
+        <button onclick="document.getElementById('iosInstallModal').style.display='none'" style="width:100%;background:#15803d;color:white;font-weight:bold;padding:12px;border-radius:12px;border:none;font-size:15px;cursor:pointer;">확인</button>
     </div>
 </div>
-
 <div id="detailModal" class="modal" onclick="app.closeModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <h3 id="modalDate" class="font-black text-green-800 mb-2 text-base md:text-lg"></h3>
@@ -278,633 +228,150 @@
 </div>
 
 <script>
-const app = {
-    API_URL: 'https://script.google.com/macros/s/AKfycbxFyog7n0_ciSjwqtv9kz61AmzeQxSjcvM4S2u1MyOB80FLe9_fc_Qm1Yzg2IIpWOal/exec',
-    events: [], localChanges: {}, localDeletes: new Set(),
-    currentDate: new Date(), viewMode: 'monthly',
-    isSyncing: false, isEditing: false, meetingInputFocused: false,
-    saveTimers: {}, savingInProgress: false, pendingSave: null,
-    aiGenerating: false, meetingDate: new Date(), meetingCalendarDate: new Date(),
-    days: ['일','월','화','수','목','금','토'], _logoBase64: null,
-    deptOrder: ['교무','연구','학생','창의','행정','1학년','2학년','3학년','학사'],
-    _isLocalFile: location.protocol === 'file:',
+const app={
+    API_URL:'https://script.google.com/macros/s/AKfycbxFyog7n0_ciSjwqtv9kz61AmzeQxSjcvM4S2u1MyOB80FLe9_fc_Qm1Yzg2IIpWOal/exec',
+    events:[],localChanges:{},localDeletes:new Set(),
+    currentDate:new Date(),viewMode:'monthly',
+    isSyncing:false,isEditing:false,meetingInputFocused:false,
+    saveTimers:{},savingInProgress:false,pendingSave:null,
+    aiGenerating:false,meetingDate:new Date(),meetingCalendarDate:new Date(),
+    days:['일','월','화','수','목','금','토'],_logoBase64:null,
+    deptOrder:['교무','연구','학생','창의','행정','1학년','2학년','3학년','학사'],
+    _isLocalFile:location.protocol==='file:',
 
-    sortByDept(evts) {
-        return [...evts].sort((a,b)=>{
-            const ai=this.deptOrder.indexOf(a.dapt), bi=this.deptOrder.indexOf(b.dapt);
-            return (ai===-1?99:ai)-(bi===-1?99:bi);
-        });
-    },
-    deptColor(d){
-        return {'교무':'#2563eb','연구':'#16a34a','학생':'#7c3aed','창의':'#ea580c','행정':'#1e3a8a','1학년':'#0891b2','2학년':'#db2777','3학년':'#0369a1','학사':'#334155'}[d]||'#2563eb';
-    },
-    deptBg(d){
-        return {'교무':'#dbeafe','연구':'#dcfce7','학생':'#ede9fe','창의':'#ffedd5','행정':'#e0e7ff','1학년':'#cffafe','2학년':'#fce7f3','3학년':'#e0f2fe','학사':'#f1f5f9'}[d]||'#dbeafe';
-    },
+    sortByDept(e){return[...e].sort((a,b)=>{const ai=this.deptOrder.indexOf(a.dapt),bi=this.deptOrder.indexOf(b.dapt);return(ai===-1?99:ai)-(bi===-1?99:bi);});},
+    deptColor(d){return{'교무':'#2563eb','연구':'#16a34a','학생':'#7c3aed','창의':'#ea580c','행정':'#1e3a8a','1학년':'#0891b2','2학년':'#db2777','3학년':'#0369a1','학사':'#334155'}[d]||'#2563eb';},
+    deptBg(d){return{'교무':'#dbeafe','연구':'#dcfce7','학생':'#ede9fe','창의':'#ffedd5','행정':'#e0e7ff','1학년':'#cffafe','2학년':'#fce7f3','3학년':'#e0f2fe','학사':'#f1f5f9'}[d]||'#dbeafe';},
+    async loadLogoBase64(){if(this._isLocalFile){this._logoBase64=null;return;}try{const img=new Image();img.crossOrigin='anonymous';await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src='./icons/icon-192.png';});const c=document.createElement('canvas');c.width=img.width||192;c.height=img.height||192;c.getContext('2d').drawImage(img,0,0);this._logoBase64=c.toDataURL('image/png');const h=document.getElementById('headerLogo');if(h)h.outerHTML=`<img src="./icons/icon-192.png" style="width:28px;height:28px;object-fit:contain;border-radius:6px;" alt="로고">`;}catch(e){this._logoBase64=null;}},
 
-    async loadLogoBase64(){
-        if(this._isLocalFile){this._logoBase64=null;return;}
-        try{
-            const img=new Image(); img.crossOrigin='anonymous';
-            await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src='./icons/icon-192.png';});
-            const c=document.createElement('canvas'); c.width=img.width||192; c.height=img.height||192;
-            c.getContext('2d').drawImage(img,0,0); this._logoBase64=c.toDataURL('image/png');
-            // 성공 시 헤더 로고도 이미지로 교체
-            const hl=document.getElementById('headerLogo');
-            if(hl){hl.outerHTML=`<img src="./icons/icon-192.png" style="width:28px;height:28px;object-fit:contain;border-radius:6px;" alt="구례중 로고">`;}
-        }catch(e){this._logoBase64=null;}
-    },
-
-    holidays:[
-        '2026-01-01:신정','2026-02-16:설날연휴','2026-02-17:설날','2026-02-18:설날연휴',
-        '2026-03-01:삼일절','2026-03-02:대체공휴일','2026-05-05:어린이날','2026-05-24:부처님오신날',
-        '2026-05-25:대체공휴일','2026-06-06:현충일','2026-08-15:광복절','2026-08-17:대체공휴일',
-        '2026-09-24:추석연휴','2026-09-25:추석','2026-09-26:추석연휴','2026-10-03:개천절',
-        '2026-10-05:대체공휴일','2026-10-09:한글날','2026-12-25:크리스마스'
-    ],
+    holidays:['2026-01-01:신정','2026-02-16:설날연휴','2026-02-17:설날','2026-02-18:설날연휴','2026-03-01:삼일절','2026-03-02:대체공휴일','2026-05-05:어린이날','2026-05-24:부처님오신날','2026-05-25:대체공휴일','2026-06-06:현충일','2026-08-15:광복절','2026-08-17:대체공휴일','2026-09-24:추석연휴','2026-09-25:추석','2026-09-26:추석연휴','2026-10-03:개천절','2026-10-05:대체공휴일','2026-10-09:한글날','2026-12-25:크리스마스'],
 
     parseLocalDate(s){const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);},
     isToday(s){return s===this.formatDate(new Date());},
-    showToast(msg,type='info',dur=3500){
-        const t=document.getElementById('toast');
-        t.textContent=msg; t.className=`toast show ${type}`;
-        clearTimeout(this._toastTimer); this._toastTimer=setTimeout(()=>{t.className='toast';},dur);
-    },
+    showToast(m,t='info',d=3500){const el=document.getElementById('toast');el.textContent=m;el.className=`toast show ${t}`;clearTimeout(this._tt);this._tt=setTimeout(()=>{el.className='toast';},d);},
     getHoliday(s){const f=this.holidays.find(h=>h.startsWith(s));return f?f.split(':')[1]:null;},
     isSpecialHoliday(s){return this.events.some(e=>e.date===s&&(e.title.includes('재량휴업일')||e.title.includes('휴업일')||e.title.includes('휴무일')));},
-    isMeetingInputActive(){
-        const a=document.activeElement; if(!a) return false;
-        return a.closest('.meeting-card')!==null||a.classList.contains('meeting-input')||a.classList.contains('meeting-textarea');
-    },
-    getMeetingsForDate(s){
-        const pfx=`meeting_${s}_`;
-        const all=this.events.filter(e=>e.id.startsWith(pfx)).map(e=>({...e}));
-        Object.keys(this.localChanges).forEach(id=>{if(id.startsWith(pfx)&&!all.find(e=>e.id===id))all.push({...this.localChanges[id]});});
-        return all.filter(e=>!this.localDeletes.has(e.id)).sort((a,b)=>a.id.localeCompare(b.id));
-    },
-    newMeetingId(s){
-        const ex=this.getMeetingsForDate(s);
-        const nums=ex.map(e=>parseInt(e.id.split('_').pop())||0);
-        return `meeting_${s}_${nums.length>0?Math.max(...nums)+1:1}`;
-    },
+    isMeetingInputActive(){const a=document.activeElement;if(!a)return false;return a.closest('.meeting-card')!==null||a.classList.contains('meeting-input')||a.classList.contains('meeting-textarea');},
+    getMeetingsForDate(s){const p=`meeting_${s}_`;const a=this.events.filter(e=>e.id.startsWith(p)).map(e=>({...e}));Object.keys(this.localChanges).forEach(id=>{if(id.startsWith(p)&&!a.find(e=>e.id===id))a.push({...this.localChanges[id]});});return a.filter(e=>!this.localDeletes.has(e.id)).sort((a,b)=>a.id.localeCompare(b.id));},
+    newMeetingId(s){const e=this.getMeetingsForDate(s);const n=e.map(e=>parseInt(e.id.split('_').pop())||0);return`meeting_${s}_${n.length>0?Math.max(...n)+1:1}`;},
 
-    async loadFromServer(){
-        if(this.isSyncing||this.aiGenerating) return;
-        try{
-            this.isSyncing=true;
-            const r=await fetch(this.API_URL+'?t='+Date.now());
-            const data=await r.json();
-            const serverEvents=data.map(item=>{
-                let ds=item.date;
-                if(typeof ds==='number'){const d=new Date(Math.round((ds-25569)*86400*1000));ds=this.formatDate(new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));}
-                else if(typeof ds==='string'&&ds.includes('T')){const d=new Date(ds);const k=new Date(d.getTime()+9*3600000);ds=this.formatDate(new Date(k.getUTCFullYear(),k.getUTCMonth(),k.getUTCDate()));}
-                else if(typeof ds==='string') ds=ds.substring(0,10);
-                return{id:String(item.id),date:ds,title:item.title,dapt:item.dapt,subject:item.subject||'',content:item.content||''};
-            });
-            this.events=this.mergeEvents(serverEvents);
-            if(this.viewMode==='meeting'){this.renderMeetingCalendar();if(!this.isMeetingInputActive()&&!this.meetingInputFocused)this.syncMeetingInputsFromData();}
-            else if(!this.isEditing) this.render();
-        }catch(e){console.error('로드 오류:',e);}
-        finally{this.isSyncing=false;}
-    },
+    async loadFromServer(){if(this.isSyncing||this.aiGenerating)return;try{this.isSyncing=true;const r=await fetch(this.API_URL+'?t='+Date.now());const d=await r.json();const se=d.map(i=>{let ds=i.date;if(typeof ds==='number'){const d=new Date(Math.round((ds-25569)*86400*1000));ds=this.formatDate(new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));}else if(typeof ds==='string'&&ds.includes('T')){const d=new Date(ds);const k=new Date(d.getTime()+9*3600000);ds=this.formatDate(new Date(k.getUTCFullYear(),k.getUTCMonth(),k.getUTCDate()));}else if(typeof ds==='string')ds=ds.substring(0,10);return{id:String(i.id),date:ds,title:i.title,dapt:i.dapt,subject:i.subject||'',content:i.content||''};});this.events=this.mergeEvents(se);if(this.viewMode==='meeting'){this.renderMeetingCalendar();if(!this.isMeetingInputActive()&&!this.meetingInputFocused)this.syncMeetingInputsFromData();}else if(!this.isEditing)this.render();}catch(e){console.error('로드 오류:',e);}finally{this.isSyncing=false;}},
     syncMeetingInputsFromData(){if(!document.getElementById('meetingCardsContainer'))return;this.renderMeetingCards();this.updateMeetingPanelDate();},
-    mergeEvents(se){
-        const f=se.filter(e=>!this.localDeletes.has(String(e.id))); const m=[...f];
-        Object.keys(this.localChanges).forEach(id=>{
-            const ld=this.localChanges[id]; const si=m.findIndex(e=>String(e.id)===String(id));
-            if(si!==-1) m[si]={...m[si],...ld}; else m.push(ld);
-        }); return m;
-    },
+    mergeEvents(se){const f=se.filter(e=>!this.localDeletes.has(String(e.id)));const m=[...f];Object.keys(this.localChanges).forEach(id=>{const l=this.localChanges[id];const i=m.findIndex(e=>String(e.id)===String(id));if(i!==-1)m[i]={...m[i],...l};else m.push(l);});return m;},
 
-    async saveToServer(action,data){
-        if(action==='add'){this.localChanges[data.id]=data;this.localDeletes.delete(data.id);}
-        else if(action==='delete'){delete this.localChanges[data.id];this.localDeletes.add(data.id);}
-        if(this.savingInProgress){this.pendingSave={action,data};return;}
-        this.savingInProgress=true;
-        try{
-            const r=await fetch(this.API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,...data})});
-            const res=await r.json();
-            if(res.success){const sid=data.id;setTimeout(()=>{delete this.localChanges[sid];this.localDeletes.delete(sid);},15000);this.showSaveIndicator('saved');}
-        }catch(e){console.error('저장 오류:',e);}
-        finally{
-            this.savingInProgress=false;
-            if(this.pendingSave){const p=this.pendingSave;this.pendingSave=null;await this.saveToServer(p.action,p.data);}
+    async saveToServer(a,d){if(a==='add'){this.localChanges[d.id]=d;this.localDeletes.delete(d.id);}else if(a==='delete'){delete this.localChanges[d.id];this.localDeletes.add(d.id);}if(this.savingInProgress){this.pendingSave={action:a,data:d};return;}this.savingInProgress=true;try{const r=await fetch(this.API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:a,...d})});const res=await r.json();if(res.success){const sid=d.id;setTimeout(()=>{delete this.localChanges[sid];this.localDeletes.delete(sid);},15000);this.showSaveIndicator('saved');}}catch(e){console.error('저장 오류:',e);}finally{this.savingInProgress=false;if(this.pendingSave){const p=this.pendingSave;this.pendingSave=null;await this.saveToServer(p.action,p.data);}}},
+    showSaveIndicator(s){const el=document.getElementById('meetingSaveIndicator');if(!el)return;el.className='save-indicator '+s;el.textContent=s==='saving'?'💾 저장 중...':(s==='saved'?'✅ 저장 완료':'💡 입력 2초 후 자동 저장');},
+
+    handleNoticeInput(inp){this.isEditing=true;this.updateInputStyle(inp);const d=inp.dataset.dept;if(this.saveTimers[d])clearTimeout(this.saveTimers[d]);this.saveTimers[d]=setTimeout(()=>this.saveNotice(inp),2000);},
+    updateInputStyle(inp){inp.value.trim()!==''?inp.classList.add('has-content'):inp.classList.remove('has-content');},
+    async saveNotice(inp){this.isEditing=false;const dept=inp.dataset.dept,content=inp.value.trim();const monday=this.getMonday(this.currentDate),ds=this.formatDate(monday);const nid=`notice_${ds}_${dept}`,xi=this.events.findIndex(e=>e.id===nid);if(content===''){if(xi!==-1){this.events.splice(xi,1);await this.saveToServer('delete',{id:nid});}}else{const nn={id:nid,date:ds,title:content,dapt:dept};if(xi!==-1)this.events[xi]=nn;else this.events.push(nn);await this.saveToServer('add',nn);}},
+
+    /* ===== 협의 내용 ===== */
+    handleDiscussionFocus(ta){if(ta.value.trim()===''){ta.value='1. ';ta.selectionStart=ta.selectionEnd=ta.value.length;}},
+    handleDiscussionKeydown(e,ta){
+        if(e.key==='Enter'){
+            e.preventDefault();
+            const pos=ta.selectionStart,before=ta.value.substring(0,pos),after=ta.value.substring(ta.selectionEnd);
+            const lines=before.split('\n'),cur=lines[lines.length-1];
+            if(/^\d+\.\s*$/.test(cur)){const nb=lines.slice(0,-1).join('\n')+(lines.length>1?'\n':'');ta.value=nb+after;ta.selectionStart=ta.selectionEnd=nb.length;}
+            else{let mx=0;before.split('\n').forEach(l=>{const m=l.match(/^(\d+)\./);if(m)mx=Math.max(mx,parseInt(m[1]));});const ins='\n'+(mx+1)+'. ';ta.value=before+ins+after;ta.selectionStart=ta.selectionEnd=pos+ins.length;}
+            ta.dispatchEvent(new Event('input',{bubbles:true}));
         }
     },
-    showSaveIndicator(s){
-        const el=document.getElementById('meetingSaveIndicator'); if(!el) return;
-        el.className='save-indicator '+s;
-        el.textContent=s==='saving'?'💾 저장 중...':(s==='saved'?'✅ 저장 완료':'💡 입력 2초 후 자동 저장');
-    },
-    handleNoticeInput(input){
-        this.isEditing=true; this.updateInputStyle(input);
-        const d=input.dataset.dept;
-        if(this.saveTimers[d]) clearTimeout(this.saveTimers[d]);
-        this.saveTimers[d]=setTimeout(()=>this.saveNotice(input),2000);
-    },
-    /* ===== 협의할 내용들 입력 핸들러 ===== */
-    handleDiscussionInput(input){
-        this.isEditing=true;
-        input.value.trim()!==''?input.classList.add('has-content'):input.classList.remove('has-content');
-        const d=input.dataset.dept;
-        if(this.saveTimers[d]) clearTimeout(this.saveTimers[d]);
-        this.saveTimers[d]=setTimeout(()=>this.saveDiscussion(input),2000);
-    },
-    async saveDiscussion(input){
-        this.isEditing=false;
-        const dept=input.dataset.dept, content=input.value.trim();
-        const monday=this.getMonday(this.currentDate), dateStr=this.formatDate(monday);
-        const nid=`notice_${dateStr}_${dept}`, xi=this.events.findIndex(e=>e.id===nid);
-        if(content===''){if(xi!==-1){this.events.splice(xi,1);await this.saveToServer('delete',{id:nid});}}
-        else{const nn={id:nid,date:dateStr,title:content,dapt:dept};if(xi!==-1)this.events[xi]=nn;else this.events.push(nn);await this.saveToServer('add',nn);}
-    },
-    updateInputStyle(input){input.value.trim()!==''?input.classList.add('has-content'):input.classList.remove('has-content');},
-    async saveNotice(input){
-        this.isEditing=false;
-        const dept=input.dataset.dept, content=input.value.trim();
-        const monday=this.getMonday(this.currentDate), dateStr=this.formatDate(monday);
-        const nid=`notice_${dateStr}_${dept}`, xi=this.events.findIndex(e=>e.id===nid);
-        if(content===''){if(xi!==-1){this.events.splice(xi,1);await this.saveToServer('delete',{id:nid});}}
-        else{const nn={id:nid,date:dateStr,title:content,dapt:dept};if(xi!==-1)this.events[xi]=nn;else this.events.push(nn);await this.saveToServer('add',nn);}
-    },
+    handleDiscussionInput(ta){this.isEditing=true;ta.value.trim()!==''&&!/^\d+\.\s*$/.test(ta.value.trim())?ta.classList.add('has-content'):ta.classList.remove('has-content');if(this.saveTimers['disc'])clearTimeout(this.saveTimers['disc']);this.saveTimers['disc']=setTimeout(()=>this.saveDiscussion(ta),2000);},
+    async saveDiscussion(ta){this.isEditing=false;let c=ta.value.trim();if(/^\d+\.\s*$/.test(c))c='';const monday=this.getMonday(this.currentDate),ds=this.formatDate(monday);const nid=`notice_${ds}_협의`,xi=this.events.findIndex(e=>e.id===nid);if(c===''){if(xi!==-1){this.events.splice(xi,1);await this.saveToServer('delete',{id:nid});}}else{const nn={id:nid,date:ds,title:c,dapt:'협의'};if(xi!==-1)this.events[xi]=nn;else this.events.push(nn);await this.saveToServer('add',nn);}},
 
     moveMeetingCalendar(dir){this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth()+dir);this.renderMeetingCalendar();},
     selectMeetingDate(s){this.meetingDate=this.parseLocalDate(s);this.meetingCalendarDate=this.parseLocalDate(s);this.updateMeetingPanelDate();this.renderMeetingCards();this.renderMeetingCalendar();},
     updateMeetingPanelDate(){const el=document.getElementById('meetingPanelDate');if(!el)return;el.textContent=`${this.formatDate(this.meetingDate)} (${this.days[this.meetingDate.getDay()]})`;},
-
-    renderMeetingCalendar(){
-        const yr=this.meetingCalendarDate.getFullYear(), mo=this.meetingCalendarDate.getMonth();
-        const sel=this.formatDate(this.meetingDate);
-        const fd=new Date(yr,mo,1).getDay(), ld=new Date(yr,mo+1,0).getDate(), pld=new Date(yr,mo,0).getDate();
-        let h=`<div class="meeting-calendar-header"><button onclick="app.moveMeetingCalendar(-1)">&#9664;</button><div class="meeting-calendar-title">${yr}년 ${mo+1}월</div><button onclick="app.moveMeetingCalendar(1)">&#9654;</button></div><div class="meeting-calendar-body"><div class="meeting-calendar-grid">`;
-        this.days.forEach(dy=>{const c=dy==='일'?'text-red-500':(dy==='토'?'text-blue-500':'');h+=`<div class="meeting-calendar-day-header ${c}">${dy}</div>`;});
-        for(let i=fd-1;i>=0;i--) h+=`<div class="meeting-calendar-day other-month">${pld-i}</div>`;
-        for(let dy=1;dy<=ld;dy++){
-            const ds=`${yr}-${String(mo+1).padStart(2,'0')}-${String(dy).padStart(2,'0')}`;
-            const dow=new Date(yr,mo,dy).getDay(), isSel=ds===sel, hasMtg=this.getMeetingsForDate(ds).length>0;
-            let cls=`meeting-calendar-day${this.isToday(ds)?' today-border':''}`;
-            if((dow===0||dow===6)&&!isSel) cls+=' weekend'; if(isSel) cls+=' selected'; if(hasMtg) cls+=' has-meeting';
-            h+=`<div class="${cls}" onclick="app.selectMeetingDate('${ds}')">${dy}</div>`;
-        }
-        const rem=7-(fd+ld)%7; if(rem<7) for(let dy=1;dy<=rem;dy++) h+=`<div class="meeting-calendar-day other-month">${dy}</div>`;
-        h+='</div></div>';
-        const c=document.getElementById('meetingCalendar'); if(c) c.innerHTML=h;
-    },
-
-    renderMeetingView(){
-        const vp=document.getElementById('viewPort'), ds=this.formatDate(this.meetingDate), dow=this.days[this.meetingDate.getDay()];
-        if(!vp.querySelector('.meeting-wrapper')){
-            vp.innerHTML=`<div class="meeting-wrapper"><div class="meeting-cal-panel"><div id="meetingCalendar"></div></div><div class="meeting-input-panel"><div class="meeting-panel-title">📝 회의메모 <span id="meetingPanelDate" class="meeting-date-badge">${ds} (${dow})</span></div><div id="meetingCardsContainer"></div><button class="add-meeting-btn" onclick="app.addMeetingCard()">＋ 회의 추가</button><div id="meetingSaveIndicator" class="save-indicator">💡 입력 2초 후 자동 저장</div></div></div>`;
-        }
-        this.meetingCalendarDate=new Date(this.meetingDate);
-        this.renderMeetingCalendar(); this.renderMeetingCards();
-    },
-    renderMeetingCards(){
-        const c=document.getElementById('meetingCardsContainer'); if(!c||this.aiGenerating) return;
-        const ds=this.formatDate(this.meetingDate), mtgs=this.getMeetingsForDate(ds);
-        c.innerHTML=mtgs.length===0?this.buildCardHTML(null,ds,1,1):mtgs.map((m,i)=>this.buildCardHTML(m,ds,i+1,mtgs.length)).join('');
-    },
-    buildCardHTML(md,ds,num,total){
-        const mid=md?md.id:`__new__${ds}`;
-        const ss=(md?.subject||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-        const sc=(md?.content||'').replace(/</g,'&lt;');
-        return `<div class="meeting-card" data-mid="${mid}"><div class="meeting-card-header"><span class="meeting-card-num">회의 ${num}</span><span class="meeting-card-del" onclick="app.deleteMeetingCard('${mid}','${ds}')">🗑 삭제</span></div><label class="meeting-label">📋 회의 주제</label><input type="text" class="meeting-input ${md?.subject?'has-data':''}" data-mid="${mid}" data-field="subject" placeholder="예: 학생생활규정 개정 협의회" value="${ss}" oninput="app.handleCardInput(this)" onfocus="app.handleMeetingFocus()" onblur="app.handleMeetingBlur()"><label class="meeting-label"><span>📝 회의 내용 정리</span><span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end"><button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button><button class="pdf-btn" onclick="app.downloadPDF('${mid}')">📄 PDF 저장</button></span></label><div style="position:relative"><textarea class="meeting-textarea ${md?.content?'has-data':''}" data-mid="${mid}" data-field="content" oninput="app.handleCardInput(this)" onfocus="app.handleMeetingFocus()" onblur="app.handleMeetingBlur()">${sc}</textarea></div></div>`;
-    },
-    addMeetingCard(){
-        const ds=this.formatDate(this.meetingDate), nid=this.newMeetingId(ds);
-        const mtgs=this.getMeetingsForDate(ds), c=document.getElementById('meetingCardsContainer'); if(!c) return;
-        const tmp=document.createElement('div'); tmp.innerHTML=this.buildCardHTML(null,ds,mtgs.length+1,mtgs.length+1);
-        const card=tmp.firstElementChild; card.dataset.mid=nid;
-        card.querySelectorAll('[data-mid]').forEach(el=>el.dataset.mid=nid);
-        card.querySelector('.meeting-card-del').setAttribute('onclick',`app.deleteMeetingCard('${nid}','${ds}')`);
-        card.querySelector('.ai-generate-btn').setAttribute('onclick',`app.generateAIMeetingMinutes('${nid}')`);
-        card.querySelector('.ai-generate-btn').dataset.mid=nid;
-        c.appendChild(card);
-    },
-    async deleteMeetingCard(mid,ds){
-        if(mid.startsWith('__new__')){const c=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(c)c.remove();this.renumberCards();return;}
-        const xi=this.events.findIndex(e=>e.id===mid);if(xi!==-1)this.events.splice(xi,1);
-        this.localDeletes.add(mid); delete this.localChanges[mid];
-        const c=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(c)c.remove();
-        this.renumberCards(); this.renderMeetingCalendar();
-        await this.saveToServer('delete',{id:mid});
-    },
-    renumberCards(){
-        const c=document.getElementById('meetingCardsContainer'); if(!c) return;
-        c.querySelectorAll('.meeting-card').forEach((card,i)=>{const n=card.querySelector('.meeting-card-num');if(n)n.textContent=`회의 ${i+1}`;});
-    },
+    renderMeetingCalendar(){const yr=this.meetingCalendarDate.getFullYear(),mo=this.meetingCalendarDate.getMonth(),sel=this.formatDate(this.meetingDate);const fd=new Date(yr,mo,1).getDay(),ld=new Date(yr,mo+1,0).getDate(),pld=new Date(yr,mo,0).getDate();let h=`<div class="meeting-calendar-header"><button onclick="app.moveMeetingCalendar(-1)">&#9664;</button><div class="meeting-calendar-title">${yr}년 ${mo+1}월</div><button onclick="app.moveMeetingCalendar(1)">&#9654;</button></div><div class="meeting-calendar-body"><div class="meeting-calendar-grid">`;this.days.forEach(d=>{const c=d==='일'?'text-red-500':(d==='토'?'text-blue-500':'');h+=`<div class="meeting-calendar-day-header ${c}">${d}</div>`;});for(let i=fd-1;i>=0;i--)h+=`<div class="meeting-calendar-day other-month">${pld-i}</div>`;for(let d=1;d<=ld;d++){const ds=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,dow=new Date(yr,mo,d).getDay(),isSel=ds===sel,has=this.getMeetingsForDate(ds).length>0;let cls=`meeting-calendar-day${this.isToday(ds)?' today-border':''}`;if((dow===0||dow===6)&&!isSel)cls+=' weekend';if(isSel)cls+=' selected';if(has)cls+=' has-meeting';h+=`<div class="${cls}" onclick="app.selectMeetingDate('${ds}')">${d}</div>`;}const rem=7-(fd+ld)%7;if(rem<7)for(let d=1;d<=rem;d++)h+=`<div class="meeting-calendar-day other-month">${d}</div>`;h+='</div></div>';const c=document.getElementById('meetingCalendar');if(c)c.innerHTML=h;},
+    renderMeetingView(){const vp=document.getElementById('viewPort'),ds=this.formatDate(this.meetingDate),dow=this.days[this.meetingDate.getDay()];if(!vp.querySelector('.meeting-wrapper'))vp.innerHTML=`<div class="meeting-wrapper"><div class="meeting-cal-panel"><div id="meetingCalendar"></div></div><div class="meeting-input-panel"><div class="meeting-panel-title">📝 회의메모 <span id="meetingPanelDate" class="meeting-date-badge">${ds} (${dow})</span></div><div id="meetingCardsContainer"></div><button class="add-meeting-btn" onclick="app.addMeetingCard()">＋ 회의 추가</button><div id="meetingSaveIndicator" class="save-indicator">💡 입력 2초 후 자동 저장</div></div></div>`;this.meetingCalendarDate=new Date(this.meetingDate);this.renderMeetingCalendar();this.renderMeetingCards();},
+    renderMeetingCards(){const c=document.getElementById('meetingCardsContainer');if(!c||this.aiGenerating)return;const ds=this.formatDate(this.meetingDate),m=this.getMeetingsForDate(ds);c.innerHTML=m.length===0?this.buildCardHTML(null,ds,1,1):m.map((x,i)=>this.buildCardHTML(x,ds,i+1,m.length)).join('');},
+    buildCardHTML(md,ds,num){const mid=md?md.id:`__new__${ds}`,ss=(md?.subject||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'),sc=(md?.content||'').replace(/</g,'&lt;');return`<div class="meeting-card" data-mid="${mid}"><div class="meeting-card-header"><span class="meeting-card-num">회의 ${num}</span><span class="meeting-card-del" onclick="app.deleteMeetingCard('${mid}','${ds}')">🗑 삭제</span></div><label class="meeting-label">📋 회의 주제</label><input type="text" class="meeting-input ${md?.subject?'has-data':''}" data-mid="${mid}" data-field="subject" placeholder="예: 학생생활규정 개정 협의회" value="${ss}" oninput="app.handleCardInput(this)" onfocus="app.handleMeetingFocus()" onblur="app.handleMeetingBlur()"><label class="meeting-label"><span>📝 회의 내용 정리</span><span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end"><button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button><button class="pdf-btn" onclick="app.downloadPDF('${mid}')">📄 PDF 저장</button></span></label><div style="position:relative"><textarea class="meeting-textarea ${md?.content?'has-data':''}" data-mid="${mid}" data-field="content" oninput="app.handleCardInput(this)" onfocus="app.handleMeetingFocus()" onblur="app.handleMeetingBlur()">${sc}</textarea></div></div>`;},
+    addMeetingCard(){const ds=this.formatDate(this.meetingDate),nid=this.newMeetingId(ds),m=this.getMeetingsForDate(ds),c=document.getElementById('meetingCardsContainer');if(!c)return;const t=document.createElement('div');t.innerHTML=this.buildCardHTML(null,ds,m.length+1);const card=t.firstElementChild;card.dataset.mid=nid;card.querySelectorAll('[data-mid]').forEach(el=>el.dataset.mid=nid);card.querySelector('.meeting-card-del').setAttribute('onclick',`app.deleteMeetingCard('${nid}','${ds}')`);card.querySelector('.ai-generate-btn').setAttribute('onclick',`app.generateAIMeetingMinutes('${nid}')`);card.querySelector('.ai-generate-btn').dataset.mid=nid;c.appendChild(card);},
+    async deleteMeetingCard(mid,ds){if(mid.startsWith('__new__')){const c=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(c)c.remove();this.renumberCards();return;}const xi=this.events.findIndex(e=>e.id===mid);if(xi!==-1)this.events.splice(xi,1);this.localDeletes.add(mid);delete this.localChanges[mid];const c=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(c)c.remove();this.renumberCards();this.renderMeetingCalendar();await this.saveToServer('delete',{id:mid});},
+    renumberCards(){const c=document.getElementById('meetingCardsContainer');if(!c)return;c.querySelectorAll('.meeting-card').forEach((card,i)=>{const n=card.querySelector('.meeting-card-num');if(n)n.textContent=`회의 ${i+1}`;});},
 
     getMonday(d){const dt=new Date(d),day=dt.getDay(),diff=dt.getDate()-day+(day===0?-6:1);return new Date(dt.getFullYear(),dt.getMonth(),diff);},
-    formatDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;},
-
-    async saveEvent(){
-        const di=document.getElementById('inDate').value, ti=document.getElementById('inTitle').value, dp=document.getElementById('inDept').value;
-        if(!di||!ti){alert('날짜와 내용을 입력하세요.');return;}
-        const ne={id:Date.now().toString(),date:di,title:ti,dapt:dp};
-        this.events.push(ne); this.currentDate=this.parseLocalDate(di); this.render();
-        document.getElementById('inDate').value=''; document.getElementById('inTitle').value='';
-        await this.saveToServer('add',ne);
-    },
-    async deleteEvent(id){
-        if(!confirm('삭제하시겠습니까?')) return;
-        this.events=this.events.filter(e=>e.id!==id); this.render();
-        await this.saveToServer('delete',{id}); this.closeModal();
-    },
-    showDetail(ds){
-        const modal=document.getElementById('detailModal'), md=document.getElementById('modalDate'), mc=document.getElementById('modalContent');
-        const dow=this.days[this.parseLocalDate(ds).getDay()], h=this.getHoliday(ds);
-        md.textContent=`${ds} (${dow})${h?' - '+h:''}`;mc.innerHTML='';
-        const de=this.events.filter(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_'));
-        const mtgs=this.getMeetingsForDate(ds);
-        mtgs.forEach((m,i)=>{const lb=mtgs.length>1?` ${i+1}`:'';mc.innerHTML+=`<div style="background:#f0fdf4;padding:10px 14px;border-radius:10px;border-left:4px solid #16a34a;margin-bottom:8px;display:flex;align-items:center;gap:8px;"><span style="font-size:15px;">📝</span><span style="font-size:13px;font-weight:800;color:#15803d;">회의${lb}</span><span style="font-size:13px;color:#1e293b;font-weight:600;">${m.subject||'(제목 없음)'}</span></div>`;});
-        if(de.length===0&&mtgs.length===0){mc.innerHTML="<div style='color:#94a3b8;font-size:13px;text-align:center;padding:12px 0;'>일정이 없습니다.</div>";}
-        else{const sd=this.viewMode==='weekly';de.forEach(e=>{const dc=this.deptColor(e.dapt),db=this.deptBg(e.dapt);mc.innerHTML+=`<div style="background:#f8fafc;padding:10px 14px;border-radius:10px;border-left:4px solid ${dc};margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;"><div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;"><span style="font-size:11px;font-weight:800;color:${dc};background:${db};padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;">${e.dapt}</span><span style="font-size:13px;color:#1e293b;font-weight:500;word-break:break-all;">${e.title}</span></div>${sd?`<span class="del-x flex-shrink-0" onclick="app.deleteEvent('${e.id}')">✕</span>`:''}</div>`;});}
-        modal.style.display='flex';
-    },
+    formatDate(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;},
+    async saveEvent(){const di=document.getElementById('inDate').value,ti=document.getElementById('inTitle').value,dp=document.getElementById('inDept').value;if(!di||!ti){alert('날짜와 내용을 입력하세요.');return;}const ne={id:Date.now().toString(),date:di,title:ti,dapt:dp};this.events.push(ne);this.currentDate=this.parseLocalDate(di);this.render();document.getElementById('inDate').value='';document.getElementById('inTitle').value='';await this.saveToServer('add',ne);},
+    async deleteEvent(id){if(!confirm('삭제하시겠습니까?'))return;this.events=this.events.filter(e=>e.id!==id);this.render();await this.saveToServer('delete',{id});this.closeModal();},
+    showDetail(ds){const modal=document.getElementById('detailModal'),md=document.getElementById('modalDate'),mc=document.getElementById('modalContent');const dow=this.days[this.parseLocalDate(ds).getDay()],h=this.getHoliday(ds);md.textContent=`${ds} (${dow})${h?' - '+h:''}`;mc.innerHTML='';const de=this.events.filter(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_'));const mtgs=this.getMeetingsForDate(ds);mtgs.forEach((m,i)=>{const lb=mtgs.length>1?` ${i+1}`:'';mc.innerHTML+=`<div style="background:#f0fdf4;padding:10px 14px;border-radius:10px;border-left:4px solid #16a34a;margin-bottom:8px;display:flex;align-items:center;gap:8px;"><span style="font-size:15px;">📝</span><span style="font-size:13px;font-weight:800;color:#15803d;">회의${lb}</span><span style="font-size:13px;color:#1e293b;font-weight:600;">${m.subject||'(제목 없음)'}</span></div>`;});if(de.length===0&&mtgs.length===0)mc.innerHTML="<div style='color:#94a3b8;font-size:13px;text-align:center;padding:12px 0;'>일정이 없습니다.</div>";else{const sd=this.viewMode==='weekly';de.forEach(e=>{const dc=this.deptColor(e.dapt),db=this.deptBg(e.dapt);mc.innerHTML+=`<div style="background:#f8fafc;padding:10px 14px;border-radius:10px;border-left:4px solid ${dc};margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;"><div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;"><span style="font-size:11px;font-weight:800;color:${dc};background:${db};padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;">${e.dapt}</span><span style="font-size:13px;color:#1e293b;font-weight:500;word-break:break-all;">${e.title}</span></div>${sd?`<span class="del-x flex-shrink-0" onclick="app.deleteEvent('${e.id}')">✕</span>`:''}</div>`;});}modal.style.display='flex';},
     closeModal(){document.getElementById('detailModal').style.display='none';},
+    move(dir){if(this.viewMode==='yearly')this.currentDate.setFullYear(this.currentDate.getFullYear()+dir);else if(this.viewMode==='monthly')this.currentDate.setMonth(this.currentDate.getMonth()+dir);else if(this.viewMode==='meeting'){this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth()+dir);this.renderMeetingCalendar();return;}else this.currentDate.setDate(this.currentDate.getDate()+(dir*7));this.render();},
+    setView(mode){this.viewMode=mode;if(mode!=='meeting'){this.meetingInputFocused=false;this.isEditing=false;}this.render();},
 
-    move(dir){
-        if(this.viewMode==='yearly') this.currentDate.setFullYear(this.currentDate.getFullYear()+dir);
-        else if(this.viewMode==='monthly') this.currentDate.setMonth(this.currentDate.getMonth()+dir);
-        else if(this.viewMode==='meeting'){this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth()+dir);this.renderMeetingCalendar();return;}
-        else this.currentDate.setDate(this.currentDate.getDate()+(dir*7));
-        this.render();
-    },
-    setView(mode){
-        this.viewMode=mode;
-        if(mode!=='meeting'){this.meetingInputFocused=false;this.isEditing=false;}
-        this.render();
-    },
+    renderYearly(){const by=2026;let h='<div class="year-view">';const months=[];for(let m=2;m<12;m++)months.push({year:by,month:m});for(let m=0;m<2;m++)months.push({year:by+1,month:m});for(const{year,month:m}of months){h+=`<div class="year-month"><div class="year-month-title">${year}년 ${m+1}월</div><div class="mini-calendar">`;this.days.forEach((w,wi)=>{const col=wi===0?'text-red-400':(wi===6?'text-blue-400':'text-slate-400');h+=`<div class="text-[9px] md:text-[11px] font-bold text-center ${col}" style="padding:2px 1px;">${w}</div>`;});const first=new Date(year,m,1).getDay(),last=new Date(year,m+1,0).getDate();for(let i=0;i<first;i++)h+='<div style="min-width:0"></div>';for(let d=1;d<=last;d++){const ds=`${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,di=new Date(year,m,d).getDay(),hol=this.getHoliday(ds),isSp=this.isSpecialHoliday(ds),isW=di===0||di===6,cc=di===0||hol?'text-sun':(di===6?'text-sat':'text-slate-600');const evts=this.sortByDept(this.events.filter(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_')));let ev='';if(hol){const s=hol.length>5?hol.substring(0,4)+'…':hol;ev+=`<div class="mini-ev" style="color:#dc2626;">${s}</div>`;}const sl=hol?1:2;evts.slice(0,sl).forEach(e=>{const t=e.title.length>6?e.title.substring(0,5)+'…':e.title;ev+=`<div class="mini-ev" style="color:#1e293b;background:${this.deptBg(e.dapt)};border-left:2px solid ${this.deptColor(e.dapt)};">${t}</div>`;});if(evts.length>sl)ev+=`<div class="mini-ev" style="color:#64748b;">+${evts.length-sl}</div>`;const cc2=(hol||isW)?'weekend':(evts.length>0?'has-event':'');h+=`<div class="mini-day ${cc2} ${cc} ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(ds)?'today-border':''}" onclick="app.showDetail('${ds}')"><span>${d}</span>${ev}</div>`;}h+='</div></div>';}return h+'</div>';},
 
-    renderYearly(){
-        const by=2026; let h='<div class="year-view">';
-        const months=[];
-        for(let m=2;m<12;m++) months.push({year:by,month:m});
-        for(let m=0;m<2;m++) months.push({year:by+1,month:m});
-        for(const {year,month:m} of months){
-            h+=`<div class="year-month"><div class="year-month-title">${year}년 ${m+1}월</div><div class="mini-calendar">`;
-            this.days.forEach((w,wi)=>{
-                const isW=wi===0||wi===6,col=wi===0?'text-red-400':(wi===6?'text-blue-400':'text-slate-400');
-                const px=isW?'style="padding:2px 0;overflow:hidden;"':'style="padding:2px 1px;"';
-                h+=`<div class="text-[9px] md:text-[11px] font-bold text-center ${col}" ${px}>${w}</div>`;
-            });
-            const first=new Date(year,m,1).getDay(), last=new Date(year,m+1,0).getDate();
-            for(let i=0;i<first;i++) h+='<div style="min-width:0"></div>';
-            for(let d=1;d<=last;d++){
-                const ds=`${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const di=new Date(year,m,d).getDay(), hol=this.getHoliday(ds), isSp=this.isSpecialHoliday(ds);
-                const isW=di===0||di===6, cc=di===0||hol?'text-sun':(di===6?'text-sat':'text-slate-600');
-                const evts=this.sortByDept(this.events.filter(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_')));
-                let ev=''; if(hol){const s=hol.length>5?hol.substring(0,4)+'…':hol;ev+=`<div class="mini-ev" style="color:#dc2626;">${s}</div>`;}
-                const sl=hol?1:2; evts.slice(0,sl).forEach(e=>{const t=e.title.length>6?e.title.substring(0,5)+'…':e.title;ev+=`<div class="mini-ev" style="color:#1e293b;background:${this.deptBg(e.dapt)};border-left:2px solid ${this.deptColor(e.dapt)};">${t}</div>`;});
-                if(evts.length>sl) ev+=`<div class="mini-ev" style="color:#64748b;">+${evts.length-sl}</div>`;
-                const cc2=(hol||isW)?'weekend':(this.events.some(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_'))?'has-event':'');
-                h+=`<div class="mini-day ${cc2} ${cc} ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(ds)?'today-border':''}" onclick="app.showDetail('${ds}')"><span>${d}</span>${ev}</div>`;
-            }
-            h+='</div></div>';
-        }
-        return h+'</div>';
-    },
+    renderMonthly(){const yr=this.currentDate.getFullYear(),mo=this.currentDate.getMonth();let h='<div class="calendar-grid">';this.days.forEach(w=>h+=`<div class="bg-slate-50 p-2 text-center text-[10px] md:text-sm font-bold text-slate-400">${w}</div>`);const first=new Date(yr,mo,1).getDay(),last=new Date(yr,mo+1,0).getDate();for(let i=0;i<first;i++)h+='<div class="day-cell bg-slate-50/30"></div>';for(let d=1;d<=last;d++){const ds=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,di=new Date(yr,mo,d).getDay(),hol=this.getHoliday(ds),isSp=this.isSpecialHoliday(ds),isW=di===0||di===6,cc=di===0||hol?'text-sun':(di===6?'text-sat':'text-slate-400');h+=`<div class="day-cell ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(ds)?'today-border':''}" onclick="app.showDetail('${ds}')"><div class="day-cell-header ${cc}">${d}</div>`;if(hol)h+=`<div class="day-cell-holiday">${hol}</div>`;h+='<div class="day-cell-events">';const evts=this.sortByDept(this.events.filter(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_')));const mx=window.innerWidth<768?2:3;evts.slice(0,mx).forEach(e=>{const t=window.innerWidth<768?e.title.substring(0,4):e.title;h+=`<div class="event-item" style="color:#1e293b;border-left-color:${this.deptColor(e.dapt)};" onclick="event.stopPropagation();app.showDetail('${ds}')" title="${e.title}">${t}</div>`;});if(evts.length>mx)h+=`<div class="event-more" onclick="event.stopPropagation();app.showDetail('${ds}')">+${evts.length-mx}개 더</div>`;h+='</div></div>';}return h+'</div>';},
 
-    renderMonthly(){
-        const yr=this.currentDate.getFullYear(), mo=this.currentDate.getMonth();
-        let h='<div class="calendar-grid">';
-        this.days.forEach(w=>h+=`<div class="bg-slate-50 p-2 text-center text-[10px] md:text-sm font-bold text-slate-400">${w}</div>`);
-        const first=new Date(yr,mo,1).getDay(), last=new Date(yr,mo+1,0).getDate();
-        for(let i=0;i<first;i++) h+='<div class="day-cell bg-slate-50/30"></div>';
-        for(let d=1;d<=last;d++){
-            const ds=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            const di=new Date(yr,mo,d).getDay(), hol=this.getHoliday(ds), isSp=this.isSpecialHoliday(ds), isW=di===0||di===6;
-            const cc=di===0||hol?'text-sun':(di===6?'text-sat':'text-slate-400');
-            h+=`<div class="day-cell ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(ds)?'today-border':''}" onclick="app.showDetail('${ds}')"><div class="day-cell-header ${cc}">${d}</div>`;
-            if(hol) h+=`<div class="day-cell-holiday">${hol}</div>`;
-            h+='<div class="day-cell-events">';
-            const evts=this.sortByDept(this.events.filter(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_')));
-            const mx=window.innerWidth<768?2:3;
-            evts.slice(0,mx).forEach(e=>{const t=window.innerWidth<768?e.title.substring(0,4):e.title;h+=`<div class="event-item" style="color:#1e293b;border-left-color:${this.deptColor(e.dapt)};" onclick="event.stopPropagation();app.showDetail('${ds}')" title="${e.title}">${t}</div>`;});
-            if(evts.length>mx) h+=`<div class="event-more" onclick="event.stopPropagation();app.showDetail('${ds}')">+${evts.length-mx}개 더</div>`;
-            h+='</div></div>';
-        }
-        return h+'</div>';
-    },
+    renderWeekly(){const monday=this.getMonday(this.currentDate),ds=this.formatDate(monday);if(!this.isEditing){document.querySelectorAll('.notice-input').forEach(inp=>{const dept=inp.dataset.dept,n=this.events.find(e=>e.id===`notice_${ds}_${dept}`);inp.value=n?n.title:'';this.updateInputStyle(inp);});const di=document.getElementById('discussionInput');if(di){const dn=this.events.find(e=>e.id===`notice_${ds}_협의`);di.value=dn?dn.title:'';const has=di.value.trim()!==''&&!/^\d+\.\s*$/.test(di.value.trim());has?di.classList.add('has-content'):di.classList.remove('has-content');}}let h='<div class="flex flex-col gap-2">';for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);const dStr=this.formatDate(d),hol=this.getHoliday(dStr),isSp=this.isSpecialHoliday(dStr),isW=d.getDay()===0||d.getDay()===6,dow=this.days[d.getDay()],cc=d.getDay()===0||hol?'text-sun':(d.getDay()===6?'text-sat':'text-green-800');h+=`<div class="week-item ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(dStr)?'today-border':''} p-3 rounded-xl border flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')"><div class="w-16 md:w-20 week-date-label font-black ${cc} border-r mr-3 pr-2 flex-shrink-0"><div>${d.getDate()}일(${dow})</div>`;if(hol)h+=`<div class="holiday-badge">${hol}</div>`;h+=`</div><div class="flex-1 min-w-0">`;this.sortByDept(this.events.filter(e=>e.date===dStr&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_'))).forEach(e=>{h+=`<div class="event-item-week dept-${e.dapt}" onclick="event.stopPropagation()"><span class="text-slate-800 font-medium flex-1 min-w-0">${e.title} <span class="dept-badge dept-${e.dapt}">${e.dapt}</span></span><span class="del-x flex-shrink-0" onclick="app.deleteEvent('${e.id}')">✕</span></div>`;});h+='</div></div>';}return h+'</div>';},
 
-    renderWeekly(){
-        const monday=this.getMonday(this.currentDate), ds=this.formatDate(monday);
-        if(!this.isEditing){
-            document.querySelectorAll('.notice-input').forEach(inp=>{
-                const dept=inp.dataset.dept, n=this.events.find(e=>e.id===`notice_${ds}_${dept}`);
-                inp.value=n?n.title:''; this.updateInputStyle(inp);
-            });
-            const discInput=document.getElementById('discussionInput');
-            if(discInput){
-                const dn=this.events.find(e=>e.id===`notice_${ds}_협의`);
-                discInput.value=dn?dn.title:'';
-                discInput.value.trim()!==''?discInput.classList.add('has-content'):discInput.classList.remove('has-content');
-            }
-        }
-        let h='<div class="flex flex-col gap-2">';
-        for(let i=0;i<7;i++){
-            const d=new Date(monday); d.setDate(monday.getDate()+i);
-            const dStr=this.formatDate(d), hol=this.getHoliday(dStr), isSp=this.isSpecialHoliday(dStr);
-            const isW=d.getDay()===0||d.getDay()===6, dow=this.days[d.getDay()];
-            const cc=d.getDay()===0||hol?'text-sun':(d.getDay()===6?'text-sat':'text-green-800');
-            h+=`<div class="week-item ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(dStr)?'today-border':''} p-3 rounded-xl border flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')">
-                <div class="w-16 md:w-20 week-date-label font-black ${cc} border-r mr-3 pr-2 flex-shrink-0"><div>${d.getDate()}일(${dow})</div>`;
-            if(hol) h+=`<div class="holiday-badge">${hol}</div>`;
-            h+=`</div><div class="flex-1 min-w-0">`;
-            this.sortByDept(this.events.filter(e=>e.date===dStr&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_'))).forEach(e=>{
-                h+=`<div class="event-item-week dept-${e.dapt}" onclick="event.stopPropagation()"><span class="text-slate-800 font-medium flex-1 min-w-0">${e.title} <span class="dept-badge dept-${e.dapt}">${e.dapt}</span></span><span class="del-x flex-shrink-0" onclick="app.deleteEvent('${e.id}')">✕</span></div>`;
-            });
-            h+='</div></div>';
-        }
-        return h+'</div>';
-    },
-
-    // ==========================================
-    //  주간계획 PDF 출력
-    // ==========================================
+    /* ========== 주간계획 PDF (협의 내용 포함) ========== */
     async downloadWeeklyPDF(){
         const btn=document.getElementById('weeklyPdfBtnEl');
         if(btn){btn.disabled=true;btn.textContent='⏳ PDF 생성 중...';}
         try{
-            const monday=this.getMonday(this.currentDate);
-            const mondayStr=this.formatDate(monday);
-            const wdates=[];
-            for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);wdates.push(d);}
-            const sun=wdates[6];
-            const rangeStr=`${monday.getFullYear()}년 ${monday.getMonth()+1}월 ${monday.getDate()}일(월) ~ ${sun.getMonth()+1}월 ${sun.getDate()}일(일)`;
-
-            const noticeCfg=[
-                {key:'교장',label:'교장'},{key:'교감',label:'교감'},{key:'행정실',label:'행정실장'},
-                {key:'교무부',label:'교무부'},{key:'연구부',label:'연구부'},{key:'학생부',label:'학생부'},
-                {key:'창의인성부',label:'창의인성부'},{key:'학년실',label:'학년실'}
-            ];
-            const notices=noticeCfg.map(nc=>{
-                const ev=this.events.find(e=>e.id===`notice_${mondayStr}_${nc.key}`);
-                return{label:nc.label,text:ev?ev.title:''};
-            }).filter(n=>n.text.trim()!=='');
-
+            const monday=this.getMonday(this.currentDate),mondayStr=this.formatDate(monday);
+            const wdates=[];for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);wdates.push(d);}
+            const fri=wdates[4],rangeStr=`${monday.getFullYear()}년 ${monday.getMonth()+1}월 ${monday.getDate()}일(월) ~ ${fri.getMonth()+1}월 ${fri.getDate()}일(금)`;const weekdays=wdates.filter(d=>d.getDay()!==0&&d.getDay()!==6);
+            const noticeCfg=[{key:'교장',label:'교장'},{key:'교감',label:'교감'},{key:'행정실',label:'행정실장'},{key:'교무부',label:'교무부'},{key:'연구부',label:'연구부'},{key:'학생부',label:'학생부'},{key:'창의인성부',label:'창의인성부'},{key:'학년실',label:'학년실'}];
+            const notices=noticeCfg.map(nc=>{const ev=this.events.find(e=>e.id===`notice_${mondayStr}_${nc.key}`);return{label:nc.label,text:ev?ev.title:''};}).filter(n=>n.text.trim()!=='');
             const discEv=this.events.find(e=>e.id===`notice_${mondayStr}_협의`);
-            const discText=discEv?discEv.title.trim():'';
-
-            const logoTag=this._logoBase64
-                ?`<img src="${this._logoBase64}" style="width:38px;height:38px;object-fit:contain;border-radius:8px;margin-right:10px;vertical-align:middle;">`
-                :'<span style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:rgba(255,255,255,0.2);border-radius:8px;font-size:20px;margin-right:10px;">🏫</span>';
-
+            let discText=discEv?discEv.title.trim():'';
+            if(/^\d+\.\s*$/.test(discText))discText='';
+            const logoTag=this._logoBase64?`<img src="${this._logoBase64}" style="width:38px;height:38px;object-fit:contain;border-radius:8px;margin-right:10px;vertical-align:middle;">`:'<span style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:#dcfce7;border-radius:8px;font-size:20px;margin-right:10px;">🏫</span>';
             const dayNames=['일','월','화','수','목','금','토'];
             let rowsHtml='';
-            for(const d of wdates){
-                const dStr=this.formatDate(d), hol=this.getHoliday(dStr), isSp=this.isSpecialHoliday(dStr);
-                const isW=d.getDay()===0||d.getDay()===6;
-                const rowBg=(hol||isSp||isW)?'#fff1f2':'white';
-                const dateColor=d.getDay()===0||hol?'#dc2626':(d.getDay()===6?'#2563eb':'#15803d');
-                const dayLabel=`${d.getDate()}일(${dayNames[d.getDay()]})`;
-                const evts=this.sortByDept(this.events.filter(e=>e.date===dStr&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_')));
-                let evHtml='';
-                if(hol) evHtml+=`<span style="display:inline-block;background:#fee2e2;color:#dc2626;font-weight:800;font-size:11px;padding:2px 8px;border-radius:8px;margin-bottom:4px;">${hol}</span><br>`;
-                if(evts.length===0&&!hol) evHtml='<span style="color:#cbd5e1;font-size:12px;">일정 없음</span>';
-                evts.forEach(ev=>{
-                    evHtml+=`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;padding:3px 7px;background:#f8fafc;border-left:3px solid ${this.deptColor(ev.dapt)};border-radius:4px;">
-                        <span style="font-size:10px;font-weight:800;color:${this.deptColor(ev.dapt)};background:${this.deptBg(ev.dapt)};padding:1px 6px;border-radius:8px;white-space:nowrap;">${ev.dapt}</span>
-                        <span style="font-size:12px;color:#1e293b;font-weight:500;word-break:break-all;">${ev.title}</span>
-                    </div>`;
-                });
-                rowsHtml+=`<tr>
-                    <td style="width:88px;padding:7px 10px;background:${rowBg};border-bottom:1px solid #e2e8f0;border-right:2px solid #dcfce7;vertical-align:top;">
-                        <div style="font-size:13px;font-weight:900;color:${dateColor};">${dayLabel}</div>
-                    </td>
-                    <td style="padding:7px 10px;background:${rowBg};border-bottom:1px solid #e2e8f0;vertical-align:top;">${evHtml}</td>
-                </tr>`;
-            }
+            for(const d of weekdays){const dStr=this.formatDate(d),hol=this.getHoliday(dStr),isSp=this.isSpecialHoliday(dStr),isW=false,rowBg=(hol||isSp)?'#fff1f2':'white',dateColor=d.getDay()===0||hol?'#dc2626':(d.getDay()===6?'#2563eb':'#15803d'),dayLabel=`${d.getDate()}일(${dayNames[d.getDay()]})`;const evts=this.sortByDept(this.events.filter(e=>e.date===dStr&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_')));let evHtml='';if(hol)evHtml+=`<span style="display:inline-block;background:#fee2e2;color:#dc2626;font-weight:800;font-size:11px;padding:2px 8px;border-radius:8px;margin-bottom:4px;">${hol}</span><br>`;if(evts.length===0&&!hol)evHtml='<span style="color:#cbd5e1;font-size:12px;">일정 없음</span>';evts.forEach(ev=>{evHtml+=`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;padding:3px 7px;background:#f8fafc;border-left:3px solid ${this.deptColor(ev.dapt)};border-radius:4px;"><span style="font-size:10px;font-weight:800;color:${this.deptColor(ev.dapt)};background:${this.deptBg(ev.dapt)};padding:1px 6px;border-radius:8px;white-space:nowrap;">${ev.dapt}</span><span style="font-size:12px;color:#1e293b;font-weight:500;word-break:break-all;">${ev.title}</span></div>`;});rowsHtml+=`<tr><td style="width:88px;padding:7px 10px;background:${rowBg};border-bottom:1px solid #e2e8f0;border-right:2px solid #dcfce7;vertical-align:top;"><div style="font-size:13px;font-weight:900;color:${dateColor};">${dayLabel}</div></td><td style="padding:7px 10px;background:${rowBg};border-bottom:1px solid #e2e8f0;vertical-align:top;">${evHtml}</td></tr>`;}
 
+            /* 협의 내용 PDF */
             let discHtml='';
             if(discText){
-                discHtml=`<div style="margin-top:18px;">
-                    <div style="font-size:13px;font-weight:900;color:#b45309;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #fde68a;">💬 협의할 내용들</div>
-                    <div style="background:#fffbeb;border:1px solid #fde68a;border-left:5px solid #f59e0b;border-radius:8px;padding:14px 18px;font-size:12px;color:#78350f;line-height:1.8;white-space:pre-wrap;word-break:break-all;">${discText.replace(/</g,'&lt;')}</div>
-                </div>`;
+                const escaped=discText.replace(/</g,'&lt;');
+                const lines=escaped.split('\n');
+                let items='';
+                lines.forEach(line=>{const m=line.match(/^(\d+)\.\s*(.*)/);if(m&&m[2].trim())items+=`<div style="display:flex;gap:8px;margin-bottom:6px;padding:6px 10px;background:#fffef5;border-radius:6px;border-left:3px solid #f59e0b;"><span style="font-weight:900;color:#b45309;min-width:22px;flex-shrink:0;">${m[1]}.</span><span style="color:#78350f;font-weight:500;">${m[2]}</span></div>`;else if(line.trim())items+=`<div style="padding:3px 10px;color:#78350f;">${line}</div>`;});
+                discHtml=`<div style="margin-top:18px;"><div style="font-size:13px;font-weight:900;color:#b45309;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #fde68a;">💬 협의 내용</div><div style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;padding:12px 14px;">${items}</div></div>`;
             }
 
             let noticeHtml='';
-            if(notices.length>0){
-                noticeHtml=`<div style="margin-top:18px;">
-                    <div style="font-size:13px;font-weight:900;color:#15803d;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #dcfce7;">📢 주간 안내사항</div>
-                    <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;overflow:hidden;">`;
-                notices.forEach((n,i)=>{
-                    const bg=i%2===0?'#f8fafc':'white';
-                    noticeHtml+=`<tr>
-                        <td style="width:76px;padding:7px 10px;background:#f0fdf4;border-bottom:1px solid #e2e8f0;border-right:2px solid #dcfce7;font-size:11px;font-weight:800;color:#15803d;white-space:nowrap;vertical-align:top;">${n.label}</td>
-                        <td style="padding:7px 10px;background:${bg};border-bottom:1px solid #e2e8f0;font-size:12px;color:#334155;line-height:1.7;white-space:pre-wrap;word-break:break-all;">${n.text.replace(/</g,'&lt;')}</td>
-                    </tr>`;
-                });
-                noticeHtml+='</table></div>';
-            }
+            if(notices.length>0){noticeHtml=`<div style="margin-top:18px;"><div style="font-size:13px;font-weight:900;color:#15803d;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #dcfce7;">📢 주간 안내사항</div><table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">`;notices.forEach((n,i)=>{const bg=i%2===0?'#f8fafc':'white';noticeHtml+=`<tr><td style="width:76px;padding:7px 10px;background:#f0fdf4;border-bottom:1px solid #e2e8f0;border-right:2px solid #dcfce7;font-size:11px;font-weight:800;color:#15803d;white-space:nowrap;vertical-align:top;">${n.label}</td><td style="padding:7px 10px;background:${bg};border-bottom:1px solid #e2e8f0;font-size:12px;color:#334155;line-height:1.7;white-space:pre-wrap;word-break:break-all;">${n.text.replace(/</g,'&lt;')}</td></tr>`;});noticeHtml+='</table></div>';}
 
-            const tpl=document.getElementById('weeklyPdfTemplate');
-            tpl.style.display='block';
-            tpl.innerHTML=`<div style="width:794px;background:white;padding:0;">
-                <div style="background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:15px 26px;display:flex;justify-content:space-between;align-items:center;">
-                    <div style="display:flex;align-items:center;font-size:17px;font-weight:900;">${logoTag}구례중학교 주간 계획</div>
-                    <div style="font-size:11px;opacity:0.9;text-align:right;line-height:1.6;">${rangeStr}</div>
-                </div>
-                <div style="padding:18px 26px 26px;">
-                    <div style="font-size:13px;font-weight:900;color:#15803d;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #dcfce7;">📅 주간 일정</div>
-                    <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">${rowsHtml}</table>
-                    ${discHtml}
-                    ${noticeHtml}
-                    <div style="margin-top:20px;padding-top:10px;border-top:1px solid #e2e8f0;text-align:center;font-size:10px;color:#94a3b8;">구례중학교 | 주간계획 | ${rangeStr}</div>
-                </div>
-            </div>`;
-
-            const canvas=await html2canvas(tpl,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:794});
-            tpl.style.display='none'; tpl.innerHTML='';
-
-            const {jsPDF}=window.jspdf;
-            const imgData=canvas.toDataURL('image/png');
-            const pdfW=210, pageH=297, pdfH=(canvas.height*pdfW)/canvas.width;
+            const tpl=document.getElementById('weeklyPdfTemplate');tpl.style.display='block';
+            tpl.innerHTML=`<div style="width:794px;background:white;padding:0;"><div style="background:white;color:#1e293b;padding:15px 26px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #16a34a;"><div style="display:flex;align-items:center;font-size:17px;font-weight:900;color:#15803d;">${logoTag}구례중학교 주간 계획</div><div style="font-size:11px;color:#64748b;text-align:right;line-height:1.6;">${rangeStr}</div></div><div style="padding:18px 26px 26px;"><div style="font-size:13px;font-weight:900;color:#15803d;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #dcfce7;">📅 주간 일정</div><table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">${rowsHtml}</table>${discHtml}${noticeHtml}<div style="margin-top:20px;padding-top:10px;border-top:1px solid #e2e8f0;text-align:center;font-size:10px;color:#94a3b8;">구례중학교 | 주간계획 | ${rangeStr}</div></div></div>`;
+            const canvas=await html2canvas(tpl,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:794});tpl.style.display='none';tpl.innerHTML='';
+            const{jsPDF}=window.jspdf,imgData=canvas.toDataURL('image/png'),pdfW=210,pageH=297,pdfH=(canvas.height*pdfW)/canvas.width;
             const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-            if(pdfH<=pageH){doc.addImage(imgData,'PNG',0,0,pdfW,pdfH);}
-            else{let yo=0;while(yo<pdfH){if(yo>0)doc.addPage();doc.addImage(imgData,'PNG',0,-yo,pdfW,pdfH);yo+=pageH;}}
-            doc.save(`구례중_주간계획_${mondayStr}.pdf`);
-            this.showToast('✅ 주간계획 PDF가 저장되었습니다!','success');
-        }catch(err){
-            console.error(err);
-            this.showToast('❌ PDF 생성 실패: '+err.message,'error');
-        }finally{
-            if(btn){btn.disabled=false;btn.textContent='📄 주간계획 PDF 출력';}
-        }
+            if(pdfH<=pageH)doc.addImage(imgData,'PNG',0,0,pdfW,pdfH);else{let yo=0;while(yo<pdfH){if(yo>0)doc.addPage();doc.addImage(imgData,'PNG',0,-yo,pdfW,pdfH);yo+=pageH;}}
+            doc.save(`구례중_주간계획_${mondayStr}.pdf`);this.showToast('✅ 주간계획 PDF가 저장되었습니다!','success');
+        }catch(err){console.error(err);this.showToast('❌ PDF 생성 실패: '+err.message,'error');}
+        finally{if(btn){btn.disabled=false;btn.textContent='📄 주간계획 PDF 출력';}}
     },
 
-    handleCardInput(input){
-        this.isEditing=true; this.meetingInputFocused=true;
-        this.updateMeetingInputStyle(input); this.showSaveIndicator('saving');
-        if(this.saveTimers['meeting']) clearTimeout(this.saveTimers['meeting']);
-        this.saveTimers['meeting']=setTimeout(()=>this.saveAllCards(),2000);
-    },
+    handleCardInput(inp){this.isEditing=true;this.meetingInputFocused=true;this.updateMeetingInputStyle(inp);this.showSaveIndicator('saving');if(this.saveTimers['meeting'])clearTimeout(this.saveTimers['meeting']);this.saveTimers['meeting']=setTimeout(()=>this.saveAllCards(),2000);},
     handleMeetingFocus(){this.meetingInputFocused=true;this.isEditing=true;},
     handleMeetingBlur(){setTimeout(()=>{if(!this.isMeetingInputActive()){this.meetingInputFocused=false;this.isEditing=false;}},300);},
-    updateMeetingInputStyle(input){input.value.trim()!==''?input.classList.add('has-data'):input.classList.remove('has-data');},
+    updateMeetingInputStyle(inp){inp.value.trim()!==''?inp.classList.add('has-data'):inp.classList.remove('has-data');},
+    async saveAllCards(){if(!this.isMeetingInputActive()){this.isEditing=false;this.meetingInputFocused=false;}const ds=this.formatDate(this.meetingDate),c=document.getElementById('meetingCardsContainer');if(!c)return;const cards=c.querySelectorAll('.meeting-card');let cn=1;for(const card of cards){const omid=card.dataset.mid,sub=card.querySelector('[data-field="subject"]')?.value.trim()||'',con=card.querySelector('[data-field="content"]')?.value.trim()||'';if(!sub&&!con){if(!omid.startsWith('__new__')){const xi=this.events.findIndex(e=>e.id===omid);if(xi!==-1)this.events.splice(xi,1);this.localDeletes.add(omid);delete this.localChanges[omid];await this.saveToServer('delete',{id:omid});}continue;}let mid=omid;if(omid.startsWith('__new__')){mid=`meeting_${ds}_${cn}`;card.dataset.mid=mid;card.querySelectorAll('[data-mid]').forEach(el=>el.dataset.mid=mid);card.querySelector('.meeting-card-del').setAttribute('onclick',`app.deleteMeetingCard('${mid}','${ds}')`);const ab=card.querySelector('.ai-generate-btn');if(ab){ab.setAttribute('onclick',`app.generateAIMeetingMinutes('${mid}')`);ab.dataset.mid=mid;}}const md={id:mid,date:ds,title:sub||'(제목 없음)',dapt:'meeting',subject:sub,content:con};const xi=this.events.findIndex(e=>e.id===mid);if(xi!==-1)this.events[xi]=md;else this.events.push(md);this.localDeletes.delete(mid);await this.saveToServer('add',md);cn++;}this.renderMeetingCalendar();},
+    async downloadPDF(mid){const card=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(!card)return;const sub=card.querySelector('[data-field="subject"]')?.value.trim()||'회의록',con=card.querySelector('[data-field="content"]')?.value.trim()||'';if(!con){this.showToast('📝 내용을 먼저 입력해주세요.','error');return;}const btn=card.querySelector('.pdf-btn');if(btn){btn.disabled=true;btn.textContent='⏳ 생성 중...';}try{const ds=this.formatDate(this.meetingDate),dow=this.days[this.meetingDate.getDay()],logoHtml=this._logoBase64?`<img src="${this._logoBase64}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;vertical-align:middle;margin-right:10px;">`:'<span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#dcfce7;border-radius:8px;font-size:18px;margin-right:10px;">🏫</span>';const pd=document.createElement('div');pd.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:14px;line-height:1.8;color:#1e293b;';pd.innerHTML=`<div style="background:white;color:#1e293b;padding:18px 32px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #16a34a;"><span style="font-size:18px;font-weight:900;display:flex;align-items:center;color:#15803d;">${logoHtml}구례중학교 회의록</span><span style="font-size:13px;color:#64748b;">${ds} (${dow})</span></div><div style="padding:28px 32px 32px;"><h1 style="font-size:22px;font-weight:900;margin:0 0 12px;line-height:1.4;">${sub}</h1><div style="height:3px;background:linear-gradient(90deg,#16a34a,#86efac);border-radius:2px;margin-bottom:20px;"></div><div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:13px;color:#15803d;"><div style="margin-bottom:6px;">📅 <strong>회의 일자</strong> : ${ds} (${dow})</div><div>📋 <strong>회의 주제</strong> : ${sub}</div></div><div style="font-size:15px;font-weight:900;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;">📝 회의 내용</div><div style="font-size:14px;color:#334155;line-height:2;white-space:pre-wrap;word-break:break-all;">${con.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div style="margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8;">구례중학교 | 회의록 | ${ds}</div></div>`;document.body.appendChild(pd);const cv=await html2canvas(pd,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false});document.body.removeChild(pd);const{jsPDF}=window.jspdf,img=cv.toDataURL('image/png'),pW=210,pH=(cv.height*pW)/cv.width,pgH=297,doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});if(pH<=pgH)doc.addImage(img,'PNG',0,0,pW,pH);else{let yo=0;while(yo<pH){if(yo>0)doc.addPage();doc.addImage(img,'PNG',0,-yo,pW,pH);yo+=pgH;}}doc.save(`회의록_${ds}_${(sub||'무제').replace(/[\/\\?%*:|"<>]/g,'_')}.pdf`);this.showToast('✅ PDF가 저장되었습니다!','success');}catch(err){this.showToast('❌ PDF 생성 실패: '+err.message,'error');}finally{if(btn){btn.disabled=false;btn.textContent='📄 PDF 저장';}}},
+    async generateAIMeetingMinutes(mid){const card=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(!card)return;const se=card.querySelector('[data-field="subject"]'),ce=card.querySelector('[data-field="content"]'),ab=card.querySelector('.ai-generate-btn'),sub=se.value.trim(),con=ce.value.trim();if(!con){this.showToast('📝 모임 내용을 먼저 입력해주세요.','error');return;}if(mid.startsWith('__new__')){await this.saveAllCards();mid=card.dataset.mid;}this.aiGenerating=true;if(ab){ab.disabled=true;ab.innerHTML='⏳ AI 분석중...';}const tw=ce.parentElement,ov=document.createElement('div');ov.className='ai-overlay';ov.innerHTML='<div class="ai-spinner">🤖 AI가 회의록을 작성하고 있습니다...</div>';tw.appendChild(ov);ce.style.opacity='0.4';try{const r=await fetch(this.API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'generateAI',subject:sub,content:con,meetingDate:this.formatDate(this.meetingDate)})});const rd=await r.json();if(rd.success&&rd.minutes){ce.value=rd.minutes;ce.classList.add('has-data');const ud={id:mid,date:this.formatDate(this.meetingDate),title:sub||'(제목 없음)',dapt:'meeting',subject:sub,content:rd.minutes};const xi=this.events.findIndex(e=>e.id===mid);if(xi!==-1)this.events[xi]=ud;else this.events.push(ud);this.localChanges[mid]=ud;await this.saveToServer('add',ud);this.showToast('✅ AI 회의록 완성!','success');}}catch(e){console.error('AI 오류:',e);}finally{this.aiGenerating=false;if(ab){ab.disabled=false;ab.innerHTML='🤖 AI 회의록';}ov.remove();ce.style.opacity='1';}},
 
-    async saveAllCards(){
-        if(!this.isMeetingInputActive()){this.isEditing=false;this.meetingInputFocused=false;}
-        const ds=this.formatDate(this.meetingDate);
-        const c=document.getElementById('meetingCardsContainer'); if(!c) return;
-        const cards=c.querySelectorAll('.meeting-card'); let cardNum=1;
-        for(const card of cards){
-            const omid=card.dataset.mid;
-            const sub=card.querySelector('[data-field="subject"]')?.value.trim()||'';
-            const con=card.querySelector('[data-field="content"]')?.value.trim()||'';
-            if(!sub&&!con){
-                if(!omid.startsWith('__new__')){
-                    const xi=this.events.findIndex(e=>e.id===omid);if(xi!==-1)this.events.splice(xi,1);
-                    this.localDeletes.add(omid);delete this.localChanges[omid];await this.saveToServer('delete',{id:omid});
-                } continue;
-            }
-            let mid=omid;
-            if(omid.startsWith('__new__')){
-                mid=`meeting_${ds}_${cardNum}`; card.dataset.mid=mid;
-                card.querySelectorAll('[data-mid]').forEach(el=>el.dataset.mid=mid);
-                card.querySelector('.meeting-card-del').setAttribute('onclick',`app.deleteMeetingCard('${mid}','${ds}')`);
-                const ab=card.querySelector('.ai-generate-btn');
-                if(ab){ab.setAttribute('onclick',`app.generateAIMeetingMinutes('${mid}')`);ab.dataset.mid=mid;}
-            }
-            const md={id:mid,date:ds,title:sub||'(제목 없음)',dapt:'meeting',subject:sub,content:con};
-            const xi=this.events.findIndex(e=>e.id===mid);if(xi!==-1)this.events[xi]=md;else this.events.push(md);
-            this.localDeletes.delete(mid);await this.saveToServer('add',md);cardNum++;
-        }
-        this.renderMeetingCalendar();
-    },
-
-    async downloadPDF(mid){
-        const card=document.querySelector(`.meeting-card[data-mid="${mid}"]`); if(!card) return;
-        const sub=card.querySelector('[data-field="subject"]')?.value.trim()||'회의록';
-        const con=card.querySelector('[data-field="content"]')?.value.trim()||'';
-        if(!con){this.showToast('📝 내용을 먼저 입력해주세요.','error');return;}
-        const btn=card.querySelector('.pdf-btn'); if(btn){btn.disabled=true;btn.textContent='⏳ 생성 중...';}
-        try{
-            const ds=this.formatDate(this.meetingDate), dow=this.days[this.meetingDate.getDay()];
-            const logoHtml=this._logoBase64
-                ?`<img src="${this._logoBase64}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;vertical-align:middle;margin-right:10px;">`
-                :'<span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;font-size:18px;margin-right:10px;">🏫</span>';
-            const pd=document.createElement('div');
-            pd.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",sans-serif;font-size:14px;line-height:1.8;color:#1e293b;padding:0;';
-            pd.innerHTML=`<div style="background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:18px;font-weight:900;display:flex;align-items:center;">${logoHtml}구례중학교 회의록</span><span style="font-size:13px;opacity:0.9;">${ds} (${dow})</span></div><div style="padding:28px 32px 32px;"><h1 style="font-size:22px;font-weight:900;color:#1e293b;margin:0 0 12px;line-height:1.4;">${sub||'(제목 없음)'}</h1><div style="height:3px;background:linear-gradient(90deg,#16a34a,#86efac);border-radius:2px;margin-bottom:20px;"></div><div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:13px;color:#15803d;"><div style="margin-bottom:6px;">📅 <strong>회의 일자</strong> : ${ds} (${dow})</div><div>📋 <strong>회의 주제</strong> : ${sub||'(제목 없음)'}</div></div><div style="font-size:15px;font-weight:900;color:#1e293b;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;">📝 회의 내용</div><div style="font-size:14px;color:#334155;line-height:2;white-space:pre-wrap;word-break:break-all;">${con.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div style="margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8;">구례중학교 | 회의록 | ${ds}</div></div>`;
-            document.body.appendChild(pd);
-            const cv=await html2canvas(pd,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false});
-            document.body.removeChild(pd);
-            const {jsPDF}=window.jspdf;
-            const img=cv.toDataURL('image/png'), pW=210, pH=(cv.height*pW)/cv.width, pgH=297;
-            const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-            if(pH<=pgH){doc.addImage(img,'PNG',0,0,pW,pH);}
-            else{let yo=0;while(yo<pH){if(yo>0)doc.addPage();doc.addImage(img,'PNG',0,-yo,pW,pH);yo+=pgH;}}
-            doc.save(`회의록_${ds}_${(sub||'무제').replace(/[\/\\?%*:|"<>]/g,'_')}.pdf`);
-            this.showToast('✅ PDF가 저장되었습니다!','success');
-        }catch(err){this.showToast('❌ PDF 생성 실패: '+err.message,'error');}
-        finally{if(btn){btn.disabled=false;btn.textContent='📄 PDF 저장';}}
-    },
-
-    async generateAIMeetingMinutes(mid){
-        const card=document.querySelector(`.meeting-card[data-mid="${mid}"]`); if(!card) return;
-        const se=card.querySelector('[data-field="subject"]'), ce=card.querySelector('[data-field="content"]');
-        const ab=card.querySelector('.ai-generate-btn');
-        const sub=se.value.trim(), con=ce.value.trim();
-        if(!con){this.showToast('📝 모임 내용을 먼저 입력해주세요.','error');return;}
-        if(mid.startsWith('__new__')){await this.saveAllCards();mid=card.dataset.mid;}
-        this.aiGenerating=true;
-        if(ab){ab.disabled=true;ab.innerHTML='⏳ AI 분석중...';}
-        const tw=ce.parentElement, ov=document.createElement('div');
-        ov.className='ai-overlay';ov.innerHTML='<div class="ai-spinner">🤖 AI가 회의록을 작성하고 있습니다...</div>';
-        tw.appendChild(ov);ce.style.opacity='0.4';
-        try{
-            const r=await fetch(this.API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'generateAI',subject:sub,content:con,meetingDate:this.formatDate(this.meetingDate)})});
-            const rd=await r.json();
-            if(rd.success&&rd.minutes){
-                ce.value=rd.minutes;ce.classList.add('has-data');
-                const ud={id:mid,date:this.formatDate(this.meetingDate),title:sub||'(제목 없음)',dapt:'meeting',subject:sub,content:rd.minutes};
-                const xi=this.events.findIndex(e=>e.id===mid);if(xi!==-1)this.events[xi]=ud;else this.events.push(ud);
-                this.localChanges[mid]=ud;await this.saveToServer('add',ud);
-                this.showToast('✅ AI 회의록 완성!','success');
-            }
-        }catch(e){console.error('AI 오류:',e);}
-        finally{this.aiGenerating=false;if(ab){ab.disabled=false;ab.innerHTML='🤖 AI 회의록';}ov.remove();ce.style.opacity='1';}
-    },
-
-    render(){
-        const vp=document.getElementById('viewPort'), tt=document.getElementById('titleText');
-        const np=document.getElementById('noticePort'), eis=document.getElementById('eventInputSection');
-        const pdfBar=document.getElementById('weeklyPdfBar');
-        const dp=document.getElementById('discussionPort');
-        const yr=this.currentDate.getFullYear(), mo=this.currentDate.getMonth()+1;
-
-        if(this.viewMode==='meeting'){
-            tt.textContent='📝 회의메모'; np.classList.add('hidden'); eis.classList.add('hidden'); pdfBar.classList.add('hidden'); dp.classList.add('hidden');
-            this.renderMeetingView();
-        } else {
-            eis.classList.remove('hidden');
-            if(vp.querySelector('.meeting-wrapper')) vp.innerHTML='';
-            if(this.viewMode==='yearly'){
-                tt.textContent='2026년 3월 ~ 2027년 2월 학사력';
-                vp.innerHTML=this.renderYearly(); np.classList.add('hidden'); pdfBar.classList.add('hidden'); dp.classList.add('hidden');
-            } else if(this.viewMode==='monthly'){
-                tt.textContent=`${yr}년 ${mo}월`;
-                vp.innerHTML=this.renderMonthly(); np.classList.add('hidden'); pdfBar.classList.add('hidden'); dp.classList.add('hidden');
-            } else {
-                tt.textContent=`${yr}년 ${mo}월 주간계획`;
-                vp.innerHTML=this.renderWeekly();
-                dp.classList.remove('hidden');
-                np.classList.remove('hidden');
-                pdfBar.classList.remove('hidden');
-            }
-        }
-    },
-
-    async init(){
-        await this.loadLogoBase64();
-        await this.loadFromServer();
-        this.render();
-        setInterval(()=>{if(!this.isEditing&&!this.meetingInputFocused)this.loadFromServer();},10000);
-    }
+    render(){const vp=document.getElementById('viewPort'),tt=document.getElementById('titleText'),np=document.getElementById('noticePort'),eis=document.getElementById('eventInputSection'),pdfBar=document.getElementById('weeklyPdfBar'),dp=document.getElementById('discussionPort'),yr=this.currentDate.getFullYear(),mo=this.currentDate.getMonth()+1;
+        if(this.viewMode==='meeting'){tt.textContent='📝 회의메모';np.classList.add('hidden');eis.classList.add('hidden');pdfBar.classList.add('hidden');dp.classList.add('hidden');this.renderMeetingView();}
+        else{eis.classList.remove('hidden');if(vp.querySelector('.meeting-wrapper'))vp.innerHTML='';
+            if(this.viewMode==='yearly'){tt.textContent='2026년 3월 ~ 2027년 2월 학사력';vp.innerHTML=this.renderYearly();np.classList.add('hidden');pdfBar.classList.add('hidden');dp.classList.add('hidden');}
+            else if(this.viewMode==='monthly'){tt.textContent=`${yr}년 ${mo}월`;vp.innerHTML=this.renderMonthly();np.classList.add('hidden');pdfBar.classList.add('hidden');dp.classList.add('hidden');}
+            else{tt.textContent=`${yr}년 ${mo}월 주간계획`;vp.innerHTML=this.renderWeekly();dp.classList.remove('hidden');np.classList.remove('hidden');pdfBar.classList.remove('hidden');}}},
+    async init(){await this.loadLogoBase64();await this.loadFromServer();this.render();setInterval(()=>{if(!this.isEditing&&!this.meetingInputFocused)this.loadFromServer();},10000);}
 };
 window.addEventListener('DOMContentLoaded',()=>app.init());
 </script>
-
 <script>
-/* ===== PWA: manifest & service worker (웹서버 환경에서만 동작) ===== */
-(function(){
-    // http/https 환경에서만 manifest 링크 추가
-    if(location.protocol.startsWith('http')){
-        var link=document.createElement('link');
-        link.rel='manifest'; link.href='./manifest.json';
-        document.head.appendChild(link);
-        // apple-touch-icon
-        var appleIcon=document.createElement('link');
-        appleIcon.rel='apple-touch-icon'; appleIcon.href='./icons/icon-192.png';
-        document.head.appendChild(appleIcon);
-    }
-    // Service Worker 등록 (http/https에서만)
-    if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-        window.addEventListener('load',function(){
-            navigator.serviceWorker.register('./service-worker.js')
-                .then(function(){console.log('✅ Service Worker 등록 성공');})
-                .catch(function(e){console.log('ℹ️ Service Worker 미등록 (정상):',e.message);});
-        });
-    }
-})();
-
-/* ===== 앱 설치 프롬프트 ===== */
-var deferredPrompt=null;
-var installBtn=document.getElementById('installBtn');
-var isStandalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
-if(!isStandalone && location.protocol.startsWith('http')){
-    var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-    if(isIOS) installBtn.style.display='block';
-    window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;installBtn.style.display='block';});
-}
-app.handleInstall=async function(){
-    var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-    if(isIOS) document.getElementById('iosInstallModal').style.display='flex';
-    else if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.style.display='none';}
-};
+(function(){if(location.protocol.startsWith('http')){var l=document.createElement('link');l.rel='manifest';l.href='./manifest.json';document.head.appendChild(l);var a=document.createElement('link');a.rel='apple-touch-icon';a.href='./icons/icon-192.png';document.head.appendChild(a);}if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',function(){navigator.serviceWorker.register('./service-worker.js').catch(function(){});});})();
+var deferredPrompt=null,installBtn=document.getElementById('installBtn');
+if(!(window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches)&&location.protocol.startsWith('http')){if(/iphone|ipad|ipod/i.test(navigator.userAgent))installBtn.style.display='block';window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;installBtn.style.display='block';});}
+app.handleInstall=async function(){if(/iphone|ipad|ipod/i.test(navigator.userAgent))document.getElementById('iosInstallModal').style.display='flex';else if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.style.display='none';}};
 </script>
 </body>
 </html>
