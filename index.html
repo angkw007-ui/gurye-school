@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+html_code = '''<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -11,9 +12,9 @@
     <meta name="apple-mobile-web-app-title" content="구례중">
     <link rel="apple-touch-icon" href="./icons/icon-192.png">
     <meta name="theme-color" content="#166534">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
     <style>
         body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: #f8fafc; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
@@ -90,6 +91,12 @@
         @media (min-width: 768px) { .notice-input { font-size: 15px; padding: 12px; min-height: 70px; } }
         .notice-input.has-content { background-color: #fef9c3 !important; border-color: #facc15; }
         .notice-input:focus { border-color: #16a34a; }
+        /* 협의할 내용들 전용 스타일 */
+        .discussion-section { background-color: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; border-left: 5px solid #f59e0b; margin-top: 20px; }
+        .discussion-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-size: 14px; outline: none; transition: all 0.2s; min-height: 160px; resize: vertical; background-color: white; font-weight: normal; width: 100%; box-sizing: border-box; line-height: 1.8; }
+        @media (min-width: 768px) { .discussion-input { font-size: 15px; padding: 14px; min-height: 200px; } }
+        .discussion-input.has-content { background-color: #fefce8 !important; border-color: #f59e0b; }
+        .discussion-input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.15); }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 24px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
         .week-date-label { font-size: 14px; font-weight: 900; line-height: 1.3; }
@@ -222,6 +229,14 @@
     </div>
 
     <div id="viewPort"></div>
+
+    <!-- ===== 협의할 내용들 (주간 뷰 전용) ===== -->
+    <div id="discussionPort" class="hidden">
+        <div class="discussion-section">
+            <h3 class="font-black text-amber-700 mb-4 flex items-center gap-2 text-base md:text-lg">💬 협의할 내용들</h3>
+            <textarea id="discussionInput" data-dept="협의" class="discussion-input" placeholder="이번 주 협의할 내용을 입력하세요..." oninput="app.handleDiscussionInput(this)"></textarea>
+        </div>
+    </div>
 
     <div id="noticePort" class="hidden">
         <div class="notice-section">
@@ -391,6 +406,22 @@ const app = {
         const d=input.dataset.dept;
         if(this.saveTimers[d]) clearTimeout(this.saveTimers[d]);
         this.saveTimers[d]=setTimeout(()=>this.saveNotice(input),2000);
+    },
+    /* ===== 협의할 내용들 입력 핸들러 ===== */
+    handleDiscussionInput(input){
+        this.isEditing=true;
+        input.value.trim()!==''?input.classList.add('has-content'):input.classList.remove('has-content');
+        const d=input.dataset.dept;
+        if(this.saveTimers[d]) clearTimeout(this.saveTimers[d]);
+        this.saveTimers[d]=setTimeout(()=>this.saveDiscussion(input),2000);
+    },
+    async saveDiscussion(input){
+        this.isEditing=false;
+        const dept=input.dataset.dept, content=input.value.trim();
+        const monday=this.getMonday(this.currentDate), dateStr=this.formatDate(monday);
+        const nid=`notice_${dateStr}_${dept}`, xi=this.events.findIndex(e=>e.id===nid);
+        if(content===''){if(xi!==-1){this.events.splice(xi,1);await this.saveToServer('delete',{id:nid});}}
+        else{const nn={id:nid,date:dateStr,title:content,dapt:dept};if(xi!==-1)this.events[xi]=nn;else this.events.push(nn);await this.saveToServer('add',nn);}
     },
     updateInputStyle(input){input.value.trim()!==''?input.classList.add('has-content'):input.classList.remove('has-content');},
     async saveNotice(input){
@@ -565,10 +596,18 @@ const app = {
     renderWeekly(){
         const monday=this.getMonday(this.currentDate), ds=this.formatDate(monday);
         if(!this.isEditing){
+            /* 안내사항 불러오기 */
             document.querySelectorAll('.notice-input').forEach(inp=>{
                 const dept=inp.dataset.dept, n=this.events.find(e=>e.id===`notice_${ds}_${dept}`);
                 inp.value=n?n.title:''; this.updateInputStyle(inp);
             });
+            /* 협의할 내용들 불러오기 */
+            const discInput=document.getElementById('discussionInput');
+            if(discInput){
+                const dn=this.events.find(e=>e.id===`notice_${ds}_협의`);
+                discInput.value=dn?dn.title:'';
+                discInput.value.trim()!==''?discInput.classList.add('has-content'):discInput.classList.remove('has-content');
+            }
         }
         let h='<div class="flex flex-col gap-2">';
         for(let i=0;i<7;i++){
@@ -597,7 +636,6 @@ const app = {
         try{
             const monday=this.getMonday(this.currentDate);
             const mondayStr=this.formatDate(monday);
-            // 주~일 날짜 배열
             const wdates=[];
             for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);wdates.push(d);}
             const sun=wdates[6];
@@ -613,6 +651,10 @@ const app = {
                 const ev=this.events.find(e=>e.id===`notice_${mondayStr}_${nc.key}`);
                 return{label:nc.label,text:ev?ev.title:''};
             }).filter(n=>n.text.trim()!=='');
+
+            // 협의할 내용들 수집
+            const discEv=this.events.find(e=>e.id===`notice_${mondayStr}_협의`);
+            const discText=discEv?discEv.title.trim():'';
 
             // 로고 태그
             const logoTag=this._logoBase64
@@ -646,6 +688,15 @@ const app = {
                 </tr>`;
             }
 
+            // 협의할 내용들 HTML
+            let discHtml='';
+            if(discText){
+                discHtml=`<div style="margin-top:18px;">
+                    <div style="font-size:13px;font-weight:900;color:#b45309;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #fde68a;">💬 협의할 내용들</div>
+                    <div style="background:#fffbeb;border:1px solid #fde68a;border-left:5px solid #f59e0b;border-radius:8px;padding:14px 18px;font-size:12px;color:#78350f;line-height:1.8;white-space:pre-wrap;word-break:break-all;">${discText.replace(/</g,'&lt;')}</div>
+                </div>`;
+            }
+
             // 안내사항 테이블
             let noticeHtml='';
             if(notices.length>0){
@@ -673,6 +724,7 @@ const app = {
                 <div style="padding:18px 26px 26px;">
                     <div style="font-size:13px;font-weight:900;color:#15803d;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #dcfce7;">📅 주간 일정</div>
                     <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">${rowsHtml}</table>
+                    ${discHtml}
                     ${noticeHtml}
                     <div style="margin-top:20px;padding-top:10px;border-top:1px solid #e2e8f0;text-align:center;font-size:10px;color:#94a3b8;">구례중학교 | 주간계획 | ${rangeStr}</div>
                 </div>
@@ -758,7 +810,7 @@ const app = {
             const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
             if(pH<=pgH){doc.addImage(img,'PNG',0,0,pW,pH);}
             else{let yo=0;while(yo<pH){if(yo>0)doc.addPage();doc.addImage(img,'PNG',0,-yo,pW,pH);yo+=pgH;}}
-            doc.save(`회의록_${ds}_${(sub||'무제').replace(/[\/\\?%*:|"<>]/g,'_')}.pdf`);
+            doc.save(`회의록_${ds}_${(sub||'무제').replace(/[\\/\\\\?%*:|"<>]/g,'_')}.pdf`);
             this.showToast('✅ PDF가 저장되었습니다!','success');
         }catch(err){this.showToast('❌ PDF 생성 실패: '+err.message,'error');}
         finally{if(btn){btn.disabled=false;btn.textContent='📄 PDF 저장';}}
@@ -794,25 +846,27 @@ const app = {
         const vp=document.getElementById('viewPort'), tt=document.getElementById('titleText');
         const np=document.getElementById('noticePort'), eis=document.getElementById('eventInputSection');
         const pdfBar=document.getElementById('weeklyPdfBar');
+        const dp=document.getElementById('discussionPort');
         const yr=this.currentDate.getFullYear(), mo=this.currentDate.getMonth()+1;
 
         if(this.viewMode==='meeting'){
-            tt.textContent='📝 회의메모'; np.classList.add('hidden'); eis.classList.add('hidden'); pdfBar.classList.add('hidden');
+            tt.textContent='📝 회의메모'; np.classList.add('hidden'); eis.classList.add('hidden'); pdfBar.classList.add('hidden'); dp.classList.add('hidden');
             this.renderMeetingView();
         } else {
             eis.classList.remove('hidden');
             if(vp.querySelector('.meeting-wrapper')) vp.innerHTML='';
             if(this.viewMode==='yearly'){
                 tt.textContent='2026년 3월 ~ 2027년 2월 학사력';
-                vp.innerHTML=this.renderYearly(); np.classList.add('hidden'); pdfBar.classList.add('hidden');
+                vp.innerHTML=this.renderYearly(); np.classList.add('hidden'); pdfBar.classList.add('hidden'); dp.classList.add('hidden');
             } else if(this.viewMode==='monthly'){
                 tt.textContent=`${yr}년 ${mo}월`;
-                vp.innerHTML=this.renderMonthly(); np.classList.add('hidden'); pdfBar.classList.add('hidden');
+                vp.innerHTML=this.renderMonthly(); np.classList.add('hidden'); pdfBar.classList.add('hidden'); dp.classList.add('hidden');
             } else {
                 tt.textContent=`${yr}년 ${mo}월 주간계획`;
                 vp.innerHTML=this.renderWeekly();
+                dp.classList.remove('hidden');
                 np.classList.remove('hidden');
-                pdfBar.classList.remove('hidden');   // 주간 뷰에서만 PDF 버튼 표시
+                pdfBar.classList.remove('hidden');
             }
         }
     },
@@ -825,7 +879,7 @@ const app = {
     }
 };
 window.addEventListener('DOMContentLoaded',()=>app.init());
-</script>
+<\/script>
 
 <script>
 if('serviceWorker' in navigator){
@@ -848,6 +902,12 @@ app.handleInstall=async function(){
     if(isIOS) document.getElementById('iosInstallModal').style.display='flex';
     else if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.style.display='none';}
 };
-</script>
+<\/script>
 </body>
-</html>
+</html>'''
+
+with open('/home/user/index.html', 'w', encoding='utf-8') as f:
+    f.write(html_code)
+
+print("✅ 파일 저장 완료: index.html")
+print(f"파일 크기: {len(html_code):,} bytes")
