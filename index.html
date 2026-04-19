@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>구례중 주간계획1.1</title>
+    <title>구례중 주간계획 v1.2</title>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,16 +14,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: #f8fafc; }
+
+        /* ── 캘린더 그리드 ── */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
         .day-cell { height: 80px; background-color: white; padding: 4px; position: relative; cursor: pointer; transition: background-color 0.2s; display: flex; flex-direction: column; overflow: hidden; }
         @media (min-width: 768px) { .day-cell { height: 120px; padding: 8px; } }
         .day-cell:hover { background-color: #f1f5f9; }
+
+        /* ── 이벤트 아이템 ── */
         .event-item { font-size: 11px; padding: 2px 4px; border-radius: 3px; background-color: #f1f5f9; border-left: 2px solid #16a34a; font-weight: 700; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: pointer; transition: all 0.2s; flex-shrink: 0; height: 18px; line-height: 14px; box-sizing: border-box; }
         @media (min-width: 768px) { .event-item { font-size: 12px; padding: 3px 6px; height: 20px; line-height: 14px; } }
         .event-item:hover { background-color: #e0f2fe; }
         .event-more { font-size: 10px; color: #64748b; font-weight: 700; padding: 1px 4px; flex-shrink: 0; }
         @media (min-width: 768px) { .event-more { font-size: 11px; } }
-        .event-item-week { font-size: 13px; padding: 6px 8px; margin-bottom: 4px; border-radius: 5px; background-color: #f8fafc; border-left: 3px solid #cbd5e1; font-weight: 500; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; word-break: break-all; color: #1e293b; }
+
+        /* ── 주간 이벤트 아이템 ── */
+        .event-item-week { font-size: 13px; padding: 6px 8px; margin-bottom: 4px; border-radius: 5px; background-color: #f8fafc; border-left: 3px solid #cbd5e1; font-weight: 500; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; word-break: break-all; color: #1e293b; }
         @media (min-width: 768px) { .event-item-week { font-size: 14px; } }
         .event-item-week:hover { background-color: #e0f2fe; }
         .event-item-week.dept-교무 { border-left-color: #2563eb; }
@@ -35,7 +41,10 @@
         .event-item-week.dept-2학년 { border-left-color: #db2777; }
         .event-item-week.dept-3학년 { border-left-color: #0369a1; }
         .event-item-week.dept-학사 { border-left-color: #334155; }
-        .dept-badge { font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 10px; white-space: nowrap; margin-left: 4px; }
+
+        /* ── 부서 배지 ── */
+        .dept-badge { font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 10px; white-space: nowrap; margin-left: 4px; cursor: pointer; }
+        .dept-badge:hover { opacity: 0.7; }
         .dept-badge.dept-교무 { color: #2563eb; background: #dbeafe; }
         .dept-badge.dept-연구 { color: #16a34a; background: #dcfce7; }
         .dept-badge.dept-학생 { color: #7c3aed; background: #ede9fe; }
@@ -45,6 +54,8 @@
         .dept-badge.dept-2학년 { color: #db2777; background: #fce7f3; }
         .dept-badge.dept-3학년 { color: #0369a1; background: #e0f2fe; }
         .dept-badge.dept-학사 { color: #334155; background: #f1f5f9; }
+
+        /* ── 날짜 헤더 ── */
         .day-cell-header { font-size: 10px; font-weight: 900; margin-bottom: 2px; flex-shrink: 0; }
         @media (min-width: 768px) { .day-cell-header { font-size: 13px; margin-bottom: 4px; } }
         .day-cell-holiday { font-size: 10px; color: #dc2626; font-weight: 700; margin-bottom: 2px; flex-shrink: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
@@ -56,6 +67,8 @@
         @media (min-width: 768px) { .holiday-badge { font-size: 13px; } }
         .text-sun { color: #ef4444; } .text-sat { color: #3b82f6; }
         .del-x { color: #ef4444; cursor: pointer; margin-left: 4px; font-weight: bold; }
+
+        /* ── 연간 보기 ── */
         .year-view { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
         .year-month { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .year-month-title { font-weight: 900; color: #1e293b; margin-bottom: 8px; font-size: 16px; }
@@ -70,6 +83,8 @@
         @media (min-width: 768px) { .mini-ev { font-size: 9px; } }
         .week-item { background-color: white; }
         .weekend-bg, .holiday-bg { background-color: #fff1f2 !important; }
+
+        /* ── 안내사항 ── */
         .notice-section { background-color: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-top: 20px; }
         .notice-list { display: flex; flex-direction: column; gap: 12px; }
         .notice-box { display: flex; flex-direction: column; gap: 4px; }
@@ -78,17 +93,24 @@
         @media (min-width: 768px) { .notice-label { font-size: 15px; } }
         .notice-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; outline: none; transition: all 0.2s; min-height: 60px; resize: vertical; background-color: white; font-weight: normal; }
         @media (min-width: 768px) { .notice-input { font-size: 15px; padding: 12px; min-height: 70px; } }
+        .notice-input.has-content { background-color: #f0fdf4 !important; border-color: #86efac; }
         .notice-input.has-content { background-color: #fef9c3 !important; border-color: #facc15; }
         .notice-input:focus { border-color: #16a34a; }
+
+        /* ── 협의 내용 ── */
         .discussion-section { background-color: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; border-left: 5px solid #f59e0b; margin-top: 20px; }
         .discussion-input { border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px; font-size: 14px; outline: none; transition: all 0.2s; min-height: 180px; resize: vertical; background-color: #fffef5; font-weight: normal; width: 100%; box-sizing: border-box; line-height: 2; font-family: inherit; }
         @media (min-width: 768px) { .discussion-input { font-size: 15px; padding: 14px 16px; min-height: 220px; } }
         .discussion-input.has-content { background-color: #fefce8 !important; border-color: #f59e0b; }
         .discussion-input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.15); }
+
+        /* ── 모달 ── */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 24px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
         .week-date-label { font-size: 14px; font-weight: 900; line-height: 1.3; }
         @media (min-width: 768px) { .week-date-label { font-size: 16px; } }
+
+        /* ── 회의메모 ── */
         .meeting-wrapper { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
         @media (min-width: 768px) { .meeting-wrapper { flex-direction: row; align-items: flex-start; gap: 20px; } }
         .meeting-cal-panel { background: white; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; flex-shrink: 0; }
@@ -135,11 +157,17 @@
         .add-meeting-btn:hover { background: #f0fdf4; }
         .ai-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(124,58,237,0.08); border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 100; }
         .ai-spinner { font-size: 13px; font-weight: 700; color: #7c3aed; text-align: center; }
+
+        /* ── 설치 버튼 ── */
         .install-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(22,163,74,0.3); cursor: pointer; border: none; transition: all 0.3s; z-index: 999; }
         .install-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(22,163,74,0.4); }
         @media (max-width: 767px) { html, body { height: auto; } body { overflow-y: auto; -webkit-overflow-scrolling: touch; } .meeting-wrapper { -webkit-overflow-scrolling: touch; } .meeting-textarea { touch-action: pan-y; -webkit-overflow-scrolling: touch; } }
+
+        /* ── 토스트 ── */
         .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity 0.3s; max-width: 90vw; text-align: center; }
         .toast.show { opacity: 1; } .toast.error { background: #dc2626; } .toast.success { background: #16a34a; }
+
+        /* ── PDF 버튼 ── */
         .pdf-btn { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(14,165,233,0.3); border: none; margin-left: 6px; }
         .pdf-btn:hover { transform: scale(1.05); } .pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .weekly-pdf-btn { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(14,165,233,0.35); transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; }
@@ -147,10 +175,72 @@
         .weekly-pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         #weeklyPdfTemplate { display: none; position: fixed; left: -9999px; top: 0; width: 794px; background: white; font-family: 'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif; color: #1e293b; padding: 0; }
         .logo-text { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 6px; font-size: 14px; font-weight: 900; color: #15803d; flex-shrink: 0; }
+
+        /* ── 인라인 수정 UI ── */
+        .edit-inline-form { background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 8px; margin-top: 4px; display: none; gap: 6px; flex-direction: column; }
+        .edit-inline-form.open { display: flex; }
+        .edit-inline-input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; font-size: 13px; outline: none; font-family: inherit; }
+        .edit-inline-input:focus { border-color: #16a34a; }
+        .edit-inline-select { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; font-size: 13px; outline: none; font-family: inherit; background: white; }
+        .edit-inline-select:focus { border-color: #16a34a; }
+        .edit-btn { font-size: 11px; padding: 2px 8px; border-radius: 5px; border: none; cursor: pointer; font-weight: 700; transition: all 0.15s; }
+        .edit-btn-save { background: #16a34a; color: white; }
+        .edit-btn-save:hover { background: #15803d; }
+        .edit-btn-cancel { background: #e5e7eb; color: #374151; }
+        .edit-btn-cancel:hover { background: #d1d5db; }
+        .edit-icon { font-size: 12px; cursor: pointer; color: #94a3b8; margin-left: 4px; transition: color 0.15s; }
+        .edit-icon:hover { color: #16a34a; }
+
+        /* ── 연간 네비게이션 ── */
+        .year-nav-btn { background: #f1f5f9; border: none; border-radius: 8px; padding: 6px 14px; font-weight: 800; font-size: 13px; cursor: pointer; color: #334155; transition: all 0.15s; }
+        .year-nav-btn:hover { background: #dcfce7; color: #15803d; }
+        .school-year-label { font-size: 13px; font-weight: 900; color: #15803d; background: #dcfce7; padding: 4px 14px; border-radius: 20px; }
+
+        /* ── 나이스 불러오기 ── */
+        .neis-btn { background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%); color: white; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(3,105,161,0.35); transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+        .neis-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(3,105,161,0.4); }
+        .neis-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .neis-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 3000; align-items: center; justify-content: center; }
+        .neis-modal-overlay.open { display: flex; }
+        .neis-modal { background: white; border-radius: 20px; width: 92%; max-width: 520px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.2); overflow: hidden; }
+        .neis-modal-header { background: linear-gradient(135deg, #0369a1, #0284c7); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .neis-modal-title { font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+        .neis-modal-close { background: rgba(255,255,255,0.25); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: background 0.2s; }
+        .neis-modal-close:hover { background: rgba(255,255,255,0.4); }
+        .neis-modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+        .neis-modal-footer { padding: 12px 20px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; justify-content: flex-end; flex-shrink: 0; background: #f8fafc; }
+        .neis-filter-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .neis-filter-select { border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 10px; font-size: 13px; outline: none; font-family: inherit; background: white; }
+        .neis-filter-select:focus { border-color: #0369a1; }
+        .neis-fetch-btn { background: #0369a1; color: white; border: none; border-radius: 8px; padding: 6px 14px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+        .neis-fetch-btn:hover { background: #075985; }
+        .neis-fetch-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .neis-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; background: #f8fafc; border: 1.5px solid #e2e8f0; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+        .neis-item:hover { border-color: #0369a1; background: #eff6ff; }
+        .neis-item.selected { border-color: #0369a1; background: #dbeafe; }
+        .neis-item.already { border-color: #86efac; background: #f0fdf4; opacity: 0.75; cursor: default; }
+        .neis-item-check { width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; transition: all 0.15s; }
+        .neis-item.selected .neis-item-check { background: #0369a1; border-color: #0369a1; color: white; font-size: 11px; }
+        .neis-item.already .neis-item-check { background: #16a34a; border-color: #16a34a; color: white; font-size: 11px; }
+        .neis-item-date { font-size: 12px; font-weight: 800; color: #0369a1; white-space: nowrap; min-width: 60px; }
+        .neis-item-title { font-size: 13px; color: #1e293b; font-weight: 500; flex: 1; line-height: 1.4; }
+        .neis-item-tag { font-size: 10px; font-weight: 800; background: #dbeafe; color: #0369a1; padding: 1px 6px; border-radius: 8px; white-space: nowrap; }
+        .neis-empty { text-align: center; color: #94a3b8; font-size: 13px; padding: 30px 0; }
+        .neis-loading { text-align: center; color: #0369a1; font-size: 13px; padding: 30px 0; font-weight: 700; }
+        .neis-select-all-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; }
+        .neis-select-all-btn { background: none; border: 1px solid #0369a1; color: #0369a1; border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+        .neis-select-all-btn:hover { background: #dbeafe; }
+        .neis-count-badge { font-size: 12px; color: #64748b; font-weight: 600; }
+        .neis-import-btn { background: linear-gradient(135deg, #16a34a, #15803d); color: white; border: none; border-radius: 10px; padding: 9px 20px; font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+        .neis-import-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(22,163,74,0.35); }
+        .neis-import-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .neis-cancel-btn { background: #e5e7eb; border: none; border-radius: 10px; padding: 9px 16px; font-size: 14px; font-weight: 700; cursor: pointer; color: #374151; transition: all 0.15s; }
+        .neis-cancel-btn:hover { background: #d1d5db; }
     </style>
 </head>
 <body class="p-3">
 <div class="max-w-6xl mx-auto">
+    <!-- ───────── 헤더 ───────── -->
     <header class="flex justify-between items-center mb-6 bg-green-800 p-4 rounded-2xl text-white shadow-lg">
         <h1 class="font-black text-sm md:text-lg flex items-center gap-2">
             <span class="logo-text" id="headerLogo">🏫</span> 구례중 주간 계획
@@ -162,24 +252,50 @@
             <button onclick="app.setView('meeting')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">📝회의메모</button>
         </div>
     </header>
-    <section id="eventInputSection" class="bg-white p-4 rounded-2xl shadow-sm border mb-4 grid grid-cols-2 md:grid-cols-4 gap-2">
-        <input type="date" id="inDate" class="border p-2 rounded-xl text-sm md:text-base outline-none" onchange="this.blur()">
-        <input type="text" id="inTitle" placeholder="업무 행사 입력" class="border p-2 rounded-xl text-sm md:text-base outline-none">
-        <select id="inDept" class="border p-2 rounded-xl text-sm md:text-base outline-none"><option>교무</option><option>연구</option><option>학생</option><option>창의</option><option>행정</option><option>1학년</option><option>2학년</option><option>3학년</option></select>
-        <button onclick="app.saveEvent()" class="bg-green-600 text-white rounded-xl font-bold py-2 text-sm md:text-base hover:bg-green-700">저장하기</button>
+
+    <!-- ───────── 일정 입력 ───────── -->
+    <section id="eventInputSection" class="bg-white p-4 rounded-2xl shadow-sm border mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
+            <input type="date" id="inDate" class="border p-2 rounded-xl text-sm md:text-base outline-none" onchange="this.blur()">
+            <input type="text" id="inTitle" placeholder="업무 행사 입력" class="border p-2 rounded-xl text-sm md:text-base outline-none">
+            <select id="inDept" class="border p-2 rounded-xl text-sm md:text-base outline-none">
+                <option>교무</option><option>연구</option><option>학생</option><option>창의</option>
+                <option>행정</option><option>1학년</option><option>2학년</option><option>3학년</option>
+            </select>
+            <button onclick="app.saveEvent()" class="bg-green-600 text-white rounded-xl font-bold py-2 text-sm md:text-base hover:bg-green-700">저장하기</button>
+        </div>
+        <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+            <span class="text-xs text-slate-400 font-medium">나이스 학사일정 자동 등록</span>
+            <button id="neisBtnEl" class="neis-btn" onclick="app.openNeisModal()">
+                📋 나이스 학사일정 불러오기
+            </button>
+        </div>
     </section>
+
+    <!-- ───────── 이전/다음 ───────── -->
     <div class="flex justify-between items-center bg-white p-3 rounded-2xl border mb-4">
         <button onclick="app.move(-1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">&#10094;</button>
         <h2 id="titleText" class="text-sm md:text-xl font-black text-slate-700">로딩 중...</h2>
         <button onclick="app.move(1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">&#10095;</button>
     </div>
+
+    <!-- ───────── 연간 학사력 네비게이션 (연간 뷰 전용) ───────── -->
+    <div id="yearNavBar" class="hidden flex justify-between items-center bg-white p-3 rounded-2xl border mb-4">
+        <button onclick="app.moveSchoolYear(-1)" class="year-nav-btn">&#9664; 이전 학년도</button>
+        <span id="schoolYearLabel" class="school-year-label">2026학년도</span>
+        <button onclick="app.moveSchoolYear(1)" class="year-nav-btn">다음 학년도 &#9654;</button>
+    </div>
+
+    <!-- ───────── PDF 출력 ───────── -->
     <div id="weeklyPdfBar" class="hidden flex justify-end items-center gap-3 mb-3">
         <span style="font-size:12px;color:#94a3b8;font-weight:500;">🖨️ 종이가 편하신 분을 위해</span>
         <button id="weeklyPdfBtnEl" class="weekly-pdf-btn" onclick="app.downloadWeeklyPDF()">&#128196; 주간계획 PDF 출력</button>
     </div>
+
+    <!-- ───────── 뷰포트 ───────── -->
     <div id="viewPort"></div>
 
-    <!-- 협의 내용 -->
+    <!-- ───────── 협의 내용 ───────── -->
     <div id="discussionPort" class="hidden">
         <div class="discussion-section">
             <h3 class="font-black text-amber-700 mb-4 flex items-center gap-2 text-base md:text-lg">💬 협의 내용</h3>
@@ -187,6 +303,7 @@
         </div>
     </div>
 
+    <!-- ───────── 주간 안내사항 ───────── -->
     <div id="noticePort" class="hidden">
         <div class="notice-section">
             <h3 class="font-black text-green-800 mb-4 flex items-center gap-2 text-base md:text-lg">&#128226; 주간 안내사항</h3>
@@ -202,11 +319,16 @@
             </div>
         </div>
     </div>
+
     <footer class="text-center py-8 text-slate-400 text-[10px] md:text-xs">© Developed by Choi Gwang-cheol of Gurye Middle School in 2026. All rights reserved.</footer>
 </div>
+
+<!-- 템플릿/오버레이 -->
 <div id="weeklyPdfTemplate"></div>
 <div id="toast" class="toast"></div>
 <button id="installBtn" class="install-btn" style="display:none;" onclick="app.handleInstall()">📱 앱으로 설치하기</button>
+
+<!-- iOS 설치 안내 모달 -->
 <div id="iosInstallModal" class="modal" onclick="document.getElementById('iosInstallModal').style.display='none'">
     <div class="modal-content" onclick="event.stopPropagation()" style="text-align:center;">
         <div style="font-size:32px;margin-bottom:12px;">📱</div>
@@ -219,6 +341,61 @@
         <button onclick="document.getElementById('iosInstallModal').style.display='none'" style="width:100%;background:#15803d;color:white;font-weight:bold;padding:12px;border-radius:12px;border:none;font-size:15px;cursor:pointer;">확인</button>
     </div>
 </div>
+
+<!-- ─────────────────────────────────────────────
+     나이스 학사일정 불러오기 모달
+────────────────────────────────────────────── -->
+<div id="neisModalOverlay" class="neis-modal-overlay" onclick="app.closeNeisModal(event)">
+    <div class="neis-modal" onclick="event.stopPropagation()">
+        <!-- 헤더 -->
+        <div class="neis-modal-header">
+            <div class="neis-modal-title">
+                📋 나이스 학사일정 불러오기
+            </div>
+            <button class="neis-modal-close" onclick="app.closeNeisModal()">✕</button>
+        </div>
+
+        <!-- 바디 -->
+        <div class="neis-modal-body">
+            <!-- 필터 바 -->
+            <div class="neis-filter-bar">
+                <select id="neisYear" class="neis-filter-select">
+                    <option value="2026">2026년</option>
+                    <option value="2027">2027년</option>
+                    <option value="2028">2028년</option>
+                </select>
+                <select id="neisMonth" class="neis-filter-select">
+                    <option value="">전체 월</option>
+                    <option value="01">1월</option><option value="02">2월</option>
+                    <option value="03">3월</option><option value="04">4월</option>
+                    <option value="05">5월</option><option value="06">6월</option>
+                    <option value="07">7월</option><option value="08">8월</option>
+                    <option value="09">9월</option><option value="10">10월</option>
+                    <option value="11">11월</option><option value="12">12월</option>
+                </select>
+                <button class="neis-fetch-btn" id="neisFetchBtn" onclick="app.fetchNeisSchedule()">
+                    🔍 조회
+                </button>
+            </div>
+
+            <!-- 목록 영역 -->
+            <div id="neisListArea">
+                <div class="neis-empty">조회 버튼을 눌러 나이스 학사일정을 불러오세요.</div>
+            </div>
+        </div>
+
+        <!-- 푸터 -->
+        <div class="neis-modal-footer">
+            <span id="neisSelectedCount" class="neis-count-badge self-center"></span>
+            <button class="neis-cancel-btn" onclick="app.closeNeisModal()">닫기</button>
+            <button class="neis-import-btn" id="neisImportBtn" onclick="app.importNeisSchedule()" disabled>
+                ✅ 선택 항목 등록
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 일정 상세 모달 -->
 <div id="detailModal" class="modal" onclick="app.closeModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <h3 id="modalDate" class="font-black text-green-800 mb-2 text-base md:text-lg"></h3>
@@ -228,150 +405,1321 @@
 </div>
 
 <script>
-const app={
-    API_URL:'https://script.google.com/macros/s/AKfycbxFyog7n0_ciSjwqtv9kz61AmzeQxSjcvM4S2u1MyOB80FLe9_fc_Qm1Yzg2IIpWOal/exec',
-    events:[],localChanges:{},localDeletes:new Set(),
-    currentDate:new Date(),viewMode:'monthly',
-    isSyncing:false,isEditing:false,meetingInputFocused:false,
-    saveTimers:{},savingInProgress:false,pendingSave:null,
-    aiGenerating:false,meetingDate:new Date(),meetingCalendarDate:new Date(),
-    days:['일','월','화','수','목','금','토'],_logoBase64:null,
-    deptOrder:['교무','연구','학생','창의','행정','1학년','2학년','3학년','학사'],
-    _isLocalFile:location.protocol==='file:',
+/* =====================================================================
+   구례중학교 주간계획 v1.2
+   개선사항:
+   1. API URL 환경설정 분리 + 요청 토큰 구조
+   2. 공휴일 연도별 동적 생성 (무제한 연도 지원)
+   3. 주요 로직 함수별 분리 + 주석
+   4. 연간 학사력 학년도 네비게이션 (무제한 연장)
+   5. 주간 업무 인라인 수정 (내용 + 부서 모두)
+   ===================================================================== */
 
-    sortByDept(e){return[...e].sort((a,b)=>{const ai=this.deptOrder.indexOf(a.dapt),bi=this.deptOrder.indexOf(b.dapt);return(ai===-1?99:ai)-(bi===-1?99:bi);});},
-    deptColor(d){return{'교무':'#2563eb','연구':'#16a34a','학생':'#7c3aed','창의':'#ea580c','행정':'#1e3a8a','1학년':'#0891b2','2학년':'#db2777','3학년':'#0369a1','학사':'#334155'}[d]||'#2563eb';},
-    deptBg(d){return{'교무':'#dbeafe','연구':'#dcfce7','학생':'#ede9fe','창의':'#ffedd5','행정':'#e0e7ff','1학년':'#cffafe','2학년':'#fce7f3','3학년':'#e0f2fe','학사':'#f1f5f9'}[d]||'#dbeafe';},
-    async loadLogoBase64(){if(this._isLocalFile){this._logoBase64=null;return;}try{const img=new Image();img.crossOrigin='anonymous';await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src='./icons/icon-192.png';});const c=document.createElement('canvas');c.width=img.width||192;c.height=img.height||192;c.getContext('2d').drawImage(img,0,0);this._logoBase64=c.toDataURL('image/png');const h=document.getElementById('headerLogo');if(h)h.outerHTML=`<img src="./icons/icon-192.png" style="width:28px;height:28px;object-fit:contain;border-radius:6px;" alt="로고">`;}catch(e){this._logoBase64=null;}},
+/* ── [개선1] 설정 분리: API URL & 토큰 한 곳에서 관리 ── */
+const APP_CONFIG = {
+    // GAS URL — 여기만 수정하면 전체 적용
+    API_URL: 'https://script.google.com/macros/s/AKfycbxFyog7n0_ciSjwqtv9kz61AmzeQxSjcvM4S2u1MyOB80FLe9_fc_Qm1Yzg2IIpWOal/exec',
+    // 요청 식별 토큰 (GAS 쪽에서도 검증 시 사용)
+    REQUEST_TOKEN: 'gurye_ms_2026',
+    // 자동 새로고침 간격 (ms)
+    SYNC_INTERVAL: 10000,
+    // 나이스 오픈API 설정
+    NEIS: {
+        KEY: 'aafc58d6f3a0426fb77fd9885d3a01a3',
+        ATPT_OFCDC_SC_CODE: 'P10',   // 전라남도교육청
+        SD_SCHUL_CODE: '7530046',    // 구례중학교
+    },
+};
 
-    holidays:['2026-01-01:신정','2026-02-16:설날연휴','2026-02-17:설날','2026-02-18:설날연휴','2026-03-01:삼일절','2026-03-02:대체공휴일','2026-05-05:어린이날','2026-05-24:부처님오신날','2026-05-25:대체공휴일','2026-06-06:현충일','2026-08-15:광복절','2026-08-17:대체공휴일','2026-09-24:추석연휴','2026-09-25:추석','2026-09-26:추석연휴','2026-10-03:개천절','2026-10-05:대체공휴일','2026-10-09:한글날','2026-12-25:크리스마스'],
+/* ── [개선2] 공휴일 동적 생성 함수 ── */
+/**
+ * 특정 연도의 대한민국 공휴일 배열을 반환합니다.
+ * 추석·설날은 음력 기준이므로 연도별 데이터로 관리합니다.
+ * @param {number} year
+ * @returns {string[]} 'YYYY-MM-DD:공휴일명' 형식 배열
+ */
+function getHolidaysForYear(year) {
+    // 고정 공휴일 (양력)
+    const fixed = [
+        `${year}-01-01:신정`,
+        `${year}-03-01:삼일절`,
+        `${year}-05-05:어린이날`,
+        `${year}-06-06:현충일`,
+        `${year}-08-15:광복절`,
+        `${year}-10-03:개천절`,
+        `${year}-10-09:한글날`,
+        `${year}-12-25:크리스마스`,
+    ];
 
-    parseLocalDate(s){const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);},
-    isToday(s){return s===this.formatDate(new Date());},
-    showToast(m,t='info',d=3500){const el=document.getElementById('toast');el.textContent=m;el.className=`toast show ${t}`;clearTimeout(this._tt);this._tt=setTimeout(()=>{el.className='toast';},d);},
-    getHoliday(s){const f=this.holidays.find(h=>h.startsWith(s));return f?f.split(':')[1]:null;},
-    isSpecialHoliday(s){return this.events.some(e=>e.date===s&&(e.title.includes('재량휴업일')||e.title.includes('휴업일')||e.title.includes('휴무일')));},
-    isMeetingInputActive(){const a=document.activeElement;if(!a)return false;return a.closest('.meeting-card')!==null||a.classList.contains('meeting-input')||a.classList.contains('meeting-textarea');},
-    getMeetingsForDate(s){const p=`meeting_${s}_`;const a=this.events.filter(e=>e.id.startsWith(p)).map(e=>({...e}));Object.keys(this.localChanges).forEach(id=>{if(id.startsWith(p)&&!a.find(e=>e.id===id))a.push({...this.localChanges[id]});});return a.filter(e=>!this.localDeletes.has(e.id)).sort((a,b)=>a.id.localeCompare(b.id));},
-    newMeetingId(s){const e=this.getMeetingsForDate(s);const n=e.map(e=>parseInt(e.id.split('_').pop())||0);return`meeting_${s}_${n.length>0?Math.max(...n)+1:1}`;},
+    // 음력 기반 공휴일 (연도별 양력 날짜) + 대체공휴일
+    const lunar = {
+        2026: [
+            '2026-02-16:설날연휴','2026-02-17:설날','2026-02-18:설날연휴',
+            '2026-03-02:대체공휴일',
+            '2026-05-24:부처님오신날','2026-05-25:대체공휴일',
+            '2026-08-17:대체공휴일',
+            '2026-09-24:추석연휴','2026-09-25:추석','2026-09-26:추석연휴',
+            '2026-10-05:대체공휴일',
+        ],
+        2027: [
+            '2027-02-06:설날연휴','2027-02-07:설날','2027-02-08:설날연휴',
+            '2027-05-13:부처님오신날',
+            '2027-09-14:추석연휴','2027-09-15:추석','2027-09-16:추석연휴',
+            '2027-10-04:대체공휴일',
+        ],
+        2028: [
+            '2028-01-26:설날연휴','2028-01-27:설날','2028-01-28:설날연휴',
+            '2028-05-02:부처님오신날',
+            '2028-09-02:추석연휴','2028-09-03:추석','2028-09-04:추석연휴',
+        ],
+        2029: [
+            '2029-02-12:설날연휴','2029-02-13:설날','2029-02-14:설날연휴',
+            '2029-05-20:부처님오신날',
+            '2029-09-21:추석연휴','2029-09-22:추석','2029-09-23:추석연휴',
+        ],
+        2030: [
+            '2030-02-02:설날연휴','2030-02-03:설날','2030-02-04:설날연휴',
+            '2030-05-10:부처님오신날',
+            '2030-09-11:추석연휴','2030-09-12:추석','2030-09-13:추석연휴',
+        ],
+    };
 
-    async loadFromServer(){if(this.isSyncing||this.aiGenerating)return;try{this.isSyncing=true;const r=await fetch(this.API_URL+'?t='+Date.now());const d=await r.json();const se=d.map(i=>{let ds=i.date;if(typeof ds==='number'){const d=new Date(Math.round((ds-25569)*86400*1000));ds=this.formatDate(new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));}else if(typeof ds==='string'&&ds.includes('T')){const d=new Date(ds);const k=new Date(d.getTime()+9*3600000);ds=this.formatDate(new Date(k.getUTCFullYear(),k.getUTCMonth(),k.getUTCDate()));}else if(typeof ds==='string')ds=ds.substring(0,10);return{id:String(i.id),date:ds,title:i.title,dapt:i.dapt,subject:i.subject||'',content:i.content||''};});this.events=this.mergeEvents(se);if(this.viewMode==='meeting'){this.renderMeetingCalendar();if(!this.isMeetingInputActive()&&!this.meetingInputFocused)this.syncMeetingInputsFromData();}else if(!this.isEditing)this.render();}catch(e){console.error('로드 오류:',e);}finally{this.isSyncing=false;}},
-    syncMeetingInputsFromData(){if(!document.getElementById('meetingCardsContainer'))return;this.renderMeetingCards();this.updateMeetingPanelDate();},
-    mergeEvents(se){const f=se.filter(e=>!this.localDeletes.has(String(e.id)));const m=[...f];Object.keys(this.localChanges).forEach(id=>{const l=this.localChanges[id];const i=m.findIndex(e=>String(e.id)===String(id));if(i!==-1)m[i]={...m[i],...l};else m.push(l);});return m;},
+    return [...fixed, ...(lunar[year] || [])];
+}
 
-    async saveToServer(a,d){if(a==='add'){this.localChanges[d.id]=d;this.localDeletes.delete(d.id);}else if(a==='delete'){delete this.localChanges[d.id];this.localDeletes.add(d.id);}if(this.savingInProgress){this.pendingSave={action:a,data:d};return;}this.savingInProgress=true;try{const r=await fetch(this.API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:a,...d})});const res=await r.json();if(res.success){const sid=d.id;setTimeout(()=>{delete this.localChanges[sid];this.localDeletes.delete(sid);},15000);this.showSaveIndicator('saved');}}catch(e){console.error('저장 오류:',e);}finally{this.savingInProgress=false;if(this.pendingSave){const p=this.pendingSave;this.pendingSave=null;await this.saveToServer(p.action,p.data);}}},
-    showSaveIndicator(s){const el=document.getElementById('meetingSaveIndicator');if(!el)return;el.className='save-indicator '+s;el.textContent=s==='saving'?'💾 저장 중...':(s==='saved'?'✅ 저장 완료':'💡 입력 2초 후 자동 저장');},
+const app = {
+    /* ── 상태 ── */
+    events: [],
+    localChanges: {},
+    localDeletes: new Set(),
+    currentDate: new Date(),
+    viewMode: 'monthly',
+    isSyncing: false,
+    isEditing: false,
+    meetingInputFocused: false,
+    saveTimers: {},
+    savingInProgress: false,
+    pendingSave: null,
+    aiGenerating: false,
+    meetingDate: new Date(),
+    meetingCalendarDate: new Date(),
+    days: ['일','월','화','수','목','금','토'],
+    _logoBase64: null,
+    deptOrder: ['교무','연구','학생','창의','행정','1학년','2학년','3학년','학사'],
+    _isLocalFile: location.protocol === 'file:',
 
-    handleNoticeInput(inp){this.isEditing=true;this.updateInputStyle(inp);const d=inp.dataset.dept;if(this.saveTimers[d])clearTimeout(this.saveTimers[d]);this.saveTimers[d]=setTimeout(()=>this.saveNotice(inp),2000);},
-    updateInputStyle(inp){inp.value.trim()!==''?inp.classList.add('has-content'):inp.classList.remove('has-content');},
-    async saveNotice(inp){this.isEditing=false;const dept=inp.dataset.dept,content=inp.value.trim();const monday=this.getMonday(this.currentDate),ds=this.formatDate(monday);const nid=`notice_${ds}_${dept}`,xi=this.events.findIndex(e=>e.id===nid);if(content===''){if(xi!==-1){this.events.splice(xi,1);await this.saveToServer('delete',{id:nid});}}else{const nn={id:nid,date:ds,title:content,dapt:dept};if(xi!==-1)this.events[xi]=nn;else this.events.push(nn);await this.saveToServer('add',nn);}},
+    /* [개선4] 연간 학사력 — 현재 표시 학년도 (3월 시작 기준) */
+    currentSchoolYear: new Date().getMonth() >= 2
+        ? new Date().getFullYear()
+        : new Date().getFullYear() - 1,
 
-    /* ===== 협의 내용 ===== */
-    handleDiscussionFocus(ta){if(ta.value.trim()===''){ta.value='1. ';ta.selectionStart=ta.selectionEnd=ta.value.length;}},
-    handleDiscussionKeydown(e,ta){
-        if(e.key==='Enter'){
-            e.preventDefault();
-            const pos=ta.selectionStart,before=ta.value.substring(0,pos),after=ta.value.substring(ta.selectionEnd);
-            const lines=before.split('\n'),cur=lines[lines.length-1];
-            if(/^\d+\.\s*$/.test(cur)){const nb=lines.slice(0,-1).join('\n')+(lines.length>1?'\n':'');ta.value=nb+after;ta.selectionStart=ta.selectionEnd=nb.length;}
-            else{let mx=0;before.split('\n').forEach(l=>{const m=l.match(/^(\d+)\./);if(m)mx=Math.max(mx,parseInt(m[1]));});const ins='\n'+(mx+1)+'. ';ta.value=before+ins+after;ta.selectionStart=ta.selectionEnd=pos+ins.length;}
-            ta.dispatchEvent(new Event('input',{bubbles:true}));
+    /* ── API URL (설정에서 참조) ── */
+    get API_URL() { return APP_CONFIG.API_URL; },
+
+    /* ───────── 유틸리티 ───────── */
+
+    /** 부서 순서대로 정렬 */
+    sortByDept(e) {
+        return [...e].sort((a, b) => {
+            const ai = this.deptOrder.indexOf(a.dapt);
+            const bi = this.deptOrder.indexOf(b.dapt);
+            return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+        });
+    },
+
+    /** 부서별 텍스트 색상 */
+    deptColor(d) {
+        const map = {
+            '교무':'#2563eb','연구':'#16a34a','학생':'#7c3aed','창의':'#ea580c',
+            '행정':'#1e3a8a','1학년':'#0891b2','2학년':'#db2777','3학년':'#0369a1','학사':'#334155'
+        };
+        return map[d] || '#2563eb';
+    },
+
+    /** 부서별 배경 색상 */
+    deptBg(d) {
+        const map = {
+            '교무':'#dbeafe','연구':'#dcfce7','학생':'#ede9fe','창의':'#ffedd5',
+            '행정':'#e0e7ff','1학년':'#cffafe','2학년':'#fce7f3','3학년':'#e0f2fe','학사':'#f1f5f9'
+        };
+        return map[d] || '#dbeafe';
+    },
+
+    /** 날짜 문자열 파싱 (로컬 타임존) */
+    parseLocalDate(s) {
+        const p = s.split('-');
+        return new Date(+p[0], +p[1] - 1, +p[2]);
+    },
+
+    /** Date → 'YYYY-MM-DD' */
+    formatDate(d) {
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    },
+
+    /** 오늘 여부 */
+    isToday(s) { return s === this.formatDate(new Date()); },
+
+    /** 주의 월요일 반환 */
+    getMonday(d) {
+        const dt = new Date(d);
+        const day = dt.getDay();
+        const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
+        return new Date(dt.getFullYear(), dt.getMonth(), diff);
+    },
+
+    /* ── [개선2] 공휴일 조회 (동적 생성) ── */
+
+    /** 날짜 문자열에 해당하는 공휴일 이름 반환 */
+    getHoliday(s) {
+        const year = parseInt(s.substring(0, 4));
+        const holidays = getHolidaysForYear(year);
+        const found = holidays.find(h => h.startsWith(s));
+        return found ? found.split(':')[1] : null;
+    },
+
+    /** 재량휴업일 여부 확인 */
+    isSpecialHoliday(s) {
+        return this.events.some(e =>
+            e.date === s && (
+                e.title.includes('재량휴업일') ||
+                e.title.includes('휴업일') ||
+                e.title.includes('휴무일')
+            )
+        );
+    },
+
+    /* ───────── 토스트 / 저장 표시 ───────── */
+
+    showToast(m, t = 'info', d = 3500) {
+        const el = document.getElementById('toast');
+        el.textContent = m;
+        el.className = `toast show ${t}`;
+        clearTimeout(this._tt);
+        this._tt = setTimeout(() => { el.className = 'toast'; }, d);
+    },
+
+    showSaveIndicator(s) {
+        const el = document.getElementById('meetingSaveIndicator');
+        if (!el) return;
+        el.className = 'save-indicator ' + s;
+        el.textContent = s === 'saving' ? '💾 저장 중...' : (s === 'saved' ? '✅ 저장 완료' : '💡 입력 2초 후 자동 저장');
+    },
+
+    /* ───────── 로고 로드 ───────── */
+
+    async loadLogoBase64() {
+        if (this._isLocalFile) { this._logoBase64 = null; return; }
+        try {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = './icons/icon-192.png'; });
+            const c = document.createElement('canvas');
+            c.width = img.width || 192; c.height = img.height || 192;
+            c.getContext('2d').drawImage(img, 0, 0);
+            this._logoBase64 = c.toDataURL('image/png');
+            const h = document.getElementById('headerLogo');
+            if (h) h.outerHTML = `<img src="./icons/icon-192.png" style="width:28px;height:28px;object-fit:contain;border-radius:6px;" alt="로고">`;
+        } catch(e) { this._logoBase64 = null; }
+    },
+
+    /* ───────── 서버 통신 ───────── */
+
+    /** 서버에서 전체 데이터 로드 */
+    async loadFromServer() {
+        if (this.isSyncing || this.aiGenerating) return;
+        try {
+            this.isSyncing = true;
+            // [개선1] 요청 토큰 포함
+            const r = await fetch(APP_CONFIG.API_URL + '?t=' + Date.now() + '&token=' + APP_CONFIG.REQUEST_TOKEN);
+            const d = await r.json();
+
+            // 날짜 형식 정규화
+            const se = d.map(i => {
+                let ds = i.date;
+                if (typeof ds === 'number') {
+                    const d = new Date(Math.round((ds - 25569) * 86400 * 1000));
+                    ds = this.formatDate(new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+                } else if (typeof ds === 'string' && ds.includes('T')) {
+                    const d = new Date(ds);
+                    const k = new Date(d.getTime() + 9 * 3600000);
+                    ds = this.formatDate(new Date(k.getUTCFullYear(), k.getUTCMonth(), k.getUTCDate()));
+                } else if (typeof ds === 'string') {
+                    ds = ds.substring(0, 10);
+                }
+                return {
+                    id: String(i.id), date: ds, title: i.title, dapt: i.dapt,
+                    subject: i.subject || '', content: i.content || ''
+                };
+            });
+
+            this.events = this.mergeEvents(se);
+
+            if (this.viewMode === 'meeting') {
+                this.renderMeetingCalendar();
+                if (!this.isMeetingInputActive() && !this.meetingInputFocused) this.syncMeetingInputsFromData();
+            } else if (!this.isEditing) {
+                this.render();
+            }
+        } catch(e) {
+            console.error('로드 오류:', e);
+        } finally {
+            this.isSyncing = false;
         }
     },
-    handleDiscussionInput(ta){this.isEditing=true;ta.value.trim()!==''&&!/^\d+\.\s*$/.test(ta.value.trim())?ta.classList.add('has-content'):ta.classList.remove('has-content');if(this.saveTimers['disc'])clearTimeout(this.saveTimers['disc']);this.saveTimers['disc']=setTimeout(()=>this.saveDiscussion(ta),2000);},
-    async saveDiscussion(ta){this.isEditing=false;let c=ta.value.trim();if(/^\d+\.\s*$/.test(c))c='';const monday=this.getMonday(this.currentDate),ds=this.formatDate(monday);const nid=`notice_${ds}_협의`,xi=this.events.findIndex(e=>e.id===nid);if(c===''){if(xi!==-1){this.events.splice(xi,1);await this.saveToServer('delete',{id:nid});}}else{const nn={id:nid,date:ds,title:c,dapt:'협의'};if(xi!==-1)this.events[xi]=nn;else this.events.push(nn);await this.saveToServer('add',nn);}},
 
-    moveMeetingCalendar(dir){this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth()+dir);this.renderMeetingCalendar();},
-    selectMeetingDate(s){this.meetingDate=this.parseLocalDate(s);this.meetingCalendarDate=this.parseLocalDate(s);this.updateMeetingPanelDate();this.renderMeetingCards();this.renderMeetingCalendar();},
-    updateMeetingPanelDate(){const el=document.getElementById('meetingPanelDate');if(!el)return;el.textContent=`${this.formatDate(this.meetingDate)} (${this.days[this.meetingDate.getDay()]})`;},
-    renderMeetingCalendar(){const yr=this.meetingCalendarDate.getFullYear(),mo=this.meetingCalendarDate.getMonth(),sel=this.formatDate(this.meetingDate);const fd=new Date(yr,mo,1).getDay(),ld=new Date(yr,mo+1,0).getDate(),pld=new Date(yr,mo,0).getDate();let h=`<div class="meeting-calendar-header"><button onclick="app.moveMeetingCalendar(-1)">&#9664;</button><div class="meeting-calendar-title">${yr}년 ${mo+1}월</div><button onclick="app.moveMeetingCalendar(1)">&#9654;</button></div><div class="meeting-calendar-body"><div class="meeting-calendar-grid">`;this.days.forEach(d=>{const c=d==='일'?'text-red-500':(d==='토'?'text-blue-500':'');h+=`<div class="meeting-calendar-day-header ${c}">${d}</div>`;});for(let i=fd-1;i>=0;i--)h+=`<div class="meeting-calendar-day other-month">${pld-i}</div>`;for(let d=1;d<=ld;d++){const ds=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,dow=new Date(yr,mo,d).getDay(),isSel=ds===sel,has=this.getMeetingsForDate(ds).length>0;let cls=`meeting-calendar-day${this.isToday(ds)?' today-border':''}`;if((dow===0||dow===6)&&!isSel)cls+=' weekend';if(isSel)cls+=' selected';if(has)cls+=' has-meeting';h+=`<div class="${cls}" onclick="app.selectMeetingDate('${ds}')">${d}</div>`;}const rem=7-(fd+ld)%7;if(rem<7)for(let d=1;d<=rem;d++)h+=`<div class="meeting-calendar-day other-month">${d}</div>`;h+='</div></div>';const c=document.getElementById('meetingCalendar');if(c)c.innerHTML=h;},
-    renderMeetingView(){const vp=document.getElementById('viewPort'),ds=this.formatDate(this.meetingDate),dow=this.days[this.meetingDate.getDay()];if(!vp.querySelector('.meeting-wrapper'))vp.innerHTML=`<div class="meeting-wrapper"><div class="meeting-cal-panel"><div id="meetingCalendar"></div></div><div class="meeting-input-panel"><div class="meeting-panel-title">📝 회의메모 <span id="meetingPanelDate" class="meeting-date-badge">${ds} (${dow})</span></div><div id="meetingCardsContainer"></div><button class="add-meeting-btn" onclick="app.addMeetingCard()">＋ 회의 추가</button><div id="meetingSaveIndicator" class="save-indicator">💡 입력 2초 후 자동 저장</div></div></div>`;this.meetingCalendarDate=new Date(this.meetingDate);this.renderMeetingCalendar();this.renderMeetingCards();},
-    renderMeetingCards(){const c=document.getElementById('meetingCardsContainer');if(!c||this.aiGenerating)return;const ds=this.formatDate(this.meetingDate),m=this.getMeetingsForDate(ds);c.innerHTML=m.length===0?this.buildCardHTML(null,ds,1,1):m.map((x,i)=>this.buildCardHTML(x,ds,i+1,m.length)).join('');},
-    buildCardHTML(md,ds,num){const mid=md?md.id:`__new__${ds}`,ss=(md?.subject||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'),sc=(md?.content||'').replace(/</g,'&lt;');return`<div class="meeting-card" data-mid="${mid}"><div class="meeting-card-header"><span class="meeting-card-num">회의 ${num}</span><span class="meeting-card-del" onclick="app.deleteMeetingCard('${mid}','${ds}')">🗑 삭제</span></div><label class="meeting-label">📋 회의 주제</label><input type="text" class="meeting-input ${md?.subject?'has-data':''}" data-mid="${mid}" data-field="subject" placeholder="예: 학생생활규정 개정 협의회" value="${ss}" oninput="app.handleCardInput(this)" onfocus="app.handleMeetingFocus()" onblur="app.handleMeetingBlur()"><label class="meeting-label"><span>📝 회의 내용 정리</span><span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end"><button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button><button class="pdf-btn" onclick="app.downloadPDF('${mid}')">📄 PDF 저장</button></span></label><div style="position:relative"><textarea class="meeting-textarea ${md?.content?'has-data':''}" data-mid="${mid}" data-field="content" oninput="app.handleCardInput(this)" onfocus="app.handleMeetingFocus()" onblur="app.handleMeetingBlur()">${sc}</textarea></div></div>`;},
-    addMeetingCard(){const ds=this.formatDate(this.meetingDate),nid=this.newMeetingId(ds),m=this.getMeetingsForDate(ds),c=document.getElementById('meetingCardsContainer');if(!c)return;const t=document.createElement('div');t.innerHTML=this.buildCardHTML(null,ds,m.length+1);const card=t.firstElementChild;card.dataset.mid=nid;card.querySelectorAll('[data-mid]').forEach(el=>el.dataset.mid=nid);card.querySelector('.meeting-card-del').setAttribute('onclick',`app.deleteMeetingCard('${nid}','${ds}')`);card.querySelector('.ai-generate-btn').setAttribute('onclick',`app.generateAIMeetingMinutes('${nid}')`);card.querySelector('.ai-generate-btn').dataset.mid=nid;c.appendChild(card);},
-    async deleteMeetingCard(mid,ds){if(mid.startsWith('__new__')){const c=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(c)c.remove();this.renumberCards();return;}const xi=this.events.findIndex(e=>e.id===mid);if(xi!==-1)this.events.splice(xi,1);this.localDeletes.add(mid);delete this.localChanges[mid];const c=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(c)c.remove();this.renumberCards();this.renderMeetingCalendar();await this.saveToServer('delete',{id:mid});},
-    renumberCards(){const c=document.getElementById('meetingCardsContainer');if(!c)return;c.querySelectorAll('.meeting-card').forEach((card,i)=>{const n=card.querySelector('.meeting-card-num');if(n)n.textContent=`회의 ${i+1}`;});},
-
-    getMonday(d){const dt=new Date(d),day=dt.getDay(),diff=dt.getDate()-day+(day===0?-6:1);return new Date(dt.getFullYear(),dt.getMonth(),diff);},
-    formatDate(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;},
-    async saveEvent(){const di=document.getElementById('inDate').value,ti=document.getElementById('inTitle').value,dp=document.getElementById('inDept').value;if(!di||!ti){alert('날짜와 내용을 입력하세요.');return;}const ne={id:Date.now().toString(),date:di,title:ti,dapt:dp};this.events.push(ne);this.currentDate=this.parseLocalDate(di);this.render();document.getElementById('inDate').value='';document.getElementById('inTitle').value='';await this.saveToServer('add',ne);},
-    async deleteEvent(id){if(!confirm('삭제하시겠습니까?'))return;this.events=this.events.filter(e=>e.id!==id);this.render();await this.saveToServer('delete',{id});this.closeModal();},
-    showDetail(ds){const modal=document.getElementById('detailModal'),md=document.getElementById('modalDate'),mc=document.getElementById('modalContent');const dow=this.days[this.parseLocalDate(ds).getDay()],h=this.getHoliday(ds);md.textContent=`${ds} (${dow})${h?' - '+h:''}`;mc.innerHTML='';const de=this.events.filter(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_'));const mtgs=this.getMeetingsForDate(ds);mtgs.forEach((m,i)=>{const lb=mtgs.length>1?` ${i+1}`:'';mc.innerHTML+=`<div style="background:#f0fdf4;padding:10px 14px;border-radius:10px;border-left:4px solid #16a34a;margin-bottom:8px;display:flex;align-items:center;gap:8px;"><span style="font-size:15px;">📝</span><span style="font-size:13px;font-weight:800;color:#15803d;">회의${lb}</span><span style="font-size:13px;color:#1e293b;font-weight:600;">${m.subject||'(제목 없음)'}</span></div>`;});if(de.length===0&&mtgs.length===0)mc.innerHTML="<div style='color:#94a3b8;font-size:13px;text-align:center;padding:12px 0;'>일정이 없습니다.</div>";else{const sd=this.viewMode==='weekly';de.forEach(e=>{const dc=this.deptColor(e.dapt),db=this.deptBg(e.dapt);mc.innerHTML+=`<div style="background:#f8fafc;padding:10px 14px;border-radius:10px;border-left:4px solid ${dc};margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;"><div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;"><span style="font-size:11px;font-weight:800;color:${dc};background:${db};padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;">${e.dapt}</span><span style="font-size:13px;color:#1e293b;font-weight:500;word-break:break-all;">${e.title}</span></div>${sd?`<span class="del-x flex-shrink-0" onclick="app.deleteEvent('${e.id}')">✕</span>`:''}</div>`;});}modal.style.display='flex';},
-    closeModal(){document.getElementById('detailModal').style.display='none';},
-    move(dir){if(this.viewMode==='yearly')this.currentDate.setFullYear(this.currentDate.getFullYear()+dir);else if(this.viewMode==='monthly')this.currentDate.setMonth(this.currentDate.getMonth()+dir);else if(this.viewMode==='meeting'){this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth()+dir);this.renderMeetingCalendar();return;}else this.currentDate.setDate(this.currentDate.getDate()+(dir*7));this.render();},
-    setView(mode){this.viewMode=mode;if(mode!=='meeting'){this.meetingInputFocused=false;this.isEditing=false;}this.render();},
-
-    renderYearly(){const by=2026;let h='<div class="year-view">';const months=[];for(let m=2;m<12;m++)months.push({year:by,month:m});for(let m=0;m<2;m++)months.push({year:by+1,month:m});for(const{year,month:m}of months){h+=`<div class="year-month"><div class="year-month-title">${year}년 ${m+1}월</div><div class="mini-calendar">`;this.days.forEach((w,wi)=>{const col=wi===0?'text-red-400':(wi===6?'text-blue-400':'text-slate-400');h+=`<div class="text-[9px] md:text-[11px] font-bold text-center ${col}" style="padding:2px 1px;">${w}</div>`;});const first=new Date(year,m,1).getDay(),last=new Date(year,m+1,0).getDate();for(let i=0;i<first;i++)h+='<div style="min-width:0"></div>';for(let d=1;d<=last;d++){const ds=`${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,di=new Date(year,m,d).getDay(),hol=this.getHoliday(ds),isSp=this.isSpecialHoliday(ds),isW=di===0||di===6,cc=di===0||hol?'text-sun':(di===6?'text-sat':'text-slate-600');const evts=this.sortByDept(this.events.filter(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_')));let ev='';if(hol){const s=hol.length>5?hol.substring(0,4)+'…':hol;ev+=`<div class="mini-ev" style="color:#dc2626;">${s}</div>`;}const sl=hol?1:2;evts.slice(0,sl).forEach(e=>{const t=e.title.length>6?e.title.substring(0,5)+'…':e.title;ev+=`<div class="mini-ev" style="color:#1e293b;background:${this.deptBg(e.dapt)};border-left:2px solid ${this.deptColor(e.dapt)};">${t}</div>`;});if(evts.length>sl)ev+=`<div class="mini-ev" style="color:#64748b;">+${evts.length-sl}</div>`;const cc2=(hol||isW)?'weekend':(evts.length>0?'has-event':'');h+=`<div class="mini-day ${cc2} ${cc} ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(ds)?'today-border':''}" onclick="app.showDetail('${ds}')"><span>${d}</span>${ev}</div>`;}h+='</div></div>';}return h+'</div>';},
-
-    renderMonthly(){const yr=this.currentDate.getFullYear(),mo=this.currentDate.getMonth();let h='<div class="calendar-grid">';this.days.forEach(w=>h+=`<div class="bg-slate-50 p-2 text-center text-[10px] md:text-sm font-bold text-slate-400">${w}</div>`);const first=new Date(yr,mo,1).getDay(),last=new Date(yr,mo+1,0).getDate();for(let i=0;i<first;i++)h+='<div class="day-cell bg-slate-50/30"></div>';for(let d=1;d<=last;d++){const ds=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,di=new Date(yr,mo,d).getDay(),hol=this.getHoliday(ds),isSp=this.isSpecialHoliday(ds),isW=di===0||di===6,cc=di===0||hol?'text-sun':(di===6?'text-sat':'text-slate-400');h+=`<div class="day-cell ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(ds)?'today-border':''}" onclick="app.showDetail('${ds}')"><div class="day-cell-header ${cc}">${d}</div>`;if(hol)h+=`<div class="day-cell-holiday">${hol}</div>`;h+='<div class="day-cell-events">';const evts=this.sortByDept(this.events.filter(e=>e.date===ds&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_')));const mx=window.innerWidth<768?2:3;evts.slice(0,mx).forEach(e=>{const t=window.innerWidth<768?e.title.substring(0,4):e.title;h+=`<div class="event-item" style="color:#1e293b;border-left-color:${this.deptColor(e.dapt)};" onclick="event.stopPropagation();app.showDetail('${ds}')" title="${e.title}">${t}</div>`;});if(evts.length>mx)h+=`<div class="event-more" onclick="event.stopPropagation();app.showDetail('${ds}')">+${evts.length-mx}개 더</div>`;h+='</div></div>';}return h+'</div>';},
-
-    renderWeekly(){const monday=this.getMonday(this.currentDate),ds=this.formatDate(monday);if(!this.isEditing){document.querySelectorAll('.notice-input').forEach(inp=>{const dept=inp.dataset.dept,n=this.events.find(e=>e.id===`notice_${ds}_${dept}`);inp.value=n?n.title:'';this.updateInputStyle(inp);});const di=document.getElementById('discussionInput');if(di){const dn=this.events.find(e=>e.id===`notice_${ds}_협의`);di.value=dn?dn.title:'';const has=di.value.trim()!==''&&!/^\d+\.\s*$/.test(di.value.trim());has?di.classList.add('has-content'):di.classList.remove('has-content');}}let h='<div class="flex flex-col gap-2">';for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);const dStr=this.formatDate(d),hol=this.getHoliday(dStr),isSp=this.isSpecialHoliday(dStr),isW=d.getDay()===0||d.getDay()===6,dow=this.days[d.getDay()],cc=d.getDay()===0||hol?'text-sun':(d.getDay()===6?'text-sat':'text-green-800');h+=`<div class="week-item ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(dStr)?'today-border':''} p-3 rounded-xl border flex items-center shadow-sm cursor-pointer hover:shadow-md" onclick="app.showDetail('${dStr}')"><div class="w-16 md:w-20 week-date-label font-black ${cc} border-r mr-3 pr-2 flex-shrink-0"><div>${d.getDate()}일(${dow})</div>`;if(hol)h+=`<div class="holiday-badge">${hol}</div>`;h+=`</div><div class="flex-1 min-w-0">`;this.sortByDept(this.events.filter(e=>e.date===dStr&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_'))).forEach(e=>{h+=`<div class="event-item-week dept-${e.dapt}" onclick="event.stopPropagation()"><span class="text-slate-800 font-medium flex-1 min-w-0">${e.title} <span class="dept-badge dept-${e.dapt}">${e.dapt}</span></span><span class="del-x flex-shrink-0" onclick="app.deleteEvent('${e.id}')">✕</span></div>`;});h+='</div></div>';}return h+'</div>';},
-
-    /* ========== 주간계획 PDF (협의 내용 포함) ========== */
-    async downloadWeeklyPDF(){
-        const btn=document.getElementById('weeklyPdfBtnEl');
-        if(btn){btn.disabled=true;btn.textContent='⏳ PDF 생성 중...';}
-        try{
-            const monday=this.getMonday(this.currentDate),mondayStr=this.formatDate(monday);
-            const wdates=[];for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);wdates.push(d);}
-            const fri=wdates[4],rangeStr=`${monday.getFullYear()}년 ${monday.getMonth()+1}월 ${monday.getDate()}일(월) ~ ${fri.getMonth()+1}월 ${fri.getDate()}일(금)`;const weekdays=wdates.filter(d=>d.getDay()!==0&&d.getDay()!==6);
-            const noticeCfg=[{key:'교장',label:'교장'},{key:'교감',label:'교감'},{key:'행정실',label:'행정실장'},{key:'교무부',label:'교무부'},{key:'연구부',label:'연구부'},{key:'학생부',label:'학생부'},{key:'창의인성부',label:'창의인성부'},{key:'학년실',label:'학년실'}];
-            const notices=noticeCfg.map(nc=>{const ev=this.events.find(e=>e.id===`notice_${mondayStr}_${nc.key}`);return{label:nc.label,text:ev?ev.title:''};}).filter(n=>n.text.trim()!=='');
-            const discEv=this.events.find(e=>e.id===`notice_${mondayStr}_협의`);
-            let discText=discEv?discEv.title.trim():'';
-            if(/^\d+\.\s*$/.test(discText))discText='';
-            const logoTag=this._logoBase64?`<img src="${this._logoBase64}" style="width:38px;height:38px;object-fit:contain;border-radius:8px;margin-right:10px;vertical-align:middle;">`:'<span style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:#dcfce7;border-radius:8px;font-size:20px;margin-right:10px;">🏫</span>';
-            const dayNames=['일','월','화','수','목','금','토'];
-            let rowsHtml='';
-            for(const d of weekdays){const dStr=this.formatDate(d),hol=this.getHoliday(dStr),isSp=this.isSpecialHoliday(dStr),isW=false,rowBg=(hol||isSp)?'#fff1f2':'white',dateColor=d.getDay()===0||hol?'#dc2626':(d.getDay()===6?'#2563eb':'#15803d'),dayLabel=`${d.getDate()}일(${dayNames[d.getDay()]})`;const evts=this.sortByDept(this.events.filter(e=>e.date===dStr&&!e.id.startsWith('notice_')&&!e.id.startsWith('meeting_')));let evHtml='';if(hol)evHtml+=`<span style="display:inline-block;background:#fee2e2;color:#dc2626;font-weight:800;font-size:11px;padding:2px 8px;border-radius:8px;margin-bottom:4px;">${hol}</span><br>`;if(evts.length===0&&!hol)evHtml='<span style="color:#cbd5e1;font-size:12px;">일정 없음</span>';evts.forEach(ev=>{evHtml+=`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;padding:3px 7px;background:#f8fafc;border-left:3px solid ${this.deptColor(ev.dapt)};border-radius:4px;"><span style="font-size:10px;font-weight:800;color:${this.deptColor(ev.dapt)};background:${this.deptBg(ev.dapt)};padding:1px 6px;border-radius:8px;white-space:nowrap;">${ev.dapt}</span><span style="font-size:12px;color:#1e293b;font-weight:500;word-break:break-all;">${ev.title}</span></div>`;});rowsHtml+=`<tr><td style="width:88px;padding:7px 10px;background:${rowBg};border-bottom:1px solid #e2e8f0;border-right:2px solid #dcfce7;vertical-align:top;"><div style="font-size:13px;font-weight:900;color:${dateColor};">${dayLabel}</div></td><td style="padding:7px 10px;background:${rowBg};border-bottom:1px solid #e2e8f0;vertical-align:top;">${evHtml}</td></tr>`;}
-
-            /* 협의 내용 PDF */
-            let discHtml='';
-            if(discText){
-                const escaped=discText.replace(/</g,'&lt;');
-                const lines=escaped.split('\n');
-                let items='';
-                lines.forEach(line=>{const m=line.match(/^(\d+)\.\s*(.*)/);if(m&&m[2].trim())items+=`<div style="display:flex;gap:8px;margin-bottom:6px;padding:6px 10px;background:#fffef5;border-radius:6px;border-left:3px solid #f59e0b;"><span style="font-weight:900;color:#b45309;min-width:22px;flex-shrink:0;">${m[1]}.</span><span style="color:#78350f;font-weight:500;">${m[2]}</span></div>`;else if(line.trim())items+=`<div style="padding:3px 10px;color:#78350f;">${line}</div>`;});
-                discHtml=`<div style="margin-top:18px;"><div style="font-size:13px;font-weight:900;color:#b45309;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #fde68a;">💬 협의 내용</div><div style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;padding:12px 14px;">${items}</div></div>`;
-            }
-
-            let noticeHtml='';
-            if(notices.length>0){noticeHtml=`<div style="margin-top:18px;"><div style="font-size:13px;font-weight:900;color:#15803d;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #dcfce7;">📢 주간 안내사항</div><table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">`;notices.forEach((n,i)=>{const bg=i%2===0?'#f8fafc':'white';noticeHtml+=`<tr><td style="width:76px;padding:7px 10px;background:#f0fdf4;border-bottom:1px solid #e2e8f0;border-right:2px solid #dcfce7;font-size:11px;font-weight:800;color:#15803d;white-space:nowrap;vertical-align:top;">${n.label}</td><td style="padding:7px 10px;background:${bg};border-bottom:1px solid #e2e8f0;font-size:12px;color:#334155;line-height:1.7;white-space:pre-wrap;word-break:break-all;">${n.text.replace(/</g,'&lt;')}</td></tr>`;});noticeHtml+='</table></div>';}
-
-            const tpl=document.getElementById('weeklyPdfTemplate');tpl.style.display='block';
-            tpl.innerHTML=`<div style="width:794px;background:white;padding:0;"><div style="background:white;color:#1e293b;padding:15px 26px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #16a34a;"><div style="display:flex;align-items:center;font-size:17px;font-weight:900;color:#15803d;">${logoTag}구례중학교 주간 계획</div><div style="font-size:11px;color:#64748b;text-align:right;line-height:1.6;">${rangeStr}</div></div><div style="padding:18px 26px 26px;"><div style="font-size:13px;font-weight:900;color:#15803d;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #dcfce7;">📅 주간 일정</div><table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">${rowsHtml}</table>${discHtml}${noticeHtml}<div style="margin-top:20px;padding-top:10px;border-top:1px solid #e2e8f0;text-align:center;font-size:10px;color:#94a3b8;">구례중학교 | 주간계획 | ${rangeStr}</div></div></div>`;
-            const canvas=await html2canvas(tpl,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:794});tpl.style.display='none';tpl.innerHTML='';
-            const{jsPDF}=window.jspdf,imgData=canvas.toDataURL('image/png'),pdfW=210,pageH=297,pdfH=(canvas.height*pdfW)/canvas.width;
-            const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-            if(pdfH<=pageH)doc.addImage(imgData,'PNG',0,0,pdfW,pdfH);else{let yo=0;while(yo<pdfH){if(yo>0)doc.addPage();doc.addImage(imgData,'PNG',0,-yo,pdfW,pdfH);yo+=pageH;}}
-            doc.save(`구례중_주간계획_${mondayStr}.pdf`);this.showToast('✅ 주간계획 PDF가 저장되었습니다!','success');
-        }catch(err){console.error(err);this.showToast('❌ PDF 생성 실패: '+err.message,'error');}
-        finally{if(btn){btn.disabled=false;btn.textContent='📄 주간계획 PDF 출력';}}
+    /** 로컬 변경사항과 서버 데이터를 병합 */
+    mergeEvents(se) {
+        const f = se.filter(e => !this.localDeletes.has(String(e.id)));
+        const m = [...f];
+        Object.keys(this.localChanges).forEach(id => {
+            const l = this.localChanges[id];
+            const i = m.findIndex(e => String(e.id) === String(id));
+            if (i !== -1) m[i] = { ...m[i], ...l };
+            else m.push(l);
+        });
+        return m;
     },
 
-    handleCardInput(inp){this.isEditing=true;this.meetingInputFocused=true;this.updateMeetingInputStyle(inp);this.showSaveIndicator('saving');if(this.saveTimers['meeting'])clearTimeout(this.saveTimers['meeting']);this.saveTimers['meeting']=setTimeout(()=>this.saveAllCards(),2000);},
-    handleMeetingFocus(){this.meetingInputFocused=true;this.isEditing=true;},
-    handleMeetingBlur(){setTimeout(()=>{if(!this.isMeetingInputActive()){this.meetingInputFocused=false;this.isEditing=false;}},300);},
-    updateMeetingInputStyle(inp){inp.value.trim()!==''?inp.classList.add('has-data'):inp.classList.remove('has-data');},
-    async saveAllCards(){if(!this.isMeetingInputActive()){this.isEditing=false;this.meetingInputFocused=false;}const ds=this.formatDate(this.meetingDate),c=document.getElementById('meetingCardsContainer');if(!c)return;const cards=c.querySelectorAll('.meeting-card');let cn=1;for(const card of cards){const omid=card.dataset.mid,sub=card.querySelector('[data-field="subject"]')?.value.trim()||'',con=card.querySelector('[data-field="content"]')?.value.trim()||'';if(!sub&&!con){if(!omid.startsWith('__new__')){const xi=this.events.findIndex(e=>e.id===omid);if(xi!==-1)this.events.splice(xi,1);this.localDeletes.add(omid);delete this.localChanges[omid];await this.saveToServer('delete',{id:omid});}continue;}let mid=omid;if(omid.startsWith('__new__')){mid=`meeting_${ds}_${cn}`;card.dataset.mid=mid;card.querySelectorAll('[data-mid]').forEach(el=>el.dataset.mid=mid);card.querySelector('.meeting-card-del').setAttribute('onclick',`app.deleteMeetingCard('${mid}','${ds}')`);const ab=card.querySelector('.ai-generate-btn');if(ab){ab.setAttribute('onclick',`app.generateAIMeetingMinutes('${mid}')`);ab.dataset.mid=mid;}}const md={id:mid,date:ds,title:sub||'(제목 없음)',dapt:'meeting',subject:sub,content:con};const xi=this.events.findIndex(e=>e.id===mid);if(xi!==-1)this.events[xi]=md;else this.events.push(md);this.localDeletes.delete(mid);await this.saveToServer('add',md);cn++;}this.renderMeetingCalendar();},
-    async downloadPDF(mid){const card=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(!card)return;const sub=card.querySelector('[data-field="subject"]')?.value.trim()||'회의록',con=card.querySelector('[data-field="content"]')?.value.trim()||'';if(!con){this.showToast('📝 내용을 먼저 입력해주세요.','error');return;}const btn=card.querySelector('.pdf-btn');if(btn){btn.disabled=true;btn.textContent='⏳ 생성 중...';}try{const ds=this.formatDate(this.meetingDate),dow=this.days[this.meetingDate.getDay()],logoHtml=this._logoBase64?`<img src="${this._logoBase64}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;vertical-align:middle;margin-right:10px;">`:'<span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#dcfce7;border-radius:8px;font-size:18px;margin-right:10px;">🏫</span>';const pd=document.createElement('div');pd.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:14px;line-height:1.8;color:#1e293b;';pd.innerHTML=`<div style="background:white;color:#1e293b;padding:18px 32px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #16a34a;"><span style="font-size:18px;font-weight:900;display:flex;align-items:center;color:#15803d;">${logoHtml}구례중학교 회의록</span><span style="font-size:13px;color:#64748b;">${ds} (${dow})</span></div><div style="padding:28px 32px 32px;"><h1 style="font-size:22px;font-weight:900;margin:0 0 12px;line-height:1.4;">${sub}</h1><div style="height:3px;background:linear-gradient(90deg,#16a34a,#86efac);border-radius:2px;margin-bottom:20px;"></div><div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:13px;color:#15803d;"><div style="margin-bottom:6px;">📅 <strong>회의 일자</strong> : ${ds} (${dow})</div><div>📋 <strong>회의 주제</strong> : ${sub}</div></div><div style="font-size:15px;font-weight:900;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;">📝 회의 내용</div><div style="font-size:14px;color:#334155;line-height:2;white-space:pre-wrap;word-break:break-all;">${con.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div style="margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8;">구례중학교 | 회의록 | ${ds}</div></div>`;document.body.appendChild(pd);const cv=await html2canvas(pd,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false});document.body.removeChild(pd);const{jsPDF}=window.jspdf,img=cv.toDataURL('image/png'),pW=210,pH=(cv.height*pW)/cv.width,pgH=297,doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});if(pH<=pgH)doc.addImage(img,'PNG',0,0,pW,pH);else{let yo=0;while(yo<pH){if(yo>0)doc.addPage();doc.addImage(img,'PNG',0,-yo,pW,pH);yo+=pgH;}}doc.save(`회의록_${ds}_${(sub||'무제').replace(/[\/\\?%*:|"<>]/g,'_')}.pdf`);this.showToast('✅ PDF가 저장되었습니다!','success');}catch(err){this.showToast('❌ PDF 생성 실패: '+err.message,'error');}finally{if(btn){btn.disabled=false;btn.textContent='📄 PDF 저장';}}},
-    async generateAIMeetingMinutes(mid){const card=document.querySelector(`.meeting-card[data-mid="${mid}"]`);if(!card)return;const se=card.querySelector('[data-field="subject"]'),ce=card.querySelector('[data-field="content"]'),ab=card.querySelector('.ai-generate-btn'),sub=se.value.trim(),con=ce.value.trim();if(!con){this.showToast('📝 모임 내용을 먼저 입력해주세요.','error');return;}if(mid.startsWith('__new__')){await this.saveAllCards();mid=card.dataset.mid;}this.aiGenerating=true;if(ab){ab.disabled=true;ab.innerHTML='⏳ AI 분석중...';}const tw=ce.parentElement,ov=document.createElement('div');ov.className='ai-overlay';ov.innerHTML='<div class="ai-spinner">🤖 AI가 회의록을 작성하고 있습니다...</div>';tw.appendChild(ov);ce.style.opacity='0.4';try{const r=await fetch(this.API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'generateAI',subject:sub,content:con,meetingDate:this.formatDate(this.meetingDate)})});const rd=await r.json();if(rd.success&&rd.minutes){ce.value=rd.minutes;ce.classList.add('has-data');const ud={id:mid,date:this.formatDate(this.meetingDate),title:sub||'(제목 없음)',dapt:'meeting',subject:sub,content:rd.minutes};const xi=this.events.findIndex(e=>e.id===mid);if(xi!==-1)this.events[xi]=ud;else this.events.push(ud);this.localChanges[mid]=ud;await this.saveToServer('add',ud);this.showToast('✅ AI 회의록 완성!','success');}}catch(e){console.error('AI 오류:',e);}finally{this.aiGenerating=false;if(ab){ab.disabled=false;ab.innerHTML='🤖 AI 회의록';}ov.remove();ce.style.opacity='1';}},
+    /** 서버에 단건 저장/삭제 */
+    async saveToServer(a, d) {
+        // [개선1] 로컬 캐시 먼저 업데이트
+        if (a === 'add') {
+            this.localChanges[d.id] = d;
+            this.localDeletes.delete(d.id);
+        } else if (a === 'delete') {
+            delete this.localChanges[d.id];
+            this.localDeletes.add(d.id);
+        }
 
-    render(){const vp=document.getElementById('viewPort'),tt=document.getElementById('titleText'),np=document.getElementById('noticePort'),eis=document.getElementById('eventInputSection'),pdfBar=document.getElementById('weeklyPdfBar'),dp=document.getElementById('discussionPort'),yr=this.currentDate.getFullYear(),mo=this.currentDate.getMonth()+1;
-        if(this.viewMode==='meeting'){tt.textContent='📝 회의메모';np.classList.add('hidden');eis.classList.add('hidden');pdfBar.classList.add('hidden');dp.classList.add('hidden');this.renderMeetingView();}
-        else{eis.classList.remove('hidden');if(vp.querySelector('.meeting-wrapper'))vp.innerHTML='';
-            if(this.viewMode==='yearly'){tt.textContent='2026년 3월 ~ 2027년 2월 학사력';vp.innerHTML=this.renderYearly();np.classList.add('hidden');pdfBar.classList.add('hidden');dp.classList.add('hidden');}
-            else if(this.viewMode==='monthly'){tt.textContent=`${yr}년 ${mo}월`;vp.innerHTML=this.renderMonthly();np.classList.add('hidden');pdfBar.classList.add('hidden');dp.classList.add('hidden');}
-            else{tt.textContent=`${yr}년 ${mo}월 주간계획`;vp.innerHTML=this.renderWeekly();dp.classList.remove('hidden');np.classList.remove('hidden');pdfBar.classList.remove('hidden');}}},
-    async init(){await this.loadLogoBase64();await this.loadFromServer();this.render();setInterval(()=>{if(!this.isEditing&&!this.meetingInputFocused)this.loadFromServer();},10000);}
+        if (this.savingInProgress) {
+            this.pendingSave = { action: a, data: d };
+            return;
+        }
+        this.savingInProgress = true;
+        try {
+            // [개선1] 요청 토큰 포함
+            const r = await fetch(APP_CONFIG.API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ action: a, token: APP_CONFIG.REQUEST_TOKEN, ...d })
+            });
+            const res = await r.json();
+            if (res.success) {
+                const sid = d.id;
+                setTimeout(() => {
+                    delete this.localChanges[sid];
+                    this.localDeletes.delete(sid);
+                }, 15000);
+                this.showSaveIndicator('saved');
+            }
+        } catch(e) {
+            console.error('저장 오류:', e);
+        } finally {
+            this.savingInProgress = false;
+            if (this.pendingSave) {
+                const p = this.pendingSave;
+                this.pendingSave = null;
+                await this.saveToServer(p.action, p.data);
+            }
+        }
+    },
+
+    /* ───────── 이벤트 CRUD ───────── */
+
+    /** 새 일정 저장 */
+    async saveEvent() {
+        const di = document.getElementById('inDate').value;
+        const ti = document.getElementById('inTitle').value;
+        const dp = document.getElementById('inDept').value;
+        if (!di || !ti) { alert('날짜와 내용을 입력하세요.'); return; }
+        const ne = { id: Date.now().toString(), date: di, title: ti, dapt: dp };
+        this.events.push(ne);
+        this.currentDate = this.parseLocalDate(di);
+        this.render();
+        document.getElementById('inDate').value = '';
+        document.getElementById('inTitle').value = '';
+        await this.saveToServer('add', ne);
+    },
+
+    /** 일정 삭제 */
+    async deleteEvent(id) {
+        if (!confirm('삭제하시겠습니까?')) return;
+        this.events = this.events.filter(e => e.id !== id);
+        this.render();
+        await this.saveToServer('delete', { id });
+        this.closeModal();
+    },
+
+    /* ── [개선5] 인라인 수정 ── */
+
+    /** 주간뷰 이벤트 아이템의 수정 폼 토글 */
+    toggleEditForm(id) {
+        const form = document.getElementById('edit-form-' + id);
+        if (!form) return;
+        const isOpen = form.classList.contains('open');
+        // 다른 모든 수정 폼 닫기
+        document.querySelectorAll('.edit-inline-form.open').forEach(f => f.classList.remove('open'));
+        if (!isOpen) form.classList.add('open');
+    },
+
+    /** 인라인 수정 저장 */
+    async saveEditForm(id) {
+        const titleInput = document.getElementById('edit-title-' + id);
+        const deptSelect = document.getElementById('edit-dept-' + id);
+        if (!titleInput || !deptSelect) return;
+
+        const newTitle = titleInput.value.trim();
+        const newDept = deptSelect.value;
+        if (!newTitle) { this.showToast('내용을 입력하세요.', 'error'); return; }
+
+        const idx = this.events.findIndex(e => e.id === id);
+        if (idx === -1) return;
+        this.events[idx] = { ...this.events[idx], title: newTitle, dapt: newDept };
+        await this.saveToServer('add', this.events[idx]);
+        this.render();
+        this.showToast('✅ 수정 완료!', 'success');
+    },
+
+    /** 인라인 수정 취소 */
+    cancelEditForm(id) {
+        const form = document.getElementById('edit-form-' + id);
+        if (form) form.classList.remove('open');
+    },
+
+    /* ───────── 모달 ───────── */
+
+    showDetail(ds) {
+        const modal = document.getElementById('detailModal');
+        const md = document.getElementById('modalDate');
+        const mc = document.getElementById('modalContent');
+        const dow = this.days[this.parseLocalDate(ds).getDay()];
+        const h = this.getHoliday(ds);
+        md.textContent = `${ds} (${dow})${h ? ' - ' + h : ''}`;
+        mc.innerHTML = '';
+        const de = this.events.filter(e => e.date === ds && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'));
+        const mtgs = this.getMeetingsForDate(ds);
+        mtgs.forEach((m, i) => {
+            const lb = mtgs.length > 1 ? ` ${i+1}` : '';
+            mc.innerHTML += `<div style="background:#f0fdf4;padding:10px 14px;border-radius:10px;border-left:4px solid #16a34a;margin-bottom:8px;display:flex;align-items:center;gap:8px;"><span style="font-size:15px;">📝</span><span style="font-size:13px;font-weight:800;color:#15803d;">회의${lb}</span><span style="font-size:13px;color:#1e293b;font-weight:600;">${m.subject||'(제목 없음)'}</span></div>`;
+        });
+        if (de.length === 0 && mtgs.length === 0) {
+            mc.innerHTML = "<div style='color:#94a3b8;font-size:13px;text-align:center;padding:12px 0;'>일정이 없습니다.</div>";
+        } else {
+            const sd = this.viewMode === 'weekly';
+            de.forEach(e => {
+                const dc = this.deptColor(e.dapt), db = this.deptBg(e.dapt);
+                mc.innerHTML += `<div style="background:#f8fafc;padding:10px 14px;border-radius:10px;border-left:4px solid ${dc};margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;"><div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;"><span style="font-size:11px;font-weight:800;color:${dc};background:${db};padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;">${e.dapt}</span><span style="font-size:13px;color:#1e293b;font-weight:500;word-break:break-all;">${e.title}</span></div>${sd?`<span class="del-x flex-shrink-0" onclick="app.deleteEvent('${e.id}')">✕</span>`:''}</div>`;
+            });
+        }
+        modal.style.display = 'flex';
+    },
+
+    closeModal() { document.getElementById('detailModal').style.display = 'none'; },
+
+    /* ───────── 뷰 전환 ───────── */
+
+    move(dir) {
+        if (this.viewMode === 'yearly') {
+            // 연간 뷰는 yearNavBar 버튼으로 처리하므로 월 이동은 무시
+            return;
+        } else if (this.viewMode === 'monthly') {
+            this.currentDate.setMonth(this.currentDate.getMonth() + dir);
+        } else if (this.viewMode === 'meeting') {
+            this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth() + dir);
+            this.renderMeetingCalendar();
+            return;
+        } else {
+            this.currentDate.setDate(this.currentDate.getDate() + (dir * 7));
+        }
+        this.render();
+    },
+
+    setView(mode) {
+        this.viewMode = mode;
+        if (mode !== 'meeting') {
+            this.meetingInputFocused = false;
+            this.isEditing = false;
+        }
+        this.render();
+    },
+
+    /* ── [개선4] 연간 학사력 학년도 네비게이션 ── */
+
+    /** 학년도 이동 */
+    moveSchoolYear(dir) {
+        this.currentSchoolYear += dir;
+        this.render();
+    },
+
+    /* ───────── 렌더러 ───────── */
+
+    render() {
+        const vp = document.getElementById('viewPort');
+        const tt = document.getElementById('titleText');
+        const np = document.getElementById('noticePort');
+        const eis = document.getElementById('eventInputSection');
+        const pdfBar = document.getElementById('weeklyPdfBar');
+        const dp = document.getElementById('discussionPort');
+        const yearNavBar = document.getElementById('yearNavBar');
+        const yr = this.currentDate.getFullYear();
+        const mo = this.currentDate.getMonth() + 1;
+
+        // 연간 네비 숨김 기본
+        yearNavBar.classList.add('hidden');
+
+        if (this.viewMode === 'meeting') {
+            tt.textContent = '📝 회의메모';
+            np.classList.add('hidden');
+            eis.classList.add('hidden');
+            pdfBar.classList.add('hidden');
+            dp.classList.add('hidden');
+            this.renderMeetingView();
+        } else {
+            eis.classList.remove('hidden');
+            if (vp.querySelector('.meeting-wrapper')) vp.innerHTML = '';
+
+            if (this.viewMode === 'yearly') {
+                // [개선4] 학년도 라벨 업데이트
+                const sy = this.currentSchoolYear;
+                tt.textContent = `${sy}학년도 학사력 (${sy}년 3월 ~ ${sy+1}년 2월)`;
+                document.getElementById('schoolYearLabel').textContent = `${sy}학년도`;
+                yearNavBar.classList.remove('hidden');
+                vp.innerHTML = this.renderYearly();
+                np.classList.add('hidden');
+                pdfBar.classList.add('hidden');
+                dp.classList.add('hidden');
+            } else if (this.viewMode === 'monthly') {
+                tt.textContent = `${yr}년 ${mo}월`;
+                vp.innerHTML = this.renderMonthly();
+                np.classList.add('hidden');
+                pdfBar.classList.add('hidden');
+                dp.classList.add('hidden');
+            } else {
+                tt.textContent = `${yr}년 ${mo}월 주간계획`;
+                vp.innerHTML = this.renderWeekly();
+                dp.classList.remove('hidden');
+                np.classList.remove('hidden');
+                pdfBar.classList.remove('hidden');
+            }
+        }
+    },
+
+    /* ── [개선4] 연간 학사력 (학년도 기반, 무제한 연장) ── */
+    renderYearly() {
+        const sy = this.currentSchoolYear;
+        // 학년도: sy년 3월 ~ (sy+1)년 2월 → 12개월
+        const months = [];
+        for (let m = 2; m < 12; m++) months.push({ year: sy, month: m });    // 3~12월
+        for (let m = 0; m < 2; m++) months.push({ year: sy + 1, month: m }); // 1~2월
+
+        let h = '<div class="year-view">';
+        for (const { year, month: m } of months) {
+            h += `<div class="year-month"><div class="year-month-title">${year}년 ${m+1}월</div><div class="mini-calendar">`;
+            this.days.forEach((w, wi) => {
+                const col = wi === 0 ? 'text-red-400' : (wi === 6 ? 'text-blue-400' : 'text-slate-400');
+                h += `<div class="text-[9px] md:text-[11px] font-bold text-center ${col}" style="padding:2px 1px;">${w}</div>`;
+            });
+            const first = new Date(year, m, 1).getDay();
+            const last = new Date(year, m + 1, 0).getDate();
+            for (let i = 0; i < first; i++) h += '<div style="min-width:0"></div>';
+            for (let d = 1; d <= last; d++) {
+                const ds = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const di = new Date(year, m, d).getDay();
+                const hol = this.getHoliday(ds);
+                const isSp = this.isSpecialHoliday(ds);
+                const isW = di === 0 || di === 6;
+                const cc = di === 0 || hol ? 'text-sun' : (di === 6 ? 'text-sat' : 'text-slate-600');
+                const evts = this.sortByDept(this.events.filter(e => e.date === ds && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')));
+                let ev = '';
+                if (hol) {
+                    const s = hol.length > 5 ? hol.substring(0, 4) + '…' : hol;
+                    ev += `<div class="mini-ev" style="color:#dc2626;">${s}</div>`;
+                }
+                const sl = hol ? 1 : 2;
+                evts.slice(0, sl).forEach(e => {
+                    const t = e.title.length > 6 ? e.title.substring(0, 5) + '…' : e.title;
+                    ev += `<div class="mini-ev" style="color:#1e293b;background:${this.deptBg(e.dapt)};border-left:2px solid ${this.deptColor(e.dapt)};">${t}</div>`;
+                });
+                if (evts.length > sl) ev += `<div class="mini-ev" style="color:#64748b;">+${evts.length - sl}</div>`;
+                const cc2 = (hol || isW) ? 'weekend' : (evts.length > 0 ? 'has-event' : '');
+                h += `<div class="mini-day ${cc2} ${cc} ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(ds)?'today-border':''}" onclick="app.showDetail('${ds}')"><span>${d}</span>${ev}</div>`;
+            }
+            h += '</div></div>';
+        }
+        return h + '</div>';
+    },
+
+    /* ── 월간 보기 ── */
+    renderMonthly() {
+        const yr = this.currentDate.getFullYear(), mo = this.currentDate.getMonth();
+        let h = '<div class="calendar-grid">';
+        this.days.forEach(w => h += `<div class="bg-slate-50 p-2 text-center text-[10px] md:text-sm font-bold text-slate-400">${w}</div>`);
+        const first = new Date(yr, mo, 1).getDay(), last = new Date(yr, mo + 1, 0).getDate();
+        for (let i = 0; i < first; i++) h += '<div class="day-cell bg-slate-50/30"></div>';
+        for (let d = 1; d <= last; d++) {
+            const ds = `${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const di = new Date(yr, mo, d).getDay();
+            const hol = this.getHoliday(ds), isSp = this.isSpecialHoliday(ds);
+            const isW = di === 0 || di === 6;
+            const cc = di === 0 || hol ? 'text-sun' : (di === 6 ? 'text-sat' : 'text-slate-400');
+            h += `<div class="day-cell ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(ds)?'today-border':''}" onclick="app.showDetail('${ds}')"><div class="day-cell-header ${cc}">${d}</div>`;
+            if (hol) h += `<div class="day-cell-holiday">${hol}</div>`;
+            h += '<div class="day-cell-events">';
+            const evts = this.sortByDept(this.events.filter(e => e.date === ds && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')));
+            const mx = window.innerWidth < 768 ? 2 : 3;
+            evts.slice(0, mx).forEach(e => {
+                const t = window.innerWidth < 768 ? e.title.substring(0, 4) : e.title;
+                h += `<div class="event-item" style="color:#1e293b;border-left-color:${this.deptColor(e.dapt)};" onclick="event.stopPropagation();app.showDetail('${ds}')" title="${e.title}">${t}</div>`;
+            });
+            if (evts.length > mx) h += `<div class="event-more" onclick="event.stopPropagation();app.showDetail('${ds}')">+${evts.length - mx}개 더</div>`;
+            h += '</div></div>';
+        }
+        return h + '</div>';
+    },
+
+    /* ── [개선5] 주간 보기 (인라인 수정 포함) ── */
+    renderWeekly() {
+        const monday = this.getMonday(this.currentDate);
+        const ds = this.formatDate(monday);
+
+        // 안내사항 입력창 동기화
+        if (!this.isEditing) {
+            document.querySelectorAll('.notice-input').forEach(inp => {
+                const dept = inp.dataset.dept;
+                const n = this.events.find(e => e.id === `notice_${ds}_${dept}`);
+                inp.value = n ? n.title : '';
+                this.updateInputStyle(inp);
+            });
+            const di = document.getElementById('discussionInput');
+            if (di) {
+                const dn = this.events.find(e => e.id === `notice_${ds}_협의`);
+                di.value = dn ? dn.title : '';
+                const has = di.value.trim() !== '' && !/^\d+\.\s*$/.test(di.value.trim());
+                has ? di.classList.add('has-content') : di.classList.remove('has-content');
+            }
+        }
+
+        const deptOptions = this.deptOrder.map(d => `<option value="${d}">${d}</option>`).join('');
+
+        let h = '<div class="flex flex-col gap-2">';
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(monday);
+            d.setDate(monday.getDate() + i);
+            const dStr = this.formatDate(d);
+            const hol = this.getHoliday(dStr);
+            const isSp = this.isSpecialHoliday(dStr);
+            const isW = d.getDay() === 0 || d.getDay() === 6;
+            const dow = this.days[d.getDay()];
+            const cc = d.getDay() === 0 || hol ? 'text-sun' : (d.getDay() === 6 ? 'text-sat' : 'text-green-800');
+
+            h += `<div class="week-item ${(hol||isSp||isW)?'holiday-bg':''} ${this.isToday(dStr)?'today-border':''} p-3 rounded-xl border flex items-start shadow-sm hover:shadow-md">`;
+            h += `<div class="w-16 md:w-20 week-date-label font-black ${cc} border-r mr-3 pr-2 flex-shrink-0 cursor-pointer" onclick="app.showDetail('${dStr}')"><div>${d.getDate()}일(${dow})</div>`;
+            if (hol) h += `<div class="holiday-badge">${hol}</div>`;
+            h += `</div><div class="flex-1 min-w-0">`;
+
+            this.sortByDept(this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'))).forEach(e => {
+                const esc = e.title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                h += `<div class="event-item-week dept-${e.dapt}">
+                    <span class="text-slate-800 font-medium flex-1 min-w-0 cursor-pointer" onclick="app.showDetail('${dStr}')">
+                        ${e.title}
+                        <span class="dept-badge dept-${e.dapt}" title="클릭하여 수정" onclick="event.stopPropagation();app.toggleEditForm('${e.id}')">${e.dapt} ✎</span>
+                    </span>
+                    <span class="del-x flex-shrink-0" onclick="event.stopPropagation();app.deleteEvent('${e.id}')">✕</span>
+                </div>
+                <div class="edit-inline-form" id="edit-form-${e.id}">
+                    <input class="edit-inline-input" id="edit-title-${e.id}" value="${esc}" placeholder="내용 수정">
+                    <select class="edit-inline-select" id="edit-dept-${e.id}">
+                        ${this.deptOrder.map(d => `<option value="${d}"${d===e.dapt?' selected':''}>${d}</option>`).join('')}
+                    </select>
+                    <div style="display:flex;gap:6px;">
+                        <button class="edit-btn edit-btn-save" onclick="app.saveEditForm('${e.id}')">✅ 저장</button>
+                        <button class="edit-btn edit-btn-cancel" onclick="app.cancelEditForm('${e.id}')">취소</button>
+                    </div>
+                </div>`;
+            });
+            h += '</div></div>';
+        }
+        return h + '</div>';
+    },
+
+    /* ───────── 안내사항 / 협의 내용 ───────── */
+
+    handleNoticeInput(inp) {
+        this.isEditing = true;
+        this.updateInputStyle(inp);
+        const d = inp.dataset.dept;
+        if (this.saveTimers[d]) clearTimeout(this.saveTimers[d]);
+        this.saveTimers[d] = setTimeout(() => this.saveNotice(inp), 2000);
+    },
+
+    updateInputStyle(inp) {
+        inp.value.trim() !== '' ? inp.classList.add('has-content') : inp.classList.remove('has-content');
+    },
+
+    async saveNotice(inp) {
+        this.isEditing = false;
+        const dept = inp.dataset.dept, content = inp.value.trim();
+        const monday = this.getMonday(this.currentDate), ds = this.formatDate(monday);
+        const nid = `notice_${ds}_${dept}`;
+        const xi = this.events.findIndex(e => e.id === nid);
+        if (content === '') {
+            if (xi !== -1) { this.events.splice(xi, 1); await this.saveToServer('delete', { id: nid }); }
+        } else {
+            const nn = { id: nid, date: ds, title: content, dapt: dept };
+            if (xi !== -1) this.events[xi] = nn; else this.events.push(nn);
+            await this.saveToServer('add', nn);
+        }
+    },
+
+    handleDiscussionFocus(ta) {
+        if (ta.value.trim() === '') { ta.value = '1. '; ta.selectionStart = ta.selectionEnd = ta.value.length; }
+    },
+
+    handleDiscussionKeydown(e, ta) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const pos = ta.selectionStart, before = ta.value.substring(0, pos), after = ta.value.substring(ta.selectionEnd);
+            const lines = before.split('\n'), cur = lines[lines.length - 1];
+            if (/^\d+\.\s*$/.test(cur)) {
+                const nb = lines.slice(0, -1).join('\n') + (lines.length > 1 ? '\n' : '');
+                ta.value = nb + after; ta.selectionStart = ta.selectionEnd = nb.length;
+            } else {
+                let mx = 0;
+                before.split('\n').forEach(l => { const m = l.match(/^(\d+)\./); if (m) mx = Math.max(mx, parseInt(m[1])); });
+                const ins = '\n' + (mx + 1) + '. ';
+                ta.value = before + ins + after; ta.selectionStart = ta.selectionEnd = pos + ins.length;
+            }
+            ta.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    },
+
+    handleDiscussionInput(ta) {
+        this.isEditing = true;
+        ta.value.trim() !== '' && !/^\d+\.\s*$/.test(ta.value.trim()) ? ta.classList.add('has-content') : ta.classList.remove('has-content');
+        if (this.saveTimers['disc']) clearTimeout(this.saveTimers['disc']);
+        this.saveTimers['disc'] = setTimeout(() => this.saveDiscussion(ta), 2000);
+    },
+
+    async saveDiscussion(ta) {
+        this.isEditing = false;
+        let c = ta.value.trim();
+        if (/^\d+\.\s*$/.test(c)) c = '';
+        const monday = this.getMonday(this.currentDate), ds = this.formatDate(monday);
+        const nid = `notice_${ds}_협의`, xi = this.events.findIndex(e => e.id === nid);
+        if (c === '') {
+            if (xi !== -1) { this.events.splice(xi, 1); await this.saveToServer('delete', { id: nid }); }
+        } else {
+            const nn = { id: nid, date: ds, title: c, dapt: '협의' };
+            if (xi !== -1) this.events[xi] = nn; else this.events.push(nn);
+            await this.saveToServer('add', nn);
+        }
+    },
+
+    /* ───────── 주간계획 PDF ───────── */
+
+    async downloadWeeklyPDF() {
+        const btn = document.getElementById('weeklyPdfBtnEl');
+        if (btn) { btn.disabled = true; btn.textContent = '⏳ PDF 생성 중...'; }
+        try {
+            const monday = this.getMonday(this.currentDate), mondayStr = this.formatDate(monday);
+            const wdates = [];
+            for (let i = 0; i < 7; i++) { const d = new Date(monday); d.setDate(monday.getDate() + i); wdates.push(d); }
+            const fri = wdates[4];
+            const rangeStr = `${monday.getFullYear()}년 ${monday.getMonth()+1}월 ${monday.getDate()}일(월) ~ ${fri.getMonth()+1}월 ${fri.getDate()}일(금)`;
+            const weekdays = wdates.filter(d => d.getDay() !== 0 && d.getDay() !== 6);
+            const noticeCfg = [
+                {key:'교장',label:'교장'},{key:'교감',label:'교감'},{key:'행정실',label:'행정실장'},
+                {key:'교무부',label:'교무부'},{key:'연구부',label:'연구부'},{key:'학생부',label:'학생부'},
+                {key:'창의인성부',label:'창의인성부'},{key:'학년실',label:'학년실'}
+            ];
+            const notices = noticeCfg.map(nc => {
+                const ev = this.events.find(e => e.id === `notice_${mondayStr}_${nc.key}`);
+                return { label: nc.label, text: ev ? ev.title : '' };
+            }).filter(n => n.text.trim() !== '');
+            const discEv = this.events.find(e => e.id === `notice_${mondayStr}_협의`);
+            let discText = discEv ? discEv.title.trim() : '';
+            if (/^\d+\.\s*$/.test(discText)) discText = '';
+            const logoTag = this._logoBase64
+                ? `<img src="${this._logoBase64}" style="width:38px;height:38px;object-fit:contain;border-radius:8px;margin-right:10px;vertical-align:middle;">`
+                : '<span style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:#dcfce7;border-radius:8px;font-size:20px;margin-right:10px;">🏫</span>';
+            const dayNames = ['일','월','화','수','목','금','토'];
+            let rowsHtml = '';
+            for (const d of weekdays) {
+                const dStr = this.formatDate(d), hol = this.getHoliday(dStr), isSp = this.isSpecialHoliday(dStr);
+                const rowBg = (hol||isSp) ? '#fff1f2' : 'white';
+                const dateColor = d.getDay() === 0 || hol ? '#dc2626' : (d.getDay() === 6 ? '#2563eb' : '#15803d');
+                const dayLabel = `${d.getDate()}일(${dayNames[d.getDay()]})`;
+                const evts = this.sortByDept(this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_')));
+                let evHtml = '';
+                if (hol) evHtml += `<span style="display:inline-block;background:#fee2e2;color:#dc2626;font-weight:800;font-size:11px;padding:2px 8px;border-radius:8px;margin-bottom:4px;">${hol}</span><br>`;
+                if (evts.length === 0 && !hol) evHtml = '<span style="color:#cbd5e1;font-size:12px;">일정 없음</span>';
+                evts.forEach(ev => {
+                    evHtml += `<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;padding:3px 7px;background:#f8fafc;border-left:3px solid ${this.deptColor(ev.dapt)};border-radius:4px;"><span style="font-size:10px;font-weight:800;color:${this.deptColor(ev.dapt)};background:${this.deptBg(ev.dapt)};padding:1px 6px;border-radius:8px;white-space:nowrap;">${ev.dapt}</span><span style="font-size:12px;color:#1e293b;font-weight:500;word-break:break-all;">${ev.title}</span></div>`;
+                });
+                rowsHtml += `<tr><td style="width:88px;padding:7px 10px;background:${rowBg};border-bottom:1px solid #e2e8f0;border-right:2px solid #dcfce7;vertical-align:top;"><div style="font-size:13px;font-weight:900;color:${dateColor};">${dayLabel}</div></td><td style="padding:7px 10px;background:${rowBg};border-bottom:1px solid #e2e8f0;vertical-align:top;">${evHtml}</td></tr>`;
+            }
+            let discHtml = '';
+            if (discText) {
+                const escaped = discText.replace(/</g, '&lt;');
+                const lines = escaped.split('\n');
+                let items = '';
+                lines.forEach(line => {
+                    const m = line.match(/^(\d+)\.\s*(.*)/);
+                    if (m && m[2].trim()) items += `<div style="display:flex;gap:8px;margin-bottom:6px;padding:6px 10px;background:#fffef5;border-radius:6px;border-left:3px solid #f59e0b;"><span style="font-weight:900;color:#b45309;min-width:22px;flex-shrink:0;">${m[1]}.</span><span style="color:#78350f;font-weight:500;">${m[2]}</span></div>`;
+                    else if (line.trim()) items += `<div style="padding:3px 10px;color:#78350f;">${line}</div>`;
+                });
+                discHtml = `<div style="margin-top:18px;"><div style="font-size:13px;font-weight:900;color:#b45309;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #fde68a;">💬 협의 내용</div><div style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;padding:12px 14px;">${items}</div></div>`;
+            }
+            let noticeHtml = '';
+            if (notices.length > 0) {
+                noticeHtml = `<div style="margin-top:18px;"><div style="font-size:13px;font-weight:900;color:#15803d;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #dcfce7;">📢 주간 안내사항</div><table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">`;
+                notices.forEach((n, i) => {
+                    const bg = i % 2 === 0 ? '#f8fafc' : 'white';
+                    noticeHtml += `<tr><td style="width:76px;padding:7px 10px;background:#f0fdf4;border-bottom:1px solid #e2e8f0;border-right:2px solid #dcfce7;font-size:11px;font-weight:800;color:#15803d;white-space:nowrap;vertical-align:top;">${n.label}</td><td style="padding:7px 10px;background:${bg};border-bottom:1px solid #e2e8f0;font-size:12px;color:#334155;line-height:1.7;white-space:pre-wrap;word-break:break-all;">${n.text.replace(/</g,'&lt;')}</td></tr>`;
+                });
+                noticeHtml += '</table></div>';
+            }
+            const tpl = document.getElementById('weeklyPdfTemplate');
+            tpl.style.display = 'block';
+            tpl.innerHTML = `<div style="width:794px;background:white;padding:0;"><div style="background:white;color:#1e293b;padding:15px 26px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #16a34a;"><div style="display:flex;align-items:center;font-size:17px;font-weight:900;color:#15803d;">${logoTag}구례중학교 주간 계획</div><div style="font-size:11px;color:#64748b;text-align:right;line-height:1.6;">${rangeStr}</div></div><div style="padding:18px 26px 26px;"><div style="font-size:13px;font-weight:900;color:#15803d;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #dcfce7;">📅 주간 일정</div><table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">${rowsHtml}</table>${discHtml}${noticeHtml}<div style="margin-top:20px;padding-top:10px;border-top:1px solid #e2e8f0;text-align:center;font-size:10px;color:#94a3b8;">구례중학교 | 주간계획 | ${rangeStr}</div></div></div>`;
+            const canvas = await html2canvas(tpl, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', logging: false, width: 794 });
+            tpl.style.display = 'none'; tpl.innerHTML = '';
+            const { jsPDF } = window.jspdf;
+            const imgData = canvas.toDataURL('image/png'), pdfW = 210, pageH = 297, pdfH = (canvas.height * pdfW) / canvas.width;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            if (pdfH <= pageH) doc.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
+            else { let yo = 0; while (yo < pdfH) { if (yo > 0) doc.addPage(); doc.addImage(imgData, 'PNG', 0, -yo, pdfW, pdfH); yo += pageH; } }
+            doc.save(`구례중_주간계획_${mondayStr}.pdf`);
+            this.showToast('✅ 주간계획 PDF가 저장되었습니다!', 'success');
+        } catch(err) {
+            console.error(err);
+            this.showToast('❌ PDF 생성 실패: ' + err.message, 'error');
+        } finally {
+            if (btn) { btn.disabled = false; btn.textContent = '📄 주간계획 PDF 출력'; }
+        }
+    },
+
+    /* ───────── 회의메모 ───────── */
+
+    isMeetingInputActive() {
+        const a = document.activeElement;
+        if (!a) return false;
+        return a.closest('.meeting-card') !== null || a.classList.contains('meeting-input') || a.classList.contains('meeting-textarea');
+    },
+
+    getMeetingsForDate(s) {
+        const p = `meeting_${s}_`;
+        const a = this.events.filter(e => e.id.startsWith(p)).map(e => ({ ...e }));
+        Object.keys(this.localChanges).forEach(id => {
+            if (id.startsWith(p) && !a.find(e => e.id === id)) a.push({ ...this.localChanges[id] });
+        });
+        return a.filter(e => !this.localDeletes.has(e.id)).sort((a, b) => a.id.localeCompare(b.id));
+    },
+
+    newMeetingId(s) {
+        const e = this.getMeetingsForDate(s);
+        const n = e.map(e => parseInt(e.id.split('_').pop()) || 0);
+        return `meeting_${s}_${n.length > 0 ? Math.max(...n) + 1 : 1}`;
+    },
+
+    handleCardInput(inp) {
+        this.isEditing = true; this.meetingInputFocused = true;
+        this.updateMeetingInputStyle(inp); this.showSaveIndicator('saving');
+        if (this.saveTimers['meeting']) clearTimeout(this.saveTimers['meeting']);
+        this.saveTimers['meeting'] = setTimeout(() => this.saveAllCards(), 2000);
+    },
+
+    handleMeetingFocus() { this.meetingInputFocused = true; this.isEditing = true; },
+    handleMeetingBlur() { setTimeout(() => { if (!this.isMeetingInputActive()) { this.meetingInputFocused = false; this.isEditing = false; } }, 300); },
+    updateMeetingInputStyle(inp) { inp.value.trim() !== '' ? inp.classList.add('has-data') : inp.classList.remove('has-data'); },
+
+    async saveAllCards() {
+        if (!this.isMeetingInputActive()) { this.isEditing = false; this.meetingInputFocused = false; }
+        const ds = this.formatDate(this.meetingDate);
+        const c = document.getElementById('meetingCardsContainer');
+        if (!c) return;
+        const cards = c.querySelectorAll('.meeting-card');
+        let cn = 1;
+        for (const card of cards) {
+            const omid = card.dataset.mid;
+            const sub = card.querySelector('[data-field="subject"]')?.value.trim() || '';
+            const con = card.querySelector('[data-field="content"]')?.value.trim() || '';
+            if (!sub && !con) {
+                if (!omid.startsWith('__new__')) {
+                    const xi = this.events.findIndex(e => e.id === omid);
+                    if (xi !== -1) this.events.splice(xi, 1);
+                    this.localDeletes.add(omid);
+                    delete this.localChanges[omid];
+                    await this.saveToServer('delete', { id: omid });
+                }
+                continue;
+            }
+            let mid = omid;
+            if (omid.startsWith('__new__')) {
+                mid = `meeting_${ds}_${cn}`;
+                card.dataset.mid = mid;
+                card.querySelectorAll('[data-mid]').forEach(el => el.dataset.mid = mid);
+                card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${mid}','${ds}')`);
+                const ab = card.querySelector('.ai-generate-btn');
+                if (ab) { ab.setAttribute('onclick', `app.generateAIMeetingMinutes('${mid}')`); ab.dataset.mid = mid; }
+            }
+            const md = { id: mid, date: ds, title: sub || '(제목 없음)', dapt: 'meeting', subject: sub, content: con };
+            const xi = this.events.findIndex(e => e.id === mid);
+            if (xi !== -1) this.events[xi] = md; else this.events.push(md);
+            this.localDeletes.delete(mid);
+            await this.saveToServer('add', md);
+            cn++;
+        }
+        this.renderMeetingCalendar();
+    },
+
+    async downloadPDF(mid) {
+        const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+        if (!card) return;
+        const sub = card.querySelector('[data-field="subject"]')?.value.trim() || '회의록';
+        const con = card.querySelector('[data-field="content"]')?.value.trim() || '';
+        if (!con) { this.showToast('📝 내용을 먼저 입력해주세요.', 'error'); return; }
+        const btn = card.querySelector('.pdf-btn');
+        if (btn) { btn.disabled = true; btn.textContent = '⏳ 생성 중...'; }
+        try {
+            const ds = this.formatDate(this.meetingDate), dow = this.days[this.meetingDate.getDay()];
+            const logoHtml = this._logoBase64
+                ? `<img src="${this._logoBase64}" style="width:36px;height:36px;object-fit:contain;border-radius:8px;vertical-align:middle;margin-right:10px;">`
+                : '<span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#dcfce7;border-radius:8px;font-size:18px;margin-right:10px;">🏫</span>';
+            const pd = document.createElement('div');
+            pd.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:14px;line-height:1.8;color:#1e293b;';
+            pd.innerHTML = `<div style="background:white;color:#1e293b;padding:18px 32px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #16a34a;"><span style="font-size:18px;font-weight:900;display:flex;align-items:center;color:#15803d;">${logoHtml}구례중학교 회의록</span><span style="font-size:13px;color:#64748b;">${ds} (${dow})</span></div><div style="padding:28px 32px 32px;"><h1 style="font-size:22px;font-weight:900;margin:0 0 12px;line-height:1.4;">${sub}</h1><div style="height:3px;background:linear-gradient(90deg,#16a34a,#86efac);border-radius:2px;margin-bottom:20px;"></div><div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:13px;color:#15803d;"><div style="margin-bottom:6px;">📅 <strong>회의 일자</strong> : ${ds} (${dow})</div><div>📋 <strong>회의 주제</strong> : ${sub}</div></div><div style="font-size:15px;font-weight:900;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;">📝 회의 내용</div><div style="font-size:14px;color:#334155;line-height:2;white-space:pre-wrap;word-break:break-all;">${con.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div style="margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8;">구례중학교 | 회의록 | ${ds}</div></div>`;
+            document.body.appendChild(pd);
+            const cv = await html2canvas(pd, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', logging: false });
+            document.body.removeChild(pd);
+            const { jsPDF } = window.jspdf;
+            const img = cv.toDataURL('image/png'), pW = 210, pH = (cv.height * pW) / cv.width, pgH = 297;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            if (pH <= pgH) doc.addImage(img, 'PNG', 0, 0, pW, pH);
+            else { let yo = 0; while (yo < pH) { if (yo > 0) doc.addPage(); doc.addImage(img, 'PNG', 0, -yo, pW, pH); yo += pgH; } }
+            doc.save(`회의록_${ds}_${(sub || '무제').replace(/[\/\\?%*:|"<>]/g, '_')}.pdf`);
+            this.showToast('✅ PDF가 저장되었습니다!', 'success');
+        } catch(err) {
+            this.showToast('❌ PDF 생성 실패: ' + err.message, 'error');
+        } finally {
+            if (btn) { btn.disabled = false; btn.textContent = '📄 PDF 저장'; }
+        }
+    },
+
+    async generateAIMeetingMinutes(mid) {
+        const card = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+        if (!card) return;
+        const se = card.querySelector('[data-field="subject"]');
+        const ce = card.querySelector('[data-field="content"]');
+        const ab = card.querySelector('.ai-generate-btn');
+        const sub = se.value.trim(), con = ce.value.trim();
+        if (!con) { this.showToast('📝 모임 내용을 먼저 입력해주세요.', 'error'); return; }
+        if (mid.startsWith('__new__')) { await this.saveAllCards(); mid = card.dataset.mid; }
+        this.aiGenerating = true;
+        if (ab) { ab.disabled = true; ab.innerHTML = '⏳ AI 분석중...'; }
+        const tw = ce.parentElement;
+        const ov = document.createElement('div');
+        ov.className = 'ai-overlay';
+        ov.innerHTML = '<div class="ai-spinner">🤖 AI가 회의록을 작성하고 있습니다...</div>';
+        tw.appendChild(ov);
+        ce.style.opacity = '0.4';
+        try {
+            const r = await fetch(APP_CONFIG.API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ action: 'generateAI', token: APP_CONFIG.REQUEST_TOKEN, subject: sub, content: con, meetingDate: this.formatDate(this.meetingDate) })
+            });
+            const rd = await r.json();
+            if (rd.success && rd.minutes) {
+                ce.value = rd.minutes;
+                ce.classList.add('has-data');
+                const ud = { id: mid, date: this.formatDate(this.meetingDate), title: sub || '(제목 없음)', dapt: 'meeting', subject: sub, content: rd.minutes };
+                const xi = this.events.findIndex(e => e.id === mid);
+                if (xi !== -1) this.events[xi] = ud; else this.events.push(ud);
+                this.localChanges[mid] = ud;
+                await this.saveToServer('add', ud);
+                this.showToast('✅ AI 회의록 완성!', 'success');
+            }
+        } catch(e) {
+            console.error('AI 오류:', e);
+        } finally {
+            this.aiGenerating = false;
+            if (ab) { ab.disabled = false; ab.innerHTML = '🤖 AI 회의록'; }
+            ov.remove();
+            ce.style.opacity = '1';
+        }
+    },
+
+    moveMeetingCalendar(dir) { this.meetingCalendarDate.setMonth(this.meetingCalendarDate.getMonth() + dir); this.renderMeetingCalendar(); },
+    selectMeetingDate(s) { this.meetingDate = this.parseLocalDate(s); this.meetingCalendarDate = this.parseLocalDate(s); this.updateMeetingPanelDate(); this.renderMeetingCards(); this.renderMeetingCalendar(); },
+    updateMeetingPanelDate() { const el = document.getElementById('meetingPanelDate'); if (!el) return; el.textContent = `${this.formatDate(this.meetingDate)} (${this.days[this.meetingDate.getDay()]})`; },
+
+    renderMeetingCalendar() {
+        const yr = this.meetingCalendarDate.getFullYear(), mo = this.meetingCalendarDate.getMonth();
+        const sel = this.formatDate(this.meetingDate);
+        const fd = new Date(yr, mo, 1).getDay(), ld = new Date(yr, mo + 1, 0).getDate(), pld = new Date(yr, mo, 0).getDate();
+        let h = `<div class="meeting-calendar-header"><button onclick="app.moveMeetingCalendar(-1)">&#9664;</button><div class="meeting-calendar-title">${yr}년 ${mo+1}월</div><button onclick="app.moveMeetingCalendar(1)">&#9654;</button></div><div class="meeting-calendar-body"><div class="meeting-calendar-grid">`;
+        this.days.forEach(d => {
+            const c = d === '일' ? 'text-red-500' : (d === '토' ? 'text-blue-500' : '');
+            h += `<div class="meeting-calendar-day-header ${c}">${d}</div>`;
+        });
+        for (let i = fd - 1; i >= 0; i--) h += `<div class="meeting-calendar-day other-month">${pld - i}</div>`;
+        for (let d = 1; d <= ld; d++) {
+            const ds = `${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const dow = new Date(yr, mo, d).getDay();
+            const isSel = ds === sel, has = this.getMeetingsForDate(ds).length > 0;
+            let cls = `meeting-calendar-day${this.isToday(ds) ? ' today-border' : ''}`;
+            if ((dow === 0 || dow === 6) && !isSel) cls += ' weekend';
+            if (isSel) cls += ' selected';
+            if (has) cls += ' has-meeting';
+            h += `<div class="${cls}" onclick="app.selectMeetingDate('${ds}')">${d}</div>`;
+        }
+        const rem = 7 - (fd + ld) % 7;
+        if (rem < 7) for (let d = 1; d <= rem; d++) h += `<div class="meeting-calendar-day other-month">${d}</div>`;
+        h += '</div></div>';
+        const c = document.getElementById('meetingCalendar');
+        if (c) c.innerHTML = h;
+    },
+
+    renderMeetingView() {
+        const vp = document.getElementById('viewPort');
+        const ds = this.formatDate(this.meetingDate), dow = this.days[this.meetingDate.getDay()];
+        if (!vp.querySelector('.meeting-wrapper')) {
+            vp.innerHTML = `<div class="meeting-wrapper"><div class="meeting-cal-panel"><div id="meetingCalendar"></div></div><div class="meeting-input-panel"><div class="meeting-panel-title">📝 회의메모 <span id="meetingPanelDate" class="meeting-date-badge">${ds} (${dow})</span></div><div id="meetingCardsContainer"></div><button class="add-meeting-btn" onclick="app.addMeetingCard()">＋ 회의 추가</button><div id="meetingSaveIndicator" class="save-indicator">💡 입력 2초 후 자동 저장</div></div></div>`;
+        }
+        this.meetingCalendarDate = new Date(this.meetingDate);
+        this.renderMeetingCalendar();
+        this.renderMeetingCards();
+    },
+
+    renderMeetingCards() {
+        const c = document.getElementById('meetingCardsContainer');
+        if (!c || this.aiGenerating) return;
+        const ds = this.formatDate(this.meetingDate);
+        const m = this.getMeetingsForDate(ds);
+        c.innerHTML = m.length === 0 ? this.buildCardHTML(null, ds, 1, 1) : m.map((x, i) => this.buildCardHTML(x, ds, i + 1, m.length)).join('');
+    },
+
+    buildCardHTML(md, ds, num) {
+        const mid = md ? md.id : `__new__${ds}`;
+        const ss = (md?.subject || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        const sc = (md?.content || '').replace(/</g, '&lt;');
+        return `<div class="meeting-card" data-mid="${mid}"><div class="meeting-card-header"><span class="meeting-card-num">회의 ${num}</span><span class="meeting-card-del" onclick="app.deleteMeetingCard('${mid}','${ds}')">🗑 삭제</span></div><label class="meeting-label">📋 회의 주제</label><input type="text" class="meeting-input ${md?.subject?'has-data':''}" data-mid="${mid}" data-field="subject" placeholder="예: 학생생활규정 개정 협의회" value="${ss}" oninput="app.handleCardInput(this)" onfocus="app.handleMeetingFocus()" onblur="app.handleMeetingBlur()"><label class="meeting-label"><span>📝 회의 내용 정리</span><span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end"><button class="ai-generate-btn" data-mid="${mid}" onclick="app.generateAIMeetingMinutes('${mid}')">🤖 AI 회의록</button><button class="pdf-btn" onclick="app.downloadPDF('${mid}')">📄 PDF 저장</button></span></label><div style="position:relative"><textarea class="meeting-textarea ${md?.content?'has-data':''}" data-mid="${mid}" data-field="content" oninput="app.handleCardInput(this)" onfocus="app.handleMeetingFocus()" onblur="app.handleMeetingBlur()">${sc}</textarea></div></div>`;
+    },
+
+    addMeetingCard() {
+        const ds = this.formatDate(this.meetingDate), nid = this.newMeetingId(ds);
+        const m = this.getMeetingsForDate(ds);
+        const c = document.getElementById('meetingCardsContainer');
+        if (!c) return;
+        const t = document.createElement('div');
+        t.innerHTML = this.buildCardHTML(null, ds, m.length + 1);
+        const card = t.firstElementChild;
+        card.dataset.mid = nid;
+        card.querySelectorAll('[data-mid]').forEach(el => el.dataset.mid = nid);
+        card.querySelector('.meeting-card-del').setAttribute('onclick', `app.deleteMeetingCard('${nid}','${ds}')`);
+        card.querySelector('.ai-generate-btn').setAttribute('onclick', `app.generateAIMeetingMinutes('${nid}')`);
+        card.querySelector('.ai-generate-btn').dataset.mid = nid;
+        c.appendChild(card);
+    },
+
+    async deleteMeetingCard(mid, ds) {
+        if (mid.startsWith('__new__')) {
+            const c = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+            if (c) c.remove();
+            this.renumberCards();
+            return;
+        }
+        const xi = this.events.findIndex(e => e.id === mid);
+        if (xi !== -1) this.events.splice(xi, 1);
+        this.localDeletes.add(mid);
+        delete this.localChanges[mid];
+        const c = document.querySelector(`.meeting-card[data-mid="${mid}"]`);
+        if (c) c.remove();
+        this.renumberCards();
+        this.renderMeetingCalendar();
+        await this.saveToServer('delete', { id: mid });
+    },
+
+    renumberCards() {
+        const c = document.getElementById('meetingCardsContainer');
+        if (!c) return;
+        c.querySelectorAll('.meeting-card').forEach((card, i) => {
+            const n = card.querySelector('.meeting-card-num');
+            if (n) n.textContent = `회의 ${i + 1}`;
+        });
+    },
+
+    syncMeetingInputsFromData() {
+        if (!document.getElementById('meetingCardsContainer')) return;
+        this.renderMeetingCards();
+        this.updateMeetingPanelDate();
+    },
+
+
+    /* ═══════════════════════════════════════════════════════════
+       나이스 학사일정 불러오기
+       - GAS를 프록시로 사용해 CORS 우회
+       - 나이스 API → GAS → 앱 순서로 데이터 흐름
+       ═══════════════════════════════════════════════════════════ */
+
+    /** 나이스 모달 열기 */
+    openNeisModal() {
+        const overlay = document.getElementById('neisModalOverlay');
+        overlay.classList.add('open');
+        // 기본 연도를 현재 연도로
+        const yearSel = document.getElementById('neisYear');
+        if (yearSel) yearSel.value = new Date().getFullYear().toString();
+    },
+
+    /** 나이스 모달 닫기 */
+    closeNeisModal(e) {
+        if (e && e.target !== document.getElementById('neisModalOverlay')) return;
+        document.getElementById('neisModalOverlay').classList.remove('open');
+        this._neisItems = [];
+    },
+
+    /** GAS 프록시를 통해 나이스 학사일정 조회 */
+    async fetchNeisSchedule() {
+        const year  = document.getElementById('neisYear').value;
+        const month = document.getElementById('neisMonth').value;
+        const btn   = document.getElementById('neisFetchBtn');
+        const area  = document.getElementById('neisListArea');
+
+        btn.disabled = true;
+        btn.textContent = '⏳ 조회 중...';
+        area.innerHTML = '<div class="neis-loading">🔍 나이스에서 학사일정을 불러오는 중입니다...</div>';
+
+        // 날짜 범위 구성
+        const from = year + (month || '01') + '01';
+        const lastDay = month
+            ? new Date(+year, +month, 0).getDate()
+            : 31;
+        const to = year + (month || '12') + String(month ? lastDay : 31).padStart(2,'0');
+
+        try {
+            // GAS 프록시 호출 (action=neis 추가)
+            const url = APP_CONFIG.API_URL
+                + '?action=neis'
+                + '&token=' + APP_CONFIG.REQUEST_TOKEN
+                + '&neisKey=' + APP_CONFIG.NEIS.KEY
+                + '&atpt=' + APP_CONFIG.NEIS.ATPT_OFCDC_SC_CODE
+                + '&schulCode=' + APP_CONFIG.NEIS.SD_SCHUL_CODE
+                + '&from=' + from
+                + '&to=' + to
+                + '&t=' + Date.now();
+
+            const res  = await fetch(url);
+            const data = await res.json();
+
+            if (!data.success) {
+                area.innerHTML = `<div class="neis-empty">❌ ${data.message || '조회 실패'}</div>`;
+                return;
+            }
+
+            this._neisItems = data.items || [];
+            this._neisSelected = new Set();
+            this._renderNeisList();
+
+        } catch(err) {
+            area.innerHTML = '<div class="neis-empty">❌ 네트워크 오류: ' + err.message + '</div>';
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '🔍 조회';
+        }
+    },
+
+    /** 나이스 목록 렌더링 */
+    _renderNeisList() {
+        const area = document.getElementById('neisListArea');
+        const items = this._neisItems || [];
+
+        if (items.length === 0) {
+            area.innerHTML = '<div class="neis-empty">해당 기간에 나이스 등록 학사일정이 없습니다.</div>';
+            this._updateNeisImportBtn();
+            return;
+        }
+
+        // 이미 앱에 등록된 나이스 ID 목록
+        const existingNeisIds = new Set(
+            this.events.filter(e => e.neisId).map(e => e.neisId)
+        );
+
+        let html = `<div class="neis-select-all-bar">
+            <button class="neis-select-all-btn" onclick="app._neisToggleAll()">전체 선택/해제</button>
+            <span class="neis-count-badge">${items.length}건 조회됨</span>
+        </div>`;
+
+        items.forEach((item, idx) => {
+            const isAlready = existingNeisIds.has(item.neisId);
+            const isSelected = this._neisSelected && this._neisSelected.has(idx);
+            const checkMark = isAlready ? '✓' : (isSelected ? '✓' : '');
+            const cls = isAlready ? 'neis-item already' : (isSelected ? 'neis-item selected' : 'neis-item');
+            const clickAttr = isAlready ? '' : `onclick="app._neisToggleItem(${idx})"`;
+
+            // 날짜 포맷: 20260301 → 3월 1일
+            const d = item.date;
+            const dateLabel = d.length === 8
+                ? `${+d.slice(4,6)}/${+d.slice(6,8)}`
+                : d;
+
+            html += `<div class="${cls}" id="neis-item-${idx}" ${clickAttr}>
+                <div class="neis-item-check">${checkMark}</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                        <span class="neis-item-date">${dateLabel}</span>
+                        ${isAlready ? '<span class="neis-item-tag" style="background:#dcfce7;color:#15803d;">이미 등록됨</span>' : '<span class="neis-item-tag">학사</span>'}
+                    </div>
+                    <div class="neis-item-title">${item.title}</div>
+                    ${item.content && item.content !== item.title ? `<div style="font-size:11px;color:#64748b;margin-top:2px;">${item.content}</div>` : ''}
+                </div>
+            </div>`;
+        });
+
+        area.innerHTML = html;
+        this._updateNeisImportBtn();
+    },
+
+    /** 나이스 아이템 선택 토글 */
+    _neisToggleItem(idx) {
+        if (!this._neisSelected) this._neisSelected = new Set();
+        if (this._neisSelected.has(idx)) {
+            this._neisSelected.delete(idx);
+        } else {
+            this._neisSelected.add(idx);
+        }
+        const el = document.getElementById('neis-item-' + idx);
+        if (el) {
+            el.classList.toggle('selected', this._neisSelected.has(idx));
+            el.querySelector('.neis-item-check').textContent = this._neisSelected.has(idx) ? '✓' : '';
+        }
+        this._updateNeisImportBtn();
+    },
+
+    /** 전체 선택/해제 */
+    _neisToggleAll() {
+        if (!this._neisSelected) this._neisSelected = new Set();
+        const existingNeisIds = new Set(this.events.filter(e => e.neisId).map(e => e.neisId));
+        const available = (this._neisItems || [])
+            .map((item, idx) => ({ item, idx }))
+            .filter(({ item }) => !existingNeisIds.has(item.neisId));
+
+        const allSelected = available.every(({ idx }) => this._neisSelected.has(idx));
+        available.forEach(({ idx }) => {
+            if (allSelected) {
+                this._neisSelected.delete(idx);
+            } else {
+                this._neisSelected.add(idx);
+            }
+            const el = document.getElementById('neis-item-' + idx);
+            if (el) {
+                el.classList.toggle('selected', this._neisSelected.has(idx));
+                el.querySelector('.neis-item-check').textContent = this._neisSelected.has(idx) ? '✓' : '';
+            }
+        });
+        this._updateNeisImportBtn();
+    },
+
+    /** 등록 버튼 상태 업데이트 */
+    _updateNeisImportBtn() {
+        const btn = document.getElementById('neisImportBtn');
+        const countEl = document.getElementById('neisSelectedCount');
+        const cnt = this._neisSelected ? this._neisSelected.size : 0;
+        if (btn) btn.disabled = cnt === 0;
+        if (countEl) countEl.textContent = cnt > 0 ? `${cnt}건 선택됨` : '';
+    },
+
+    /** 선택된 나이스 일정을 앱에 등록 */
+    async importNeisSchedule() {
+        if (!this._neisSelected || this._neisSelected.size === 0) return;
+        const btn = document.getElementById('neisImportBtn');
+        btn.disabled = true;
+        btn.textContent = '⏳ 등록 중...';
+
+        let successCount = 0;
+        const items = this._neisItems || [];
+
+        for (const idx of this._neisSelected) {
+            const item = items[idx];
+            if (!item) continue;
+
+            // 날짜 형식: 20260301 → 2026-03-01
+            const rawDate = item.date;
+            const date = rawDate.length === 8
+                ? `${rawDate.slice(0,4)}-${rawDate.slice(4,6)}-${rawDate.slice(6,8)}`
+                : rawDate;
+
+            const ne = {
+                id: 'neis_' + item.neisId + '_' + Date.now(),
+                date,
+                title: item.title,
+                dapt: '학사',
+                neisId: item.neisId,
+            };
+
+            this.events.push(ne);
+            await this.saveToServer('add', ne);
+            successCount++;
+        }
+
+        this.showToast(`✅ 나이스 학사일정 ${successCount}건이 등록되었습니다!`, 'success', 4000);
+        document.getElementById('neisModalOverlay').classList.remove('open');
+        this._neisItems = [];
+        this._neisSelected = new Set();
+        this.render();
+    },
+
+    /* ───────── 초기화 ───────── */
+
+    async init() {
+        await this.loadLogoBase64();
+        await this.loadFromServer();
+        this.render();
+        // [개선1] 설정에서 간격 참조
+        setInterval(() => {
+            if (!this.isEditing && !this.meetingInputFocused) this.loadFromServer();
+        }, APP_CONFIG.SYNC_INTERVAL);
+    }
 };
-window.addEventListener('DOMContentLoaded',()=>app.init());
+
+window.addEventListener('DOMContentLoaded', () => app.init());
 </script>
+
+<!-- PWA 설치 처리 -->
 <script>
-(function(){if(location.protocol.startsWith('http')){var l=document.createElement('link');l.rel='manifest';l.href='./manifest.json';document.head.appendChild(l);var a=document.createElement('link');a.rel='apple-touch-icon';a.href='./icons/icon-192.png';document.head.appendChild(a);}if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',function(){navigator.serviceWorker.register('./service-worker.js').catch(function(){});});})();
-var deferredPrompt=null,installBtn=document.getElementById('installBtn');
-if(!(window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches)&&location.protocol.startsWith('http')){if(/iphone|ipad|ipod/i.test(navigator.userAgent))installBtn.style.display='block';window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;installBtn.style.display='block';});}
-app.handleInstall=async function(){if(/iphone|ipad|ipod/i.test(navigator.userAgent))document.getElementById('iosInstallModal').style.display='flex';else if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.style.display='none';}};
+(function() {
+    if (location.protocol.startsWith('http')) {
+        const l = document.createElement('link');
+        l.rel = 'manifest'; l.href = './manifest.json';
+        document.head.appendChild(l);
+        const a = document.createElement('link');
+        a.rel = 'apple-touch-icon'; a.href = './icons/icon-192.png';
+        document.head.appendChild(a);
+    }
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('./service-worker.js').catch(function() {});
+        });
+    }
+})();
+
+var deferredPrompt = null;
+var installBtn = document.getElementById('installBtn');
+if (!(window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) && location.protocol.startsWith('http')) {
+    if (/iphone|ipad|ipod/i.test(navigator.userAgent)) installBtn.style.display = 'block';
+    window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
+    });
+}
+app.handleInstall = async function() {
+    if (/iphone|ipad|ipod/i.test(navigator.userAgent)) document.getElementById('iosInstallModal').style.display = 'flex';
+    else if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+    }
+};
 </script>
 </body>
 </html>
