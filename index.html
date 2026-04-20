@@ -753,30 +753,56 @@ const app = {
     /* ── [개선5] 인라인 수정 ── */
 
     /** 주간뷰 이벤트 아이템의 수정 폼 토글 */
-    toggleEditForm(id) {
+    toggleEditForm(id, ev) {
+        // 이벤트 버블링 완전 차단 (showDetail 등 부모 핸들러 실행 방지)
+        if (ev) { ev.stopPropagation(); ev.preventDefault(); }
         const form = document.getElementById('edit-form-' + id);
         if (!form) return;
         const isOpen = form.classList.contains('open');
-        // 다른 모든 수정 폼 닫기
+        // 다른 열린 폼 모두 닫기
         document.querySelectorAll('.edit-inline-form.open').forEach(f => f.classList.remove('open'));
-        if (!isOpen) form.classList.add('open');
+        if (!isOpen) {
+            form.classList.add('open');
+            // 내용 입력창에 자동 포커스
+            const inp = document.getElementById('edit-title-' + id);
+            if (inp) setTimeout(() => inp.focus(), 50);
+        }
     },
 
-    /** 인라인 수정 저장 */
+    /** 인라인 수정 저장 — render() 없이 DOM 직접 업데이트 */
     async saveEditForm(id) {
         const titleInput = document.getElementById('edit-title-' + id);
         const deptSelect = document.getElementById('edit-dept-' + id);
         if (!titleInput || !deptSelect) return;
 
         const newTitle = titleInput.value.trim();
-        const newDept = deptSelect.value;
+        const newDept  = deptSelect.value;
         if (!newTitle) { this.showToast('내용을 입력하세요.', 'error'); return; }
 
         const idx = this.events.findIndex(e => e.id === id);
         if (idx === -1) return;
         this.events[idx] = { ...this.events[idx], title: newTitle, dapt: newDept };
         await this.saveToServer('add', this.events[idx]);
-        this.render();
+
+        // render() 대신 해당 아이템만 DOM 업데이트
+        const row = document.getElementById('week-row-' + id);
+        if (row) {
+            // 부서 클래스 교체
+            row.className = row.className.replace(/dept-\S+/, 'dept-' + newDept);
+            // 제목 텍스트 업데이트
+            const titleEl = document.getElementById('week-title-' + id);
+            if (titleEl) titleEl.textContent = newTitle;
+            // 배지 텍스트 업데이트
+            const badgeEl = document.getElementById('week-badge-' + id);
+            if (badgeEl) {
+                badgeEl.textContent = newDept + ' ✎';
+                badgeEl.className = 'dept-badge dept-' + newDept;
+            }
+        }
+        // 수정 폼 닫기
+        const form = document.getElementById('edit-form-' + id);
+        if (form) form.classList.remove('open');
+
         this.showToast('✅ 수정 완료!', 'success');
     },
 
@@ -1019,21 +1045,21 @@ const app = {
 
             this.sortByDept(this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'))).forEach(e => {
                 const esc = e.title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                h += `<div class="event-item-week dept-${e.dapt}">
-                    <span class="text-slate-800 font-medium flex-1 min-w-0 cursor-pointer" onclick="app.showDetail('${dStr}')">
+                h += `<div class="event-item-week dept-${e.dapt}" id="week-row-${e.id}">
+                    <span class="text-slate-800 font-medium flex-1 min-w-0" id="week-title-${e.id}" onclick="event.stopPropagation();app.showDetail('${dStr}')">
                         ${e.title}
-                        <span class="dept-badge dept-${e.dapt}" title="클릭하여 수정" onclick="event.stopPropagation();app.toggleEditForm('${e.id}')">${e.dapt} ✎</span>
+                        <span class="dept-badge dept-${e.dapt}" id="week-badge-${e.id}" title="클릭하여 수정" onclick="app.toggleEditForm('${e.id}',event)">${e.dapt} ✎</span>
                     </span>
                     <span class="del-x flex-shrink-0" onclick="event.stopPropagation();app.deleteEvent('${e.id}')">✕</span>
                 </div>
-                <div class="edit-inline-form" id="edit-form-${e.id}">
-                    <input class="edit-inline-input" id="edit-title-${e.id}" value="${esc}" placeholder="내용 수정">
-                    <select class="edit-inline-select" id="edit-dept-${e.id}">
+                <div class="edit-inline-form" id="edit-form-${e.id}" onclick="event.stopPropagation()">
+                    <input class="edit-inline-input" id="edit-title-${e.id}" value="${esc}" placeholder="내용 수정" onclick="event.stopPropagation()">
+                    <select class="edit-inline-select" id="edit-dept-${e.id}" onclick="event.stopPropagation()">
                         ${this.deptOrder.map(d => `<option value="${d}"${d===e.dapt?' selected':''}>${d}</option>`).join('')}
                     </select>
-                    <div style="display:flex;gap:6px;">
-                        <button class="edit-btn edit-btn-save" onclick="app.saveEditForm('${e.id}')">✅ 저장</button>
-                        <button class="edit-btn edit-btn-cancel" onclick="app.cancelEditForm('${e.id}')">취소</button>
+                    <div style="display:flex;gap:6px;" onclick="event.stopPropagation()">
+                        <button class="edit-btn edit-btn-save" onclick="event.stopPropagation();app.saveEditForm('${e.id}')">✅ 저장</button>
+                        <button class="edit-btn edit-btn-cancel" onclick="event.stopPropagation();app.cancelEditForm('${e.id}')">취소</button>
                     </div>
                 </div>`;
             });
