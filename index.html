@@ -176,20 +176,31 @@
         #weeklyPdfTemplate { display: none; position: fixed; left: -9999px; top: 0; width: 794px; background: white; font-family: 'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif; color: #1e293b; padding: 0; }
         .logo-text { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 6px; font-size: 14px; font-weight: 900; color: #15803d; flex-shrink: 0; }
 
-        /* ── 인라인 수정 UI ── */
-        .edit-inline-form { background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 8px; margin-top: 4px; display: none; gap: 6px; flex-direction: column; }
-        .edit-inline-form.open { display: flex; }
-        .edit-inline-input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; font-size: 13px; outline: none; font-family: inherit; }
-        .edit-inline-input:focus { border-color: #16a34a; }
-        .edit-inline-select { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px; font-size: 13px; outline: none; font-family: inherit; background: white; }
-        .edit-inline-select:focus { border-color: #16a34a; }
-        .edit-btn { font-size: 11px; padding: 2px 8px; border-radius: 5px; border: none; cursor: pointer; font-weight: 700; transition: all 0.15s; }
-        .edit-btn-save { background: #16a34a; color: white; }
-        .edit-btn-save:hover { background: #15803d; }
-        .edit-btn-cancel { background: #e5e7eb; color: #374151; }
-        .edit-btn-cancel:hover { background: #d1d5db; }
-        .edit-icon { font-size: 12px; cursor: pointer; color: #94a3b8; margin-left: 4px; transition: color 0.15s; }
-        .edit-icon:hover { color: #16a34a; }
+        /* ── 수정 팝업 모달 ── */
+        .edit-popup-overlay { display:none; position:fixed; inset:0; z-index:4000; background:rgba(0,0,0,0.4); }
+        .edit-popup-overlay.open { display:block; }
+        .edit-popup { position:fixed; background:white; border-radius:16px; padding:20px;
+                      box-shadow:0 8px 32px rgba(0,0,0,0.18); border:2px solid #86efac;
+                      width:88%; max-width:380px; z-index:4001;
+                      top:50%; left:50%; transform:translate(-50%,-50%); }
+        .edit-popup-title { font-size:14px; font-weight:900; color:#15803d; margin-bottom:12px; }
+        .edit-popup-input { width:100%; border:1.5px solid #cbd5e1; border-radius:8px;
+                            padding:9px 11px; font-size:14px; outline:none; font-family:inherit;
+                            margin-bottom:10px; box-sizing:border-box; }
+        .edit-popup-input:focus { border-color:#16a34a; box-shadow:0 0 0 3px rgba(22,163,74,0.1); }
+        .edit-popup-select { width:100%; border:1.5px solid #cbd5e1; border-radius:8px;
+                             padding:9px 11px; font-size:14px; outline:none; font-family:inherit;
+                             background:white; margin-bottom:14px; box-sizing:border-box; }
+        .edit-popup-select:focus { border-color:#16a34a; }
+        .edit-popup-btns { display:flex; gap:8px; justify-content:flex-end; }
+        .edit-btn-save { background:#16a34a; color:white; border:none; border-radius:8px;
+                         padding:8px 18px; font-size:13px; font-weight:800; cursor:pointer; transition:all 0.15s; }
+        .edit-btn-save:hover { background:#15803d; }
+        .edit-btn-cancel { background:#e5e7eb; color:#374151; border:none; border-radius:8px;
+                           padding:8px 14px; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s; }
+        .edit-btn-cancel:hover { background:#d1d5db; }
+        .edit-icon { font-size:12px; cursor:pointer; color:#94a3b8; margin-left:4px; }
+        .edit-icon:hover { color:#16a34a; }
 
         /* ── 연간 네비게이션 ── */
         .year-nav-btn { background: #f1f5f9; border: none; border-radius: 8px; padding: 6px 14px; font-weight: 800; font-size: 13px; cursor: pointer; color: #334155; transition: all 0.15s; }
@@ -753,30 +764,37 @@ const app = {
     /* ── [개선5] 인라인 수정 ── */
 
     /** 주간뷰 이벤트 아이템의 수정 폼 토글 */
+    /** ✎ 배지 클릭 → 팝업 모달 열기 */
     toggleEditForm(id, ev) {
-        // 이벤트 버블링 완전 차단 (showDetail 등 부모 핸들러 실행 방지)
         if (ev) { ev.stopPropagation(); ev.preventDefault(); }
-        const form = document.getElementById('edit-form-' + id);
-        if (!form) return;
-        const isOpen = form.classList.contains('open');
-        // 다른 열린 폼 모두 닫기
-        document.querySelectorAll('.edit-inline-form.open').forEach(f => f.classList.remove('open'));
-        if (!isOpen) {
-            form.classList.add('open');
-            // 내용 입력창에 자동 포커스
-            const inp = document.getElementById('edit-title-' + id);
-            if (inp) setTimeout(() => inp.focus(), 50);
-        }
+        this._editingId = id;
+
+        // 팝업 필드 채우기
+        const ev2 = this.events.find(e => e.id === id);
+        if (!ev2) return;
+
+        const titleEl = document.getElementById('editPopupTitle');
+        const deptEl  = document.getElementById('editPopupDept');
+
+        titleEl.value = ev2.title;
+
+        // 부서 셀렉트 옵션 구성
+        deptEl.innerHTML = this.deptOrder
+            .map(d => `<option value="${d}"${d === ev2.dapt ? ' selected' : ''}>${d}</option>`)
+            .join('');
+
+        // 팝업 열기
+        document.getElementById('editPopupOverlay').classList.add('open');
+        setTimeout(() => titleEl.focus(), 80);
     },
 
-    /** 인라인 수정 저장 — render() 없이 DOM 직접 업데이트 */
-    async saveEditForm(id) {
-        const titleInput = document.getElementById('edit-title-' + id);
-        const deptSelect = document.getElementById('edit-dept-' + id);
-        if (!titleInput || !deptSelect) return;
+    /** 팝업에서 저장 */
+    async saveEditForm() {
+        const id = this._editingId;
+        if (!id) return;
 
-        const newTitle = titleInput.value.trim();
-        const newDept  = deptSelect.value;
+        const newTitle = document.getElementById('editPopupTitle').value.trim();
+        const newDept  = document.getElementById('editPopupDept').value;
         if (!newTitle) { this.showToast('내용을 입력하세요.', 'error'); return; }
 
         const idx = this.events.findIndex(e => e.id === id);
@@ -784,32 +802,30 @@ const app = {
         this.events[idx] = { ...this.events[idx], title: newTitle, dapt: newDept };
         await this.saveToServer('add', this.events[idx]);
 
-        // render() 대신 해당 아이템만 DOM 업데이트
+        // 해당 DOM 요소만 업데이트 (화면 깜빡임 없음)
         const row = document.getElementById('week-row-' + id);
         if (row) {
-            // 부서 클래스 교체
-            row.className = row.className.replace(/dept-\S+/, 'dept-' + newDept);
-            // 제목 텍스트 업데이트
-            const titleEl = document.getElementById('week-title-' + id);
-            if (titleEl) titleEl.textContent = newTitle;
-            // 배지 텍스트 업데이트
-            const badgeEl = document.getElementById('week-badge-' + id);
-            if (badgeEl) {
-                badgeEl.textContent = newDept + ' ✎';
-                badgeEl.className = 'dept-badge dept-' + newDept;
+            row.className = row.className.replace(/dept-[^\s]+/, 'dept-' + newDept);
+            const titleSpan = document.getElementById('week-title-' + id);
+            if (titleSpan) {
+                // 텍스트노드만 교체 (배지 자식 유지)
+                const badge = document.getElementById('week-badge-' + id);
+                titleSpan.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = newTitle + ' '; });
+                if (badge) {
+                    badge.textContent = newDept + ' ✎';
+                    badge.className = 'dept-badge dept-' + newDept;
+                }
             }
         }
-        // 수정 폼 닫기
-        const form = document.getElementById('edit-form-' + id);
-        if (form) form.classList.remove('open');
 
+        this.cancelEditForm();
         this.showToast('✅ 수정 완료!', 'success');
     },
 
-    /** 인라인 수정 취소 */
-    cancelEditForm(id) {
-        const form = document.getElementById('edit-form-' + id);
-        if (form) form.classList.remove('open');
+    /** 팝업 닫기 */
+    cancelEditForm() {
+        document.getElementById('editPopupOverlay').classList.remove('open');
+        this._editingId = null;
     },
 
     /* ───────── 모달 ───────── */
@@ -1046,21 +1062,11 @@ const app = {
             this.sortByDept(this.events.filter(e => e.date === dStr && !e.id.startsWith('notice_') && !e.id.startsWith('meeting_'))).forEach(e => {
                 const esc = e.title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                 h += `<div class="event-item-week dept-${e.dapt}" id="week-row-${e.id}">
-                    <span class="text-slate-800 font-medium flex-1 min-w-0" id="week-title-${e.id}" onclick="event.stopPropagation();app.showDetail('${dStr}')">
+                    <span class="text-slate-800 font-medium flex-1 min-w-0" id="week-title-${e.id}">
                         ${e.title}
                         <span class="dept-badge dept-${e.dapt}" id="week-badge-${e.id}" title="클릭하여 수정" onclick="app.toggleEditForm('${e.id}',event)">${e.dapt} ✎</span>
                     </span>
                     <span class="del-x flex-shrink-0" onclick="event.stopPropagation();app.deleteEvent('${e.id}')">✕</span>
-                </div>
-                <div class="edit-inline-form" id="edit-form-${e.id}" onclick="event.stopPropagation()">
-                    <input class="edit-inline-input" id="edit-title-${e.id}" value="${esc}" placeholder="내용 수정" onclick="event.stopPropagation()">
-                    <select class="edit-inline-select" id="edit-dept-${e.id}" onclick="event.stopPropagation()">
-                        ${this.deptOrder.map(d => `<option value="${d}"${d===e.dapt?' selected':''}>${d}</option>`).join('')}
-                    </select>
-                    <div style="display:flex;gap:6px;" onclick="event.stopPropagation()">
-                        <button class="edit-btn edit-btn-save" onclick="event.stopPropagation();app.saveEditForm('${e.id}')">✅ 저장</button>
-                        <button class="edit-btn edit-btn-cancel" onclick="event.stopPropagation();app.cancelEditForm('${e.id}')">취소</button>
-                    </div>
                 </div>`;
             });
             h += '</div></div>';
