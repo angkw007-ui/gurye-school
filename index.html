@@ -406,6 +406,19 @@
     </div>
 </div>
 
+<!-- ── 수정 팝업 모달 ── -->
+<div id="editPopupOverlay" class="edit-popup-overlay" onclick="app.cancelEditForm()">
+    <div class="edit-popup" onclick="event.stopPropagation()">
+        <div class="edit-popup-title">✏️ 일정 수정</div>
+        <input  class="edit-popup-input"  id="editPopupTitle"  placeholder="업무·행사 내용">
+        <select class="edit-popup-select" id="editPopupDept"></select>
+        <div class="edit-popup-btns">
+            <button class="edit-btn-cancel" onclick="app.cancelEditForm()">취소</button>
+            <button class="edit-btn-save"   onclick="app.saveEditForm()">✅ 저장</button>
+        </div>
+    </div>
+</div>
+
 <!-- 일정 상세 모달 -->
 <div id="detailModal" class="modal" onclick="app.closeModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
