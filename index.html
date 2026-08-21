@@ -1717,9 +1717,15 @@ const app = {
     /* ───────── 초기화 ───────── */
 
     async init() {
-        await this.loadLogoBase64();
-        await this.loadFromServer();
+        // 화면을 먼저 그려서 즉시 보여줌 (로고/서버 응답을 기다리지 않음)
         this.render();
+
+        // 로고는 화면 표시를 막지 않도록 별도로 처리
+        this.loadLogoBase64();
+
+        // 서버 데이터는 백그라운드에서 불러온 뒤 자동으로 다시 그려짐
+        this.loadFromServer();
+
         // [개선1] 설정에서 간격 참조
         setInterval(() => {
             if (!this.isEditing && !this.meetingInputFocused) this.loadFromServer();
