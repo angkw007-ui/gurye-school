@@ -247,6 +247,35 @@
         .neis-import-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .neis-cancel-btn { background: #e5e7eb; border: none; border-radius: 10px; padding: 9px 16px; font-size: 14px; font-weight: 700; cursor: pointer; color: #374151; transition: all 0.15s; }
         .neis-cancel-btn:hover { background: #d1d5db; }
+
+        /* ── 월별 전체목록 + 검색 ── */
+        .list-search-input { width:100%; border:2px solid #e2e8f0; border-radius:12px; padding:10px 36px 10px 12px; font-size:14px; outline:none; font-family:inherit; box-sizing:border-box; transition:all .2s; }
+        .list-search-input:focus { border-color:#16a34a; box-shadow:0 0 0 3px rgba(22,163,74,.12); }
+        .list-clear-btn { position:absolute; right:8px; top:50%; transform:translateY(-50%); background:#e2e8f0; color:#475569; border:none; width:22px; height:22px; border-radius:50%; font-size:12px; font-weight:900; cursor:pointer; display:none; line-height:22px; padding:0; }
+        .list-filter-select { border:1px solid #cbd5e1; border-radius:8px; padding:5px 8px; font-size:13px; outline:none; background:white; font-family:inherit; }
+        .list-chipbar { position:sticky; top:0; z-index:20; background:rgba(248,250,252,.95); backdrop-filter:blur(4px); padding:8px 0; margin-bottom:8px; display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        .list-chip { flex-shrink:0; background:white; border:1px solid #cbd5e1; border-radius:20px; padding:4px 12px; font-size:12px; font-weight:800; color:#334155; cursor:pointer; white-space:nowrap; transition:all .15s; }
+        .list-chip:hover { background:#dcfce7; border-color:#16a34a; color:#15803d; }
+        .list-chip small { color:#94a3b8; font-weight:700; margin-left:3px; }
+        .list-month { background:white; border-radius:14px; border:1px solid #e2e8f0; margin-bottom:14px; overflow:hidden; scroll-margin-top:56px; }
+        .list-month-head { background:linear-gradient(135deg,#16a34a,#15803d); color:white; padding:9px 16px; font-weight:900; font-size:15px; display:flex; justify-content:space-between; align-items:center; }
+        .list-month-head span { font-size:12px; font-weight:700; background:rgba(255,255,255,.25); padding:2px 10px; border-radius:12px; }
+        .list-row { display:grid; grid-template-columns:78px 1fr; gap:8px; padding:7px 14px; border-bottom:1px solid #f1f5f9; cursor:pointer; align-items:start; }
+        @media (min-width:768px) { .list-row { grid-template-columns:96px 1fr; font-size:14px; } }
+        .list-row:last-child { border-bottom:none; }
+        .list-row:hover { background:#f0fdf4; }
+        .list-row.same-date { border-top:none; }
+        .list-date { font-size:12px; font-weight:900; color:#475569; white-space:nowrap; padding-top:2px; }
+        .list-date.sun { color:#ef4444; } .list-date.sat { color:#3b82f6; }
+        .list-date.today { background:#fee2e2; border-radius:6px; padding:2px 6px; margin-left:-6px; }
+        .list-body { display:flex; gap:6px; align-items:flex-start; min-width:0; font-size:13px; color:#1e293b; font-weight:500; word-break:break-all; line-height:1.5; }
+        .list-body .dept-badge { margin-left:0; flex-shrink:0; cursor:inherit; }
+        .list-badge-hol { color:#dc2626; background:#fee2e2; }
+        .list-badge-mtg { color:#15803d; background:#dcfce7; }
+        .list-snippet { display:block; font-size:12px; color:#64748b; font-weight:400; margin-top:2px; }
+        .list-empty-month { padding:12px 16px; font-size:12px; color:#94a3b8; }
+        .list-noresult { background:white; border:1px dashed #cbd5e1; border-radius:14px; text-align:center; padding:40px 12px; color:#94a3b8; font-size:14px; font-weight:600; }
+        mark.hl { background:#fde047; color:#1e293b; border-radius:3px; padding:0 1px; }
     </style>
 </head>
 <body class="p-3">
@@ -260,6 +289,7 @@
             <button onclick="app.setView('weekly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">주간</button>
             <button onclick="app.setView('monthly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">월간</button>
             <button onclick="app.setView('yearly')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">연간</button>
+            <button onclick="app.setView('list')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">📋전체목록</button>
             <button onclick="app.setView('meeting')" class="text-[10px] md:text-sm bg-green-700 px-2 md:px-4 py-1.5 md:py-2 rounded-lg font-bold hover:bg-green-600">📝회의메모</button>
         </div>
     </header>
@@ -288,6 +318,25 @@
         <button onclick="app.move(-1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">&#10094;</button>
         <h2 id="titleText" class="text-sm md:text-xl font-black text-slate-700">로딩 중...</h2>
         <button onclick="app.move(1)" class="text-green-600 font-bold px-4 text-lg md:text-xl hover:text-green-800">&#10095;</button>
+    </div>
+
+    <!-- ───────── 전체목록 검색 툴바 (목록 뷰 전용) ───────── -->
+    <div id="listToolbar" class="hidden bg-white p-3 rounded-2xl border mb-4">
+        <div class="relative">
+            <input type="text" id="listSearch" class="list-search-input" placeholder="🔍 일정·회의 검색 (예: 체육대회, 시험, 3월 15일)" autocomplete="off" oninput="app.onListSearch(this.value)">
+            <button type="button" id="listClearBtn" class="list-clear-btn" onclick="app.clearListSearch()" title="검색어 지우기">✕</button>
+        </div>
+        <div class="flex items-center gap-3 mt-2 flex-wrap">
+            <select id="listDept" class="list-filter-select" onchange="app.onListFilter()">
+                <option value="">전체 부서</option>
+                <option>교무</option><option>연구</option><option>학생</option><option>창의</option>
+                <option>행정</option><option>1학년</option><option>2학년</option><option>3학년</option><option>학사</option>
+            </select>
+            <label class="text-xs md:text-sm font-bold text-slate-600 flex items-center gap-1 cursor-pointer">
+                <input type="checkbox" id="listMeet" checked onchange="app.onListFilter()"> 📝 회의메모 포함
+            </label>
+            <span id="listCount" class="text-xs text-slate-500 font-bold ml-auto"></span>
+        </div>
     </div>
 
     <!-- ───────── 연간 학사력 네비게이션 (연간 뷰 전용) ───────── -->
@@ -526,6 +575,8 @@ const app = {
     pendingSave: null,
     aiGenerating: false,
     meetingDate: new Date(),
+    listQuery: '',
+    _listHtml: null,
     meetingCalendarDate: new Date(),
     days: ['일','월','화','수','목','금','토'],
     _logoBase64: null,
@@ -874,8 +925,8 @@ const app = {
     /* ───────── 뷰 전환 ───────── */
 
     move(dir) {
-        if (this.viewMode === 'yearly') {
-            // 연간 뷰는 yearNavBar 버튼으로 처리하므로 월 이동은 무시
+        if (this.viewMode === 'yearly' || this.viewMode === 'list') {
+            // 연간/목록 뷰는 yearNavBar 버튼으로 처리하므로 월 이동은 무시
             return;
         } else if (this.viewMode === 'monthly') {
             this.currentDate.setMonth(this.currentDate.getMonth() + dir);
@@ -921,6 +972,8 @@ const app = {
 
         // 연간 네비 숨김 기본
         yearNavBar.classList.add('hidden');
+        document.getElementById('listToolbar').classList.add('hidden');
+        if (this.viewMode !== 'list') this._listHtml = null;
 
         if (this.viewMode === 'meeting') {
             tt.textContent = '📝 회의메모';
@@ -933,7 +986,23 @@ const app = {
             eis.classList.remove('hidden');
             if (vp.querySelector('.meeting-wrapper')) vp.innerHTML = '';
 
-            if (this.viewMode === 'yearly') {
+            if (this.viewMode === 'list') {
+                const sy = this.currentSchoolYear;
+                const q = this.listQuery.trim();
+                tt.textContent = q ? `🔍 검색 결과` : `📋 ${sy}학년도 월별 전체 일정`;
+                document.getElementById('listToolbar').classList.remove('hidden');
+                document.getElementById('schoolYearLabel').textContent = `${sy}학년도`;
+                if (!q) yearNavBar.classList.remove('hidden');
+                np.classList.add('hidden');
+                pdfBar.classList.add('hidden');
+                dp.classList.add('hidden');
+                const html = this.renderList();
+                // 10초 자동동기화 때 내용이 같으면 다시 그리지 않음 (스크롤 유지)
+                if (html !== this._listHtml || !vp.querySelector('.list-view')) {
+                    vp.innerHTML = html;
+                    this._listHtml = html;
+                }
+            } else if (this.viewMode === 'yearly') {
                 // [개선4] 학년도 라벨 업데이트
                 const sy = this.currentSchoolYear;
                 tt.textContent = `${sy}학년도 학사력 (${sy}년 3월 ~ ${sy+1}년 2월)`;
@@ -957,6 +1026,170 @@ const app = {
                 pdfBar.classList.remove('hidden');
             }
         }
+    },
+
+    /* ───────── 월별 전체목록 + 검색 ───────── */
+
+    _esc(t) {
+        return String(t == null ? '' : t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    },
+
+    /** 검색어(terms)를 노란색으로 강조 */
+    _hl(text, terms) {
+        const t = String(text == null ? '' : text);
+        if (!terms.length) return this._esc(t);
+        const re = new RegExp('(' + terms.map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'gi');
+        return t.split(re).map((part, i) => i % 2 === 1 ? `<mark class="hl">${this._esc(part)}</mark>` : this._esc(part)).join('');
+    },
+
+    onListSearch(v) {
+        this.listQuery = v;
+        document.getElementById('listClearBtn').style.display = v ? 'block' : 'none';
+        this.render();
+    },
+    clearListSearch() {
+        const el = document.getElementById('listSearch');
+        el.value = ''; this.onListSearch(''); el.focus();
+    },
+    onListFilter() { this.render(); },
+
+    /** 목록에서 회의 항목 클릭 → 회의메모 화면으로 이동 */
+    openMeeting(ds) {
+        this.meetingDate = this.parseLocalDate(ds);
+        this.meetingCalendarDate = this.parseLocalDate(ds);
+        this.setView('meeting');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    jumpToMonth(id) {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+
+    renderList() {
+        const q = this.listQuery.trim();
+        const terms = q ? q.toLowerCase().split(/\s+/).filter(Boolean) : [];
+        const deptF = document.getElementById('listDept').value;
+        const incMtg = document.getElementById('listMeet').checked;
+        const sy = this.currentSchoolYear;
+        const startStr = `${sy}-03-01`, endStr = `${sy + 1}-02-29`; // 문자열 비교용 (2월 말 포함)
+
+        // ── 항목 수집 ──
+        let items = [];
+        const normal = this.events.filter(e => !e.id.startsWith('notice_') && !e.id.startsWith('meeting_') && e.date);
+        normal.forEach(e => {
+            if (deptF && e.dapt !== deptF) return;
+            items.push({ kind: 'event', date: e.date, dept: e.dapt, title: e.title || '', ev: e, ord: 1 });
+        });
+        if (incMtg && !deptF) {
+            this.events.filter(e => e.id.startsWith('meeting_') && e.date).forEach(e => {
+                items.push({ kind: 'meeting', date: e.date, dept: '회의', title: e.subject || e.title || '(제목 없음)', content: e.content || '', ev: e, ord: 2 });
+            });
+        }
+        // 공휴일 (부서 필터 중에는 제외)
+        if (!deptF) {
+            const yrs = new Set(normal.map(e => +e.date.substring(0, 4)));
+            const y0 = q ? Math.min(...yrs, sy) : sy, y1 = q ? Math.max(...yrs, sy + 1) : sy + 1;
+            for (let y = y0; y <= y1; y++) {
+                getHolidaysForYear(y).forEach(h => {
+                    const [d, name] = h.split(':');
+                    if (!name) return;
+                    if (normal.some(e => e.date === d && e.title && e.title.includes(name))) return; // 중복 방지
+                    items.push({ kind: 'holiday', date: d, dept: '공휴일', title: name, ord: 0 });
+                });
+            }
+        }
+
+        // ── 범위/검색 필터 ──
+        if (q) {
+            items = items.filter(it => {
+                const [yy, mm, dd] = it.date.split('-');
+                const hay = [it.date, `${yy}년 ${+mm}월 ${+dd}일`, `${+mm}월 ${+dd}일`, it.dept, it.title, it.content || ''].join(' ').toLowerCase();
+                return terms.every(t => hay.includes(t));
+            });
+        } else {
+            items = items.filter(it => it.date >= startStr && it.date <= endStr);
+        }
+        items.sort((a, b) => a.date.localeCompare(b.date) || a.ord - b.ord
+            || ((this.deptOrder.indexOf(a.dept) === -1 ? 99 : this.deptOrder.indexOf(a.dept)) - (this.deptOrder.indexOf(b.dept) === -1 ? 99 : this.deptOrder.indexOf(b.dept))));
+
+        // ── 건수 표시 ──
+        const realCount = items.filter(i => i.kind !== 'holiday').length;
+        const cnt = document.getElementById('listCount');
+        if (cnt) cnt.textContent = q ? `전체 기간 · ${realCount}건` : `${sy}학년도 · ${realCount}건`;
+
+        // ── 월별 그룹 ──
+        const groups = new Map();
+        if (!q) {
+            for (let m = 2; m < 14; m++) {
+                const y = m < 12 ? sy : sy + 1, mo = m % 12;
+                groups.set(`${y}-${String(mo + 1).padStart(2, '0')}`, []);
+            }
+        }
+        items.forEach(it => {
+            const k = it.date.substring(0, 7);
+            if (!groups.has(k)) groups.set(k, []);
+            groups.get(k).push(it);
+        });
+
+        if (q && items.length === 0) {
+            return `<div class="list-view"><div class="list-noresult">🔍 '${this._esc(q)}' 에 대한 검색 결과가 없습니다.</div></div>`;
+        }
+
+        let h = '<div class="list-view">';
+        if (!q) {
+            h += '<div class="list-chipbar">';
+            groups.forEach((arr, k) => {
+                const [y, m] = k.split('-');
+                h += `<button type="button" class="list-chip" onclick="app.jumpToMonth('list-m-${k}')">${+m}월<small>${arr.filter(i => i.kind !== 'holiday').length}</small></button>`;
+            });
+            h += '</div>';
+        }
+
+        groups.forEach((arr, k) => {
+            const [y, m] = k.split('-');
+            const n = arr.filter(i => i.kind !== 'holiday').length;
+            h += `<div class="list-month" id="list-m-${k}"><div class="list-month-head"><div>${y}년 ${+m}월</div><span>${n}건</span></div>`;
+            if (arr.length === 0) h += '<div class="list-empty-month">입력된 일정이 없습니다.</div>';
+            let prev = '';
+            arr.forEach(it => {
+                const dt = this.parseLocalDate(it.date);
+                const dow = dt.getDay();
+                const showDate = it.date !== prev; prev = it.date;
+                const isHol = it.kind === 'holiday' || !!this.getHoliday(it.date);
+                const cls = (dow === 0 || isHol) ? 'sun' : (dow === 6 ? 'sat' : '');
+                const dlabel = q ? `${y.substring(2)}.${+m}.${dt.getDate()}(${this.days[dow]})` : `${+m}/${dt.getDate()}(${this.days[dow]})`;
+                const dateCell = showDate ? `<div class="list-date ${cls}${this.isToday(it.date) ? ' today' : ''}">${dlabel}</div>` : '<div></div>';
+                let badge, body, click;
+                if (it.kind === 'holiday') {
+                    badge = `<span class="dept-badge list-badge-hol">공휴일</span>`;
+                    body = `<span style="color:#dc2626;font-weight:700;">${this._hl(it.title, terms)}</span>`;
+                    click = `app.showDetail('${it.date}')`;
+                } else if (it.kind === 'meeting') {
+                    badge = `<span class="dept-badge list-badge-mtg">📝 회의</span>`;
+                    let snip = '';
+                    if (terms.length && it.content) {
+                        const low = it.content.toLowerCase();
+                        const idxs = terms.map(t => low.indexOf(t)).filter(i => i >= 0);
+                        if (idxs.length && !terms.every(t => it.title.toLowerCase().includes(t))) {
+                            const i0 = Math.min(...idxs);
+                            const st = Math.max(0, i0 - 20);
+                            const piece = it.content.substring(st, st + 70).replace(/\s+/g, ' ');
+                            snip = `<span class="list-snippet">${st > 0 ? '…' : ''}${this._hl(piece, terms)}${st + 70 < it.content.length ? '…' : ''}</span>`;
+                        }
+                    }
+                    body = `<span>${this._hl(it.title, terms)}${snip}</span>`;
+                    click = `app.openMeeting('${it.date}')`;
+                } else {
+                    badge = `<span class="dept-badge dept-${this._esc(it.dept)}" style="background:${this.deptBg(it.dept)};color:${this.deptColor(it.dept)};">${this._hl(it.dept, terms)}</span>`;
+                    body = `<span>${this._hl(it.title, terms)}</span>`;
+                    click = `app.showDetail('${it.date}')`;
+                }
+                h += `<div class="list-row" onclick="${click}">${dateCell}<div class="list-body">${badge}${body}</div></div>`;
+            });
+            h += '</div>';
+        });
+        return h + '</div>';
     },
 
     /* ── [개선4] 연간 학사력 (학년도 기반, 무제한 연장) ── */
