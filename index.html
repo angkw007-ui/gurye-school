@@ -275,6 +275,13 @@
         .list-snippet { display:block; font-size:12px; color:#64748b; font-weight:400; margin-top:2px; }
         .list-empty-month { padding:12px 16px; font-size:12px; color:#94a3b8; }
         .list-noresult { background:white; border:1px dashed #cbd5e1; border-radius:14px; text-align:center; padding:40px 12px; color:#94a3b8; font-size:14px; font-weight:600; }
+        .list-actions { margin-left:auto; display:flex; gap:4px; flex-shrink:0; }
+        .list-act-btn { border:none; border-radius:6px; padding:2px 7px; font-size:12px; font-weight:800; cursor:pointer; line-height:1.4; }
+        .list-act-edit { background:#dbeafe; color:#1d4ed8; } .list-act-edit:hover { background:#bfdbfe; }
+        .list-act-del { background:#fee2e2; color:#dc2626; } .list-act-del:hover { background:#fca5a5; }
+        .list-add-btn { background:rgba(255,255,255,.25); color:white; border:none; border-radius:10px; padding:2px 10px; font-size:12px; font-weight:800; cursor:pointer; margin-left:8px; }
+        .list-add-btn:hover { background:rgba(255,255,255,.45); }
+        .list-text { flex:1; min-width:0; }
         mark.hl { background:#fde047; color:#1e293b; border-radius:3px; padding:0 1px; }
     </style>
 </head>
@@ -459,6 +466,7 @@
 <div id="editPopupOverlay" class="edit-popup-overlay" onclick="app.cancelEditForm()">
     <div class="edit-popup" onclick="event.stopPropagation()">
         <div class="edit-popup-title">✏️ 일정 수정</div>
+        <input  type="date" class="edit-popup-input" id="editPopupDate">
         <input  class="edit-popup-input"  id="editPopupTitle"  placeholder="업무·행사 내용">
         <select class="edit-popup-select" id="editPopupDept"></select>
         <div class="edit-popup-btns">
@@ -810,6 +818,7 @@ const app = {
         const ne = { id: Date.now().toString(), date: di, title: ti, dapt: dp };
         this.events.push(ne);
         this.currentDate = this.parseLocalDate(di);
+        { const dd = this.currentDate; this.currentSchoolYear = dd.getMonth() >= 2 ? dd.getFullYear() : dd.getFullYear() - 1; }
         this.render();
         document.getElementById('inDate').value = '';
         document.getElementById('inTitle').value = '';
@@ -841,6 +850,7 @@ const app = {
         const deptEl  = document.getElementById('editPopupDept');
 
         titleEl.value = ev2.title;
+        document.getElementById('editPopupDate').value = ev2.date || '';
 
         // 부서 셀렉트 옵션 구성
         deptEl.innerHTML = this.deptOrder
@@ -861,9 +871,15 @@ const app = {
         const newDept  = document.getElementById('editPopupDept').value;
         if (!newTitle) { this.showToast('내용을 입력하세요.', 'error'); return; }
 
+        const newDate = document.getElementById('editPopupDate').value;
+        if (!newDate) { this.showToast('날짜를 입력하세요.', 'error'); return; }
+
         const idx = this.events.findIndex(e => e.id === id);
         if (idx === -1) return;
-        this.events[idx] = { ...this.events[idx], title: newTitle, dapt: newDept };
+        const dateChanged = this.events[idx].date !== newDate;
+        this.events[idx] = { ...this.events[idx], date: newDate, title: newTitle, dapt: newDept };
+        // 목록뷰이거나 날짜가 바뀌면 화면 전체를 다시 그림
+        if (this.viewMode === 'list' || dateChanged) this.render();
         await this.saveToServer('add', this.events[idx]);
 
         // 해당 DOM 요소만 업데이트 (화면 깜빡임 없음)
@@ -1061,6 +1077,16 @@ const app = {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 
+    /** 월 머리글 '＋ 추가' → 입력창에 해당 월 1일 채우고 맨 위로 */
+    addToMonth(k) {
+        const inp = document.getElementById('inDate');
+        const today = this.formatDate(new Date());
+        inp.value = today.startsWith(k) ? today : `${k}-01`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => document.getElementById('inTitle').focus(), 350);
+        this.showToast('날짜를 확인하고 내용을 입력한 뒤 저장하세요.', 'info', 2500);
+    },
+
     jumpToMonth(id) {
         const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1149,7 +1175,7 @@ const app = {
         groups.forEach((arr, k) => {
             const [y, m] = k.split('-');
             const n = arr.filter(i => i.kind !== 'holiday').length;
-            h += `<div class="list-month" id="list-m-${k}"><div class="list-month-head"><div>${y}년 ${+m}월</div><span>${n}건</span></div>`;
+            h += `<div class="list-month" id="list-m-${k}"><div class="list-month-head"><div>${y}년 ${+m}월${q ? '' : `<button type="button" class="list-add-btn" onclick="app.addToMonth('${k}')">＋ 추가</button>`}</div><span>${n}건</span></div>`;
             if (arr.length === 0) h += '<div class="list-empty-month">입력된 일정이 없습니다.</div>';
             let prev = '';
             arr.forEach(it => {
@@ -1185,7 +1211,10 @@ const app = {
                     body = `<span>${this._hl(it.title, terms)}</span>`;
                     click = `app.showDetail('${it.date}')`;
                 }
-                h += `<div class="list-row" onclick="${click}">${dateCell}<div class="list-body">${badge}${body}</div></div>`;
+                const acts = it.kind === 'event'
+                    ? `<span class="list-actions"><button type="button" class="list-act-btn list-act-edit" title="수정" onclick="app.toggleEditForm('${it.ev.id}',event)">✎ 수정</button><button type="button" class="list-act-btn list-act-del" title="삭제" onclick="event.stopPropagation();app.deleteEvent('${it.ev.id}')">🗑</button></span>`
+                    : '';
+                h += `<div class="list-row" onclick="${click}">${dateCell}<div class="list-body"><span style="display:contents">${badge}</span><span class="list-text">${body}</span>${acts}</div></div>`;
             });
             h += '</div>';
         });
